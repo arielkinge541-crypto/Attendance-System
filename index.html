@@ -2202,12 +2202,17 @@
     return {ok:true, old:old, now:nu};
   }
   function applyPasswordChange(acct, newPass, isReset){
-    passHashOf(newPass).then(function(h){ acct.passHash=h; });
+    /* Returns a promise that resolves only after the new password hash is
+       stored, so the new password is guaranteed to work on the next login.
+       The password itself is never written to the Audit Log — only who
+       changed it and when. */
+    var stored = passHashOf(newPass).then(function(h){ acct.passHash=h; });
     var txt;
     if(isReset) txt = actorText()+" <b>reset</b> the password of <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+") and set a temporary password.";
     else if(acct===currentUser) txt = actorText()+" changed their own password.";
     else txt = actorText()+" changed the password of <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+").";
     logAuthority(txt); Core.log(txt);
+    return stored;
   }
 
   /* ---------- My Account panel (own username & password, by role) ---------- */
@@ -2219,7 +2224,7 @@
     $("myAccountHint").textContent = u.role==="super"
       ? "As Super Admin, you can change your own username and password here. To change the username or password of any Admin or user — or to reset a password — use Admin Management below. Every change is logged in the Audit Log."
       : u.role==="admin"
-      ? "You can change your own username and password here. You cannot change anyone else's — only the Super Admin can do that. Every change is logged in the Audit Log."
+      ? "As Admin, you can change your own username and password here — use the Change Password form to set a new password, and it will work on your next login. You cannot change anyone else's password — only the Super Admin can do that. Every change is logged in the Audit Log."
       : "You can change your own password here. Your username can only be changed by the Super Admin. Every change is logged in the Audit Log.";
     var userBox = canUser
       ? '<div class="field"><label for="myUsername">Username</label><input type="text" id="myUsername" value="'+esc(u.username)+'" autocomplete="username"></div>'+
@@ -2230,12 +2235,13 @@
       '<div class="myacct-grid">'+
         '<div class="myacct-box"><h3>Username</h3>'+
           '<p class="mb-hint">Signed in as <b>'+esc(u.name)+'</b> · '+roleLabel(u.role)+'</p>'+ userBox +'</div>'+
-        '<div class="myacct-box"><h3>Password</h3>'+
-          '<p class="mb-hint">To change your password, enter your current password first, then the new one.</p>'+
+        '<div class="myacct-box"><h3>Change Password</h3>'+
+          '<p class="mb-hint">To change your password, enter your current password first, then the new one. Your new password will work on your next login.</p>'+
           '<div class="field"><label for="myPassCurrent">Current Password</label><input type="password" id="myPassCurrent" autocomplete="current-password"></div>'+
           '<div class="field"><label for="myPassNew">New Password</label><input type="password" id="myPassNew" autocomplete="new-password"></div>'+
           '<div class="field"><label for="myPassConfirm">Confirm New Password</label><input type="password" id="myPassConfirm" autocomplete="new-password"></div>'+
-          '<button class="btn btn-in" type="button" id="btnMyPassword" style="padding:9px 16px;min-height:2.5rem">Change My Password</button>'+
+          '<button class="btn btn-in" type="button" id="btnMyPassword" style="padding:9px 16px;min-height:2.5rem">Change Password</button>'+
+          '<div class="cred-note" id="myPassNote" role="status"></div>'+
         '</div>'+
       '</div>';
     if(canUser){
@@ -2248,17 +2254,29 @@
       });
     }
     $("btnMyPassword").addEventListener("click", function(){
+      var btn=$("btnMyPassword");
       var cur=$("myPassCurrent").value, nw=$("myPassNew").value, cf=$("myPassConfirm").value;
+      if(!cur){ Core.toast("Enter your current password first."); return; }
       if(!nw || nw.length<6){ Core.toast("Enter a new password of at least 6 characters."); return; }
       if(nw!==cf){ Core.toast("The new password and its confirmation do not match."); return; }
+      btn.disabled=true;
       passHashOf(cur).then(function(curH){
-        if(curH!==u.passHash){ Core.toast("Your current password is incorrect — the password was not changed."); return; }
+        if(curH!==u.passHash){ btn.disabled=false; Core.toast("Your current password is incorrect — the password was not changed."); return; }
         return passHashOf(nw).then(function(nwH){
-          if(nwH===u.passHash){ Core.toast("That is already your password — nothing changed."); return; }
-          applyPasswordChange(u, nw, false);
-          syncDemoCards();
-          $("myPassCurrent").value=""; $("myPassNew").value=""; $("myPassConfirm").value="";
-          Core.toast("Your password was changed. Logged in the Audit Log.");
+          if(nwH===u.passHash){ btn.disabled=false; Core.toast("That is already your password — nothing changed."); return; }
+          /* Wait until the new password is actually stored before confirming,
+             so it is guaranteed to work on the next login. */
+          return applyPasswordChange(u, nw, false).then(function(){
+            btn.disabled=false;
+            syncDemoCards();
+            $("myPassCurrent").value=""; $("myPassNew").value=""; $("myPassConfirm").value="";
+            var note=$("myPassNote");
+            if(note){
+              note.textContent="Password changed successfully at "+Core.fmtDateTime(new Date())+". Use your new password the next time you log in. This change was logged in the Audit Log.";
+              note.classList.add("show");
+            }
+            Core.toast("Your password was changed. Use the new password on your next login. Logged in the Audit Log.");
+          });
         });
       });
     });
@@ -2486,14 +2504,17 @@
         if(res.err){ Core.toast(res.err); return; }
         var msgs=[];
         if(res.ok) msgs.push("username changed to @"+res.now);
+        var finish=function(){
+          if(msgs.length===0){ Core.toast("Nothing changed for "+acct.name+"."); return; }
+          syncDemoCards();
+          if(acct===currentUser) applySession(); else renderAdminList();
+          Core.toast("Updated "+acct.name+": "+msgs.join(" and ")+". Logged in the Audit Log.");
+        };
         if(passInp.value){
-          applyPasswordChange(acct, passInp.value, false);
           msgs.push("password changed");
-        }
-        if(msgs.length===0){ Core.toast("Nothing changed for "+acct.name+"."); return; }
-        syncDemoCards();
-        if(acct===currentUser) applySession(); else renderAdminList();
-        Core.toast("Updated "+acct.name+": "+msgs.join(" and ")+". Logged in the Audit Log.");
+          /* Confirm only after the new password is stored, so it works on that account's next login. */
+          applyPasswordChange(acct, passInp.value, false).then(finish);
+        } else finish();
       });
     });
     wrap.querySelectorAll("[data-reset-cred]").forEach(function(btn){
@@ -2501,15 +2522,17 @@
         var uname=btn.getAttribute("data-reset-cred");
         var acct=findAccount(uname); if(!acct) return;
         var temp="Temp"+Math.floor(1000+Math.random()*9000)+"!";
-        applyPasswordChange(acct, temp, true);
-        syncDemoCards();
         var box=credBox(uname);
         var note=box ? box.querySelector("[data-cred-note]") : null;
-        if(note){
-          note.textContent="Temporary password for @"+acct.username+": "+temp+" — give it to "+acct.name+"; they can change it after logging in. (Demo only — a sample password, not a real one.)";
-          note.classList.add("show");
-        }
-        Core.toast("Reset the password of "+acct.name+". Temporary password: "+temp+" (demo). Logged in the Audit Log.");
+        /* Confirm only after the temporary password is stored, so it works on that account's next login. */
+        applyPasswordChange(acct, temp, true).then(function(){
+          syncDemoCards();
+          if(note){
+            note.textContent="Temporary password for @"+acct.username+": "+temp+" — give it to "+acct.name+"; they can change it after logging in. (Demo only — a sample password, not a real one.)";
+            note.classList.add("show");
+          }
+          Core.toast("Reset the password of "+acct.name+". Temporary password: "+temp+" (demo). Logged in the Audit Log.");
+        });
       });
     });
   }
