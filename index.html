@@ -630,6 +630,28 @@
   .side-logout{color:var(--red)}
   .btn-logout{background:var(--red-soft);color:var(--red)}
   thead th{background:var(--surface-2)}
+
+  /* ---------- Dashboard header: smooth rounded card (no sharp corners, no edge bleed) ---------- */
+  /* The content area paints the dark background itself, so no bright cyan
+     can bleed through at the sides of the header or between the cards. */
+  html,.app,.main{background:var(--bg)}
+  .topbar{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:16px 20px;
+    margin:0 0 20px;
+    top:12px;
+    overflow:hidden;
+    background-clip:padding-box;
+  }
+  .user-chip{border-radius:999px;overflow:hidden;background-clip:padding-box}
+  .user-chip .avatar{border-radius:50%}
+  .btn-logout{border-radius:999px}
+  @media (max-width:760px){
+    .topbar{border-radius:16px;padding:14px 16px;top:8px}
+  }
 </style>
 </head>
 <body class="locked">
@@ -2096,12 +2118,23 @@
     {key:"export", label:"Export Reports", desc:"Can download the attendance report as CSV"}
   ];
   function allPerms(v){ var o={}; PERM_DEFS.forEach(function(p){ o[p.key]=v; }); return o; }
+  /* Passwords are never kept in plaintext: only salted SHA-256 hashes are stored,
+     and a sign-in attempt is checked by hashing what was typed and comparing hashes. */
+  var PASS_SALT = "AttendProDemo::";
+  function passHashOf(text){
+    var data = new TextEncoder().encode(PASS_SALT + String(text));
+    return crypto.subtle.digest("SHA-256", data).then(function(buf){
+      var bytes = new Uint8Array(buf), hex = "";
+      for(var i=0;i<bytes.length;i++) hex += ("0" + bytes[i].toString(16)).slice(-2);
+      return hex;
+    });
+  }
   var ACCOUNTS = [
-    {username:"super admin", email:"super@attendpro.demo", password:"password", name:"Super Admin", role:"super",
+    {username:"super admin", email:"super@attendpro.demo", passHash:"ffe21e2567af1cc58d2a3460649ce2fc3eb0e06a05e0fef40ff469e77b53b9de", name:"Super Admin", role:"super",
      perms: allPerms(true)},
-    {username:"admin", email:"admin@attendpro.demo", password:"password", name:"Admin", role:"admin",
+    {username:"admin", email:"admin@attendpro.demo", passHash:"ffe21e2567af1cc58d2a3460649ce2fc3eb0e06a05e0fef40ff469e77b53b9de", name:"Admin", role:"admin",
      perms:{time:true, enroll:true, leave:true, audit:true, export:false}},
-    {username:"member", email:"member@attendpro.demo", password:"member123", name:"Maria Clara Santos", role:"member", empId:1,
+    {username:"member", email:"member@attendpro.demo", passHash:"b082c738e7275a4752c228281ea564e314b7e58d4c4adbb9338a88663f5f10d1", name:"Maria Clara Santos", role:"member", empId:1,
      perms: allPerms(false)}
   ];
   var currentUser = null; /* the logged-in account object, or null */
@@ -2138,7 +2171,7 @@
     var map={super:"daCredSuper", admin:"daCredAdmin", member:"daCredMember"};
     ACCOUNTS.forEach(function(a){
       var el=$(map[a.role]); if(!el) return;
-      var txt="username: "+a.username+" · password: "+a.password;
+      var txt="username: "+a.username;
       if(a.role==="member") txt+=" — Maria Clara Santos; she can only see her own profile and records";
       el.textContent=txt;
     });
@@ -2169,7 +2202,7 @@
     return {ok:true, old:old, now:nu};
   }
   function applyPasswordChange(acct, newPass, isReset){
-    acct.password=newPass;
+    passHashOf(newPass).then(function(h){ acct.passHash=h; });
     var txt;
     if(isReset) txt = actorText()+" <b>reset</b> the password of <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+") and set a temporary password.";
     else if(acct===currentUser) txt = actorText()+" changed their own password.";
@@ -2216,14 +2249,18 @@
     }
     $("btnMyPassword").addEventListener("click", function(){
       var cur=$("myPassCurrent").value, nw=$("myPassNew").value, cf=$("myPassConfirm").value;
-      if(cur!==u.password){ Core.toast("Your current password is incorrect — the password was not changed."); return; }
       if(!nw || nw.length<6){ Core.toast("Enter a new password of at least 6 characters."); return; }
       if(nw!==cf){ Core.toast("The new password and its confirmation do not match."); return; }
-      if(nw===u.password){ Core.toast("That is already your password — nothing changed."); return; }
-      applyPasswordChange(u, nw, false);
-      syncDemoCards();
-      $("myPassCurrent").value=""; $("myPassNew").value=""; $("myPassConfirm").value="";
-      Core.toast("Your password was changed. Logged in the Audit Log.");
+      passHashOf(cur).then(function(curH){
+        if(curH!==u.passHash){ Core.toast("Your current password is incorrect — the password was not changed."); return; }
+        return passHashOf(nw).then(function(nwH){
+          if(nwH===u.passHash){ Core.toast("That is already your password — nothing changed."); return; }
+          applyPasswordChange(u, nw, false);
+          syncDemoCards();
+          $("myPassCurrent").value=""; $("myPassNew").value=""; $("myPassConfirm").value="";
+          Core.toast("Your password was changed. Logged in the Audit Log.");
+        });
+      });
     });
   }
 
@@ -2294,8 +2331,10 @@
     ev.preventDefault();
     var acct=findAccount($("loginUser").value);
     if(!acct){ showLoginError("No account with that username or email. Check your spelling and try again."); return; }
-    if(acct.password !== $("loginPass").value){ showLoginError("Wrong password for "+acct.username+". Please try again."); return; }
-    doLogin(acct);
+    passHashOf($("loginPass").value).then(function(h){
+      if(acct.passHash !== h){ showLoginError("Wrong password for "+acct.username+". Please try again."); return; }
+      doLogin(acct);
+    });
   });
   document.querySelectorAll("[data-demo-login]").forEach(function(btn){
     btn.addEventListener("click", function(){
@@ -2485,15 +2524,17 @@
     if(!pass){ Core.toast("Enter the new Admin's demo password."); $("newAdminPass").focus(); return; }
     if(findAccount(user)){ Core.toast("An account is already using the username \""+user+"\"."); return; }
     var perms=readPermChecks($("newAdminPerms"));
-    var acct={username:user, email:user+"@attendpro.demo", password:pass, name:name, role:"admin", perms:perms};
-    ACCOUNTS.push(acct);
-    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>created</b> an Admin account for <b>"+esc(name)+"</b> (@"+esc(user)+") with authority: <b>"+esc(grantedList(perms))+"</b>.";
-    logAuthority(txt);
-    Core.log(txt);
-    Core.toast("Created the Admin account for "+name+" (@"+user+"). They can now log in with it. Logged in the Audit Log.");
-    $("newAdminName").value=""; $("newAdminUser").value=""; $("newAdminPass").value="";
-    $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
-    renderAdminList();
+    passHashOf(pass).then(function(h){
+      var acct={username:user, email:user+"@attendpro.demo", passHash:h, name:name, role:"admin", perms:perms};
+      ACCOUNTS.push(acct);
+      var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>created</b> an Admin account for <b>"+esc(name)+"</b> (@"+esc(user)+") with authority: <b>"+esc(grantedList(perms))+"</b>.";
+      logAuthority(txt);
+      Core.log(txt);
+      Core.toast("Created the Admin account for "+name+" (@"+user+"). They can now log in with it. Logged in the Audit Log.");
+      $("newAdminName").value=""; $("newAdminUser").value=""; $("newAdminPass").value="";
+      $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
+      renderAdminList();
+    });
   });
 
   /* ---------- Member management (Super Admin only) ---------- */
