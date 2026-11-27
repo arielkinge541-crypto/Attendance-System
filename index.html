@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tl">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -415,7 +415,7 @@
   .hist-row:last-child{border-bottom:0}
   .hist-row .hd{font-weight:700;min-width:118px}
   .hist-row .ht{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2)}
-  /* Member (user) mode: sariling profile lang ang nakikita */
+  /* Member (user) mode: only their own profile is visible */
   body.role-member .kpis,
   body.role-member #liveSection,
   body.role-member .grid-2,
@@ -441,7 +441,7 @@
   }
   input[type="date"]:focus{outline:2px solid var(--green);outline-offset:1px;border-color:transparent}
 
-  /* ---------- UI polish (itsura at daloy lang — walang binagong feature) ---------- */
+  /* ---------- UI polish (look and flow only — no feature changed) ---------- */
   :root{--radius:16px;--shadow:0 1px 2px rgba(22,33,28,.05),0 10px 30px -14px rgba(22,33,28,.16)}
   html{scroll-behavior:smooth}
   section[id]{scroll-margin-top:14px}
@@ -473,7 +473,7 @@
   .toast{border-radius:999px;padding:13px 22px}
   .clock .time{font-size:2.8rem}
   .match-card,.loc-card,.match-person .avatar{border-radius:12px}
-  /* Chart tabs: Araw / Linggo / Buwan */
+  /* Chart tabs: Day / Week / Month */
   .chart-tabs{display:inline-flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:14px;flex-wrap:wrap}
   .chart-tab{border:0;background:transparent;color:var(--ink-2);border-radius:999px;padding:8px 18px;font-weight:800;font-size:.86rem;min-height:2.25rem}
   .chart-tab:hover{color:var(--ink)}
@@ -492,6 +492,43 @@
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
     .kpi,.btn,.btn-ghost,.btn-sm,.chip,.nav-item,.profile-card{transition:none}
+  }
+
+  /* ---------- UI refinement: clean spacing, hierarchy, at-a-glance status ---------- */
+  .main > section,.main > .grid-2,.main > .grid-bottom{margin-bottom:20px}
+  .kpis{gap:16px;margin-bottom:20px}
+  .grid-2,.grid-bottom{gap:16px}
+  .live-grid{gap:20px}
+  .panel{padding:26px}
+  .panel h2{font-size:1.14rem;margin-bottom:6px}
+  .panel .hint{max-width:70ch}
+  .nav-item{padding:11px 12px}
+  .kpi{padding:18px 20px}
+  .kpi .num{font-variant-numeric:tabular-nums}
+  .kpi:nth-child(1) .num{color:var(--green-ink)}
+  .kpi:nth-child(2) .num{color:var(--amber)}
+  .kpi:nth-child(3) .num{color:var(--red)}
+  .kpi:nth-child(4) .num{color:var(--blue)}
+  .status{padding:5px 12px;font-size:.8rem}
+  .table-tools{margin-bottom:16px}
+  .profile-grid{gap:14px}
+  .profile-card,.acct-card{padding:18px}
+  .btn-in{box-shadow:0 1px 2px rgba(10,79,54,.28)}
+  .audit-stat{background:var(--surface-2)}
+  .bar{height:10px}
+  .bar i{transition:width .5s ease}
+  .dept-row .dp,.day-legend .dl-row b{font-variant-numeric:tabular-nums}
+  .login-card{padding:38px 36px 30px}
+  .login-brand{margin-bottom:10px}
+  .side-block h3{font-size:.9rem;margin-bottom:10px}
+  .leave-item{padding:15px 0}
+  @media (prefers-reduced-motion: reduce){
+    .bar i{transition:none}
+  }
+  @media (max-width:760px){
+    .panel{padding:18px 16px}
+    .login-card{padding:24px 20px 22px}
+    .kpi{padding:15px 16px}
   }
 
   /* ---------- Mobile ---------- */
@@ -542,31 +579,31 @@
           <div class="lb-sub">Attendance System</div>
         </div>
       </div>
-      <h1>Mag-login muna</h1>
-      <p class="login-hint">Kailangan munang mag-login bago makita ang dashboard. Dalawang role ang puwede: <b>Super Admin</b> (lahat ng authority) at <b>Admin</b> (ayon sa authority na ibinigay ng Super Admin).</p>
+      <h1>Log in first</h1>
+      <p class="login-hint">You need to log in before you can see the dashboard. Two roles are available: <b>Super Admin</b> (all authority) and <b>Admin</b> (based on the authority granted by the Super Admin).</p>
       <div class="login-error" id="loginError" role="alert"></div>
       <form id="loginForm" autocomplete="off">
         <div class="field">
-          <label for="loginUser">Username o Email</label>
-          <input type="text" id="loginUser" placeholder="hal. superadmin o admin" autocomplete="username" />
+          <label for="loginUser">Username or Email</label>
+          <input type="text" id="loginUser" placeholder="e.g. superadmin or admin" autocomplete="username" />
         </div>
         <div class="field">
           <label for="loginPass">Password</label>
-          <input type="password" id="loginPass" placeholder="Ilagay ang password" autocomplete="current-password" />
+          <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password" />
         </div>
-        <button class="btn btn-in btn-login" type="submit">Mag-login</button>
+        <button class="btn btn-in btn-login" type="submit">Log in</button>
       </form>
 
       <div class="demo-accounts">
-        <h2>Demo Accounts — i-tap para mag-login agad</h2>
-        <p>Hindi na kailangang mag-type: i-tap ang account at diretso ka nang papasok bilang role na iyon.</p>
+        <h2>Demo Accounts — tap to log in instantly</h2>
+        <p>No typing needed: tap an account and you will go straight in with that role.</p>
         <button class="demo-acct" type="button" data-demo-login="superadmin">
           <span class="avatar" style="background:var(--green)">SA</span>
           <span class="da-body">
             <span class="da-name">Super Admin <span class="role-badge role-super">Super Admin</span></span>
             <span class="da-cred" style="display:block">username: superadmin · password: super123</span>
           </span>
-          <span class="da-go">Pumasok →</span>
+          <span class="da-go">Enter →</span>
         </button>
         <button class="demo-acct" type="button" data-demo-login="admin">
           <span class="avatar" style="background:var(--blue)">AD</span>
@@ -574,18 +611,18 @@
             <span class="da-name">Admin <span class="role-badge role-admin">Admin</span></span>
             <span class="da-cred" style="display:block">username: admin · password: admin123</span>
           </span>
-          <span class="da-go">Pumasok →</span>
+          <span class="da-go">Enter →</span>
         </button>
         <button class="demo-acct" type="button" data-demo-login="member">
           <span class="avatar" style="background:var(--amber)">MC</span>
           <span class="da-body">
             <span class="da-name">Member / User <span class="role-badge" style="background:var(--amber-soft);color:var(--amber)">Member</span></span>
-            <span class="da-cred" style="display:block">username: member · password: member123 — si Maria Clara Santos; sariling profile at record lang niya ang makikita niya</span>
+            <span class="da-cred" style="display:block">username: member · password: member123 — Maria Clara Santos; she can only see her own profile and records</span>
           </span>
-          <span class="da-go">Pumasok →</span>
+          <span class="da-go">Enter →</span>
         </button>
       </div>
-      <p class="login-note">Demo lang ito: sample accounts at sample data ang gamit, lahat ng pagproseso ay dito lang sa browser ng device na ito — walang totoong password na sine-save o sine-send kahit saan, at walang face data na sine-save o sine-send. Demo session lang ang login: pag ni-refresh ang page, kailangan ulit mag-login.</p>
+      <p class="login-note">This is a demo only: it uses sample accounts and sample data, and all processing happens right here in this device's browser — no real password is saved or sent anywhere, and no face data is saved or sent. The login is a demo session only: if you refresh the page, you will need to log in again.</p>
     </div>
   </div>
 
@@ -646,11 +683,11 @@
       <div class="side-user">
         <div class="avatar" id="sideAvatar" aria-hidden="true">—</div>
         <div>
-          <div class="n" id="sideUserName">Hindi naka-login</div>
+          <div class="n" id="sideUserName">Not logged in</div>
           <div class="r" id="sideUserRole">—</div>
         </div>
       </div>
-      <button class="side-logout" id="btnLogoutSide" type="button">Mag-logout</button>
+      <button class="side-logout" id="btnLogoutSide" type="button">Log out</button>
     </div>
   </aside>
 
@@ -661,10 +698,10 @@
         <h1>Dashboard <span class="mock-tag">Mockup</span></h1>
         <div class="date-line" id="todayLine">—</div>
       </div>
-      <div class="user-chip" id="userChip" aria-label="Naka-login ngayon">
+      <div class="user-chip" id="userChip" aria-label="Currently logged in">
         <div class="avatar" id="topAvatar" aria-hidden="true">—</div>
         <div class="uc-meta">
-          <div class="uc-name" id="topUserName">Hindi naka-login</div>
+          <div class="uc-name" id="topUserName">Not logged in</div>
           <div class="uc-role" id="topUserRole">—</div>
         </div>
         <button class="btn-logout" id="btnLogout" type="button">Logout</button>
@@ -672,39 +709,39 @@
     </div>
 
     <!-- KPI -->
-    <section class="kpis" aria-label="Buod ng attendance ngayong araw">
+    <section class="kpis" aria-label="Summary of today's attendance">
       <div class="kpi">
-        <div class="lbl"><span class="dot" style="background:var(--green)"></span>Pumasok (Present)</div>
+        <div class="lbl"><span class="dot" style="background:var(--green)"></span>Present</div>
         <div class="num" id="kpiPresent">0</div>
-        <div class="sub" id="kpiPresentSub">sa 24 empleyado</div>
+        <div class="sub" id="kpiPresentSub">of 24 employees</div>
       </div>
       <div class="kpi">
         <div class="lbl"><span class="dot" style="background:var(--amber)"></span>Late</div>
         <div class="num" id="kpiLate">0</div>
-        <div class="sub">lagpas 8:00 AM ang time in</div>
+        <div class="sub">time in past 8:00 AM</div>
       </div>
       <div class="kpi">
         <div class="lbl"><span class="dot" style="background:var(--red)"></span>Absent</div>
         <div class="num" id="kpiAbsent">0</div>
-        <div class="sub">walang time in ngayong araw</div>
+        <div class="sub">no time in today</div>
       </div>
       <div class="kpi">
         <div class="lbl"><span class="dot" style="background:var(--blue)"></span>On Leave</div>
         <div class="num" id="kpiLeave">0</div>
-        <div class="sub">approved na bakasyon / sick leave</div>
+        <div class="sub">approved vacation / sick leave</div>
       </div>
     </section>
 
     <!-- ============ LIVE CAMERA CHECK-IN ============ -->
-    <section class="panel live-panel" id="liveSection" aria-label="Live camera check-in gamit ang facial recognition">
+    <section class="panel live-panel" id="liveSection" aria-label="Live camera check-in using facial recognition">
       <div class="live-head">
         <div style="display:flex;align-items:center;gap:12px;min-width:0">
           <img class="live-logo" src="data:image/png;base64,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" alt="Logo" />
           <h2>Live Check-In — Facial Recognition + Photo Proof &amp; GPS <span class="demo-badge">Demo</span></h2>
         </div>
-        <span class="live-dot-wrap"><span class="live-dot" id="liveDot"></span><span id="liveState">Camera: naka-off</span></span>
+        <span class="live-dot-wrap"><span class="live-dot" id="liveDot"></span><span id="liveState">Camera: off</span></span>
       </div>
-      <p class="hint">TESDA-style anti-cheat: bawat check-in ay kailangan ng <b>photo proof na may timestamp</b> mula sa camera at <b>GPS location</b>, at lahat ay naka-log sa Audit Log sa ibaba. I-on ang camera — hahanapin nito ang mukha nang real time, lalagyan ng frame, at itutugma sa mga naka-enroll na demo member. Walang mai-mark na Present hangga't hindi mo kino-confirm.</p>
+      <p class="hint">TESDA-style anti-cheat: every check-in requires <b>photo proof with a timestamp</b> from the camera and a <b>GPS location</b>, and everything is logged in the Audit Log below. Turn on the camera — it will find the face in real time, frame it, and match it against the enrolled demo members. No one is marked Present until you confirm.</p>
 
       <div class="live-grid">
         <div>
@@ -714,47 +751,47 @@
             <div class="cam-placeholder" id="camPlaceholder">
               <div>
                 <img class="ph-logo" src="data:image/png;base64,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" alt="Logo" />
-                <div>Naka-off ang camera.<br>I-tap ang “Buksan ang Camera” para magsimula.</div>
+                <div>The camera is off.<br>Tap “Turn On Camera” to start.</div>
               </div>
             </div>
-            <div class="face-status" id="faceStatus">Walang camera</div>
+            <div class="face-status" id="faceStatus">No camera</div>
           </div>
           <div class="cam-controls">
-            <button class="btn btn-in" id="btnCamStart" type="button" style="flex:0 1 auto;padding-left:18px;padding-right:18px">Buksan ang Camera</button>
-            <button class="btn-danger-ghost" id="btnCamStop" type="button" disabled>Patayin</button>
+            <button class="btn btn-in" id="btnCamStart" type="button" style="flex:0 1 auto;padding-left:18px;padding-right:18px">Turn On Camera</button>
+            <button class="btn-danger-ghost" id="btnCamStop" type="button" disabled>Turn Off</button>
           </div>
           <div class="sim-row">
-            <button class="btn-ghost" id="btnSimKnown" type="button">I-simulate: kilalang mukha</button>
-            <button class="btn-ghost" id="btnSimUnknown" type="button">I-simulate: hindi kilalang mukha</button>
+            <button class="btn-ghost" id="btnSimKnown" type="button">Simulate: known face</button>
+            <button class="btn-ghost" id="btnSimUnknown" type="button">Simulate: unknown face</button>
           </div>
 
           <div class="loc-card" id="locCard">
-            <div class="loc-head"><span class="loc-dot" id="locDot"></span><span id="locTitle">GPS Location: hindi pa nakukuha</span></div>
-            <div class="loc-coords" id="locCoords">Kailangan ang location sa bawat check-in bilang patunay kung nasaan nag-check in.</div>
+            <div class="loc-head"><span class="loc-dot" id="locDot"></span><span id="locTitle">GPS Location: not captured yet</span></div>
+            <div class="loc-coords" id="locCoords">Location is required for every check-in as proof of where the check-in happened.</div>
             <div class="loc-place" id="locPlace"></div>
             <div style="margin-top:10px">
-              <button class="btn-ghost" id="btnGetLoc" type="button">Kunin ang GPS Location</button>
+              <button class="btn-ghost" id="btnGetLoc" type="button">Get GPS Location</button>
             </div>
-            <div class="loc-warn" id="locWarn" role="alert">⚠ Naka-off o walang pahintulot ang location. Mai-flag ang check-in na walang GPS location — i-on ang location ng device at i-allow ito sa browser, tapos i-tap ang “Kunin ang GPS Location”.</div>
+            <div class="loc-warn" id="locWarn" role="alert">⚠ Location is off or not permitted. A check-in without a GPS location will be flagged — turn on the device location and allow it in the browser, then tap “Get GPS Location”.</div>
           </div>
 
-          <p class="privacy-note">Demo lang ito: sample roster ang gamit, at lahat ng pagproseso ng mukha ay dito lang sa browser ng device na ito — walang face data na sine-save, ina-upload, o sine-send kahit saan. Ang photo proof at GPS ay dito lang din sa page na ito naka-display bilang demo record at hindi sine-save pagka-refresh. Pang-demo ang simulation buttons kung walang camera — pero dahil walang totoong litrato, mai-flag ang simulation check-in sa Audit Log.</p>
+          <p class="privacy-note">This is a demo only: it uses a sample roster, and all face processing happens right here in this device's browser — no face data is saved, uploaded, or sent anywhere. The photo proof and GPS are also only displayed on this page as a demo record and are not saved after a refresh. The simulation buttons are for demo use when there is no camera — but since there is no real photo, a simulation check-in will be flagged in the Audit Log.</p>
         </div>
 
         <div class="live-side">
           <div class="side-block">
-            <h3>Resulta ng Scan</h3>
+            <h3>Scan Result</h3>
             <div class="match-card" id="matchCard">
-              <div class="mc-title">Wala pang na-scan</div>
-              <div class="mc-body">Pag may nakitang mukha ang camera, dito lalabas kung kilala siya o hindi. Kailangan munang i-confirm bago maitala ang attendance.</div>
+              <div class="mc-title">Nothing scanned yet</div>
+              <div class="mc-body">When the camera sees a face, it will show here whether the person is recognized or not. You need to confirm before the attendance is recorded.</div>
             </div>
           </div>
 
           <div class="side-block">
-            <h3>Mag-enroll ng Demo Member</h3>
+            <h3>Enroll a Demo Member</h3>
             <div class="enroll-grid">
-              <input type="text" id="enrollName" placeholder="Pangalan ng demo member" aria-label="Pangalan ng demo member" />
-              <select id="enrollDept" aria-label="Department ng demo member">
+              <input type="text" id="enrollName" placeholder="Demo member name" aria-label="Demo member name" />
+              <select id="enrollDept" aria-label="Demo member department">
                 <option>IT Department</option>
                 <option>Media</option>
                 <option>Operations</option>
@@ -763,26 +800,26 @@
                 <option>HR</option>
               </select>
             </div>
-            <button class="btn-ghost" id="btnEnroll" type="button" style="margin-top:9px" disabled>Kumuha ng Larawan at I-enroll</button>
-            <p class="privacy-note" id="enrollHint">Buksan muna ang camera at humarap dito — saka lang puwedeng mag-enroll.</p>
-            <div class="perm-lock-note" id="enrollLockNote">Walang authority ang account mo para mag-enroll ng members. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
+            <button class="btn-ghost" id="btnEnroll" type="button" style="margin-top:9px" disabled>Take Photo and Enroll</button>
+            <p class="privacy-note" id="enrollHint">Turn on the camera first and face it — only then can you enroll.</p>
+            <div class="perm-lock-note" id="enrollLockNote">Your account does not have the authority to enroll members. Only the Super Admin can grant this authority.</div>
           </div>
 
           <div class="side-block">
-            <h3>Naka-enroll na Mukha (<span id="enrolledCount">0</span>)</h3>
+            <h3>Enrolled Faces (<span id="enrolledCount">0</span>)</h3>
             <div class="enrolled-list" id="enrolledList">
-              <span style="font-size:.84rem;color:var(--ink-3);font-weight:600">Wala pa. Mag-enroll gamit ang camera sa itaas.</span>
+              <span style="font-size:.84rem;color:var(--ink-3);font-weight:600">None yet. Enroll using the camera above.</span>
             </div>
           </div>
 
           <div class="side-block">
             <h3>Live Activity Feed</h3>
             <ul class="feed" id="activityFeed">
-              <li><span class="ft">8:22 AM</span><span><b>Daniel Paul Mendoza</b> nag-Time In (manual) — Late</span></li>
-              <li><span class="ft">8:17 AM</span><span><b>Ana Marie Cruz</b> nag-Time In (manual) — Late</span></li>
-              <li><span class="ft">8:05 AM</span><span><b>Mark Anthony Tan</b> nag-Time In (manual) — Late</span></li>
-              <li><span class="ft">7:59 AM</span><span><b>Grace Ann Villanueva</b> nag-Time In (manual) — On time</span></li>
-              <li><span class="ft">7:55 AM</span><span><b>Jose Miguel Reyes</b> nag-Time In (manual) — On time</span></li>
+              <li><span class="ft">8:22 AM</span><span><b>Daniel Paul Mendoza</b> timed in (manual) — Late</span></li>
+              <li><span class="ft">8:17 AM</span><span><b>Ana Marie Cruz</b> timed in (manual) — Late</span></li>
+              <li><span class="ft">8:05 AM</span><span><b>Mark Anthony Tan</b> timed in (manual) — Late</span></li>
+              <li><span class="ft">7:59 AM</span><span><b>Grace Ann Villanueva</b> timed in (manual) — On time</span></li>
+              <li><span class="ft">7:55 AM</span><span><b>Jose Miguel Reyes</b> timed in (manual) — On time</span></li>
             </ul>
           </div>
         </div>
@@ -791,9 +828,9 @@
 
     <div class="grid-2">
       <!-- Clock + Time In/Out -->
-      <section class="panel" aria-label="Time in at time out">
+      <section class="panel" aria-label="Time in and time out">
         <h2>Time In / Time Out</h2>
-        <p class="hint">Piliin ang empleyado, tapos i-tap ang Time In o Time Out. Gamit ang totoong oras ngayon.</p>
+        <p class="hint">Select the employee, then tap Time In or Time Out. It uses the actual current time.</p>
         <div class="clock">
           <div class="time mono" id="clockTime">--:--:--</div>
           <div class="cdate" id="clockDate">—</div>
@@ -801,7 +838,7 @@
         </div>
         <div style="height:16px"></div>
         <div class="field">
-          <label for="empSelect">Empleyado</label>
+          <label for="empSelect">Employee</label>
           <select id="empSelect"></select>
         </div>
         <div class="btn-row">
@@ -815,71 +852,71 @@
           </button>
         </div>
         <div class="last-action" id="lastAction" role="status"></div>
-        <div class="perm-lock-note" id="timeLockNote">Walang authority ang account mo para mag-Time In / Time Out. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
+        <div class="perm-lock-note" id="timeLockNote">Your account does not have the authority for Time In / Time Out. Only the Super Admin can grant this authority.</div>
       </section>
 
       <!-- Weekly chart -->
-      <section class="panel" id="reports" aria-label="Attendance ngayong linggo">
-        <h2>Mga Graph ng Attendance</h2>
-        <p class="hint">Pumili ng saklaw: <b>Araw</b> para sa ngayon, <b>Linggo</b> para sa Lunes–Biyernes, o <b>Buwan</b> para sa bawat linggo ng buwan. Kulay: berde = on time, dilaw = late, pula = absent, asul = on leave.</p>
+      <section class="panel" id="reports" aria-label="This week's attendance">
+        <h2>Attendance Graphs</h2>
+        <p class="hint">Choose a range: <b>Day</b> for today, <b>Week</b> for Monday–Friday, or <b>Month</b> for each week of the month. Colors: green = on time, yellow = late, red = absent, blue = on leave.</p>
         <div class="chart-wrap">
-          <div class="chart-tabs" role="tablist" aria-label="Piliin ang saklaw ng graph">
-            <button class="chart-tab" type="button" data-chart="day" role="tab">Araw</button>
-            <button class="chart-tab active" type="button" data-chart="week" role="tab">Linggo</button>
-            <button class="chart-tab" type="button" data-chart="month" role="tab">Buwan</button>
+          <div class="chart-tabs" role="tablist" aria-label="Choose the graph range">
+            <button class="chart-tab" type="button" data-chart="day" role="tab">Day</button>
+            <button class="chart-tab active" type="button" data-chart="week" role="tab">Week</button>
+            <button class="chart-tab" type="button" data-chart="month" role="tab">Month</button>
           </div>
 
           <div id="chartDay" class="chart-view" hidden>
             <div class="day-flex">
-              <svg id="dayDonut" viewBox="0 0 150 150" width="168" height="168" role="img" aria-label="Donut chart ng attendance ngayong araw" style="display:block;flex:none"></svg>
+              <svg id="dayDonut" viewBox="0 0 150 150" width="168" height="168" role="img" aria-label="Donut chart of today's attendance" style="display:block;flex:none"></svg>
               <div class="day-legend" id="dayLegend"></div>
             </div>
-            <p class="chart-note">Buod ng attendance ngayong araw, galing mismo sa records sa ibaba — nag-a-update ito tuwing may nag-Time In o Time Out.</p>
+            <p class="chart-note">Summary of today's attendance, taken directly from the records below — it updates whenever someone times in or out.</p>
           </div>
 
           <div id="chartWeek" class="chart-view">
-            <svg id="weekChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart ng attendance mula Lunes hanggang Biyernes" style="display:block"></svg>
+            <svg id="weekChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart of attendance from Monday to Friday" style="display:block"></svg>
             <div class="chart-legend">
               <span><i class="swatch" style="background:var(--green)"></i>On time</span>
               <span><i class="swatch" style="background:var(--amber)"></i>Late</span>
-              <span style="margin-left:auto">Attendance rate ngayong linggo: <b id="weekRate" style="color:var(--ink)">—</b></span>
+              <span style="margin-left:auto">Attendance rate this week: <b id="weekRate" style="color:var(--ink)">—</b></span>
             </div>
           </div>
 
           <div id="chartMonth" class="chart-view" hidden>
-            <svg id="monthChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart ng attendance bawat linggo ng buwan" style="display:block"></svg>
+            <svg id="monthChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart of attendance per week of the month" style="display:block"></svg>
             <div class="chart-legend">
               <span><i class="swatch" style="background:var(--green)"></i>On time</span>
               <span><i class="swatch" style="background:var(--amber)"></i>Late</span>
               <span><i class="swatch" style="background:var(--red)"></i>Absent</span>
-              <span style="margin-left:auto">Attendance rate ngayong buwan: <b id="monthRate" style="color:var(--ink)">—</b></span>
+              <span style="margin-left:auto">Attendance rate this month: <b id="monthRate" style="color:var(--ink)">—</b></span>
             </div>
-            <p class="chart-note">Bawat bar = isang linggo (12 empleyado × 5 araw = 60 puwesto). Ang Linggo 4 ay hanggang ngayong araw pa lang ang datos (partial), galing sa records ngayon.</p>
+            <p class="chart-note">Each bar = one week (12 employees × 5 days = 60 slots). Week 4 only has data up to today (partial), taken from today's records.</p>
           </div>
           <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <button class="btn-ghost export-only" id="btnExport" type="button">I-export ang Report (CSV)</button>
-            <button class="btn-ghost export-only" id="btnExportPdfRoster" type="button">Buong Roster (PDF)</button>
+            <button class="btn-ghost export-only" id="btnExport" type="button">Export Report (CSV)</button>
+            <button class="btn-ghost export-only" id="btnExportPdfRoster" type="button">Full Roster (PDF)</button>
             <button class="btn-ghost export-only" id="btnExportPdfAudit" type="button">Audit Log (PDF)</button>
           </div>
           <div class="export-only" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">Mula <input type="date" id="repFrom" aria-label="Simula ng date range para sa PDF report" /></label>
-            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">Hanggang <input type="date" id="repTo" aria-label="Katapusan ng date range para sa PDF report" /></label>
-            <span style="font-size:.8rem;color:var(--ink-3);font-weight:600">Date range para sa PDF. Walang pipiliin = ngayong araw + nakaraang 10 araw ng pasok.</span>
+            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">From <input type="date" id="repFrom" aria-label="Start of the date range for the PDF report" /></label>
+            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">To <input type="date" id="repTo" aria-label="End of the date range for the PDF report" /></label>
+            <span style="font-size:.8rem;color:var(--ink-3);font-weight:600">Date range for the PDF. Leave blank = today + the past 10 workdays.</span>
           </div>
         </div>
       </section>
     </div>
 
     <!-- Records table -->
-    <section class="panel" id="records" aria-label="Attendance records ngayong araw" style="margin-bottom:18px">
-      <h2>Attendance Ngayon</h2>
-      <p class="hint">Lahat ng records ngayong araw. Mag-search o mag-filter ayon sa status.</p>
+    <section class="panel" id="records" aria-label="Today's attendance records" style="margin-bottom:18px">
+      <h2>Today's Attendance</h2>
+      <p class="hint">All of today's records. Search or filter by status.</p>
       <div class="table-tools">
         <div class="search">
-          <input type="search" id="searchInput" placeholder="Mag-search ng pangalan o department…" aria-label="Mag-search ng empleyado" />
+          <input type="search" id="searchInput" placeholder="Search by name or department…" aria-label="Search employees" />
         </div>
-        <div class="chips" role="group" aria-label="Filter ayon sa status">
-          <button class="chip active" type="button" data-filter="all">Lahat</button>
+        <div class="chips" role="group" aria-label="Filter by status">
+          <button class="chip active" type="button" data-filter="all">All</button>
           <button class="chip" type="button" data-filter="present">Present</button>
           <button class="chip" type="button" data-filter="late">Late</button>
           <button class="chip" type="button" data-filter="absent">Absent</button>
@@ -889,11 +926,11 @@
       <table>
         <thead>
           <tr>
-            <th>Empleyado</th>
+            <th>Employee</th>
             <th>Time In</th>
             <th>Time Out</th>
             <th>Status</th>
-            <th>Oras ng Trabaho</th>
+            <th>Hours Worked</th>
           </tr>
         </thead>
         <tbody id="recordsBody"></tbody>
@@ -901,19 +938,19 @@
     </section>
 
     <!-- ============ AUDIT LOG / HISTORY ============ -->
-    <section class="panel" id="auditSection" aria-label="Audit log ng bawat check-in" style="margin-bottom:18px">
-      <h2>Audit Log — Kasaysayan ng Check-In</h2>
-      <p class="hint">Bawat check-in ay naka-log dito: sino, anong oras, anong photo proof, at anong GPS location. <b>Verified</b> lang kung kumpleto ang photo proof na may timestamp at ang location. Awtomatikong <b>Flagged</b> kung walang photo, walang location, o masyadong mabilis ang sunod-sunod na check-in ng parehong tao (wala pang 3 minuto).</p>
+    <section class="panel" id="auditSection" aria-label="Audit log of every check-in" style="margin-bottom:18px">
+      <h2>Audit Log — Check-In History</h2>
+      <p class="hint">Every check-in is logged here: who, what time, what photo proof, and what GPS location. <b>Verified</b> only if the photo proof with timestamp and the location are complete. Automatically <b>Flagged</b> if there is no photo, no location, or the same person's check-ins are too close together (less than 3 minutes apart).</p>
       <div class="audit-summary">
-        <span class="audit-stat">Kabuuang log: <b id="auditTotal">0</b></span>
+        <span class="audit-stat">Total logs: <b id="auditTotal">0</b></span>
         <span class="audit-stat">Verified: <b id="auditVerified">0</b></span>
         <span class="audit-stat">Flagged: <b id="auditFlagged">0</b></span>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Empleyado</th>
-            <th>Oras / Petsa</th>
+            <th>Employee</th>
+            <th>Time / Date</th>
             <th>Photo Proof</th>
             <th>Location</th>
             <th>Status</th>
@@ -921,34 +958,34 @@
         </thead>
         <tbody id="auditBody"></tbody>
       </table>
-      <p class="privacy-note">I-tap ang photo proof para makita nang malaki — may naka-overlay na petsa, oras, pangalan, at GPS coordinates sa litrato mismo. Demo lang ang log na ito: nasa memory lang ng page at nawawala pagka-refresh.</p>
+      <p class="privacy-note">Tap a photo proof to view it larger — the date, time, name, and GPS coordinates are overlaid on the photo itself. This log is a demo only: it lives only in the page's memory and disappears on refresh.</p>
       <div class="super-only" style="margin-top:14px">
-        <button class="btn-danger-ghost" id="btnClearAudit" type="button">Burahin ang Audit Log (Super Admin lang)</button>
+        <button class="btn-danger-ghost" id="btnClearAudit" type="button">Clear Audit Log (Super Admin only)</button>
       </div>
 
       <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px">
-        <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Log ng Authority at Admin Changes</h3>
-        <p class="hint" style="margin-bottom:10px">Bawat pagbigay o pagbawi ng authority ng Super Admin, paggawa o pagtanggal ng Admin account, at pagtanggal ng member ay naka-log dito: sino ang gumawa, kanino, anong authority, at anong oras.</p>
+        <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Authority &amp; Admin Changes Log</h3>
+        <p class="hint" style="margin-bottom:10px">Every grant or revocation of authority by the Super Admin, creation or removal of an Admin account, and removal of a member is logged here: who did it, to whom, which authority, and at what time.</p>
         <ul class="authority-list" id="authorityList">
-          <li><span style="color:var(--ink-3);font-weight:600">Wala pang authority changes sa session na ito.</span></li>
+          <li><span style="color:var(--ink-3);font-weight:600">No authority changes in this session yet.</span></li>
         </ul>
       </div>
     </section>
 
     <!-- ============ ADMIN MANAGEMENT (SUPER ADMIN LANG) ============ -->
-    <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin lang" style="margin-bottom:18px">
-      <h2>Admin Management <span class="role-badge role-super">Super Admin lang</span></h2>
-      <p class="hint">Dito lang puwedeng magbigay o magbawi ng authority. Ang Admin ay <b>hindi</b> puwedeng magbigay ng authority sa iba at hindi niya nakikita ang screen na ito. Bawat pagbabago ay naka-log sa Audit Log sa itaas.</p>
+    <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin only" style="margin-bottom:18px">
+      <h2>Admin Management <span class="role-badge role-super">Super Admin only</span></h2>
+      <p class="hint">This is the only place where authority can be granted or revoked. An Admin <b>cannot</b> grant authority to others and cannot see this screen. Every change is logged in the Audit Log above.</p>
 
-      <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Gumawa ng Bagong Admin Account</h3>
+      <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Create a New Admin Account</h3>
       <div class="create-grid">
         <div class="field" style="margin:0">
-          <label for="newAdminName">Pangalan</label>
-          <input type="text" id="newAdminName" placeholder="hal. Juan Dela Cruz" />
+          <label for="newAdminName">Name</label>
+          <input type="text" id="newAdminName" placeholder="e.g. Juan Dela Cruz" />
         </div>
         <div class="field" style="margin:0">
           <label for="newAdminUser">Username</label>
-          <input type="text" id="newAdminUser" placeholder="hal. juan.admin" />
+          <input type="text" id="newAdminUser" placeholder="e.g. juan.admin" />
         </div>
         <div class="field" style="margin:0">
           <label for="newAdminPass">Password (demo)</label>
@@ -956,63 +993,63 @@
         </div>
       </div>
       <div class="field" style="margin-top:12px">
-        <label>Authority na ibibigay sa bagong Admin</label>
+        <label>Authority to grant to the new Admin</label>
         <div class="perm-checks" id="newAdminPerms"></div>
       </div>
-      <button class="btn btn-in" id="btnCreateAdmin" type="button" style="padding-left:18px;padding-right:18px">Gumawa ng Admin Account</button>
+      <button class="btn btn-in" id="btnCreateAdmin" type="button" style="padding-left:18px;padding-right:18px">Create Admin Account</button>
 
-      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 8px">Mga Account</h3>
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 8px">Accounts</h3>
       <div id="adminList"></div>
 
-      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 4px">Pamamahala ng Members</h3>
-      <p class="hint">Ang Super Admin lang ang makakapagtanggal ng member. Ang pagtanggal ay naka-log din sa Audit Log.</p>
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 4px">Member Management</h3>
+      <p class="hint">Only the Super Admin can remove a member. Removals are also logged in the Audit Log.</p>
       <div id="memberMgmtList"></div>
     </section>
 
     <!-- ============ USER PROFILES ============ -->
-    <section class="panel" id="profilesSection" aria-label="User profiles ng mga miyembro" style="margin-bottom:18px">
-      <h2 id="profilesTitle">User Profiles — Mga Miyembro</h2>
-      <p class="hint" id="profilesHint">Bawat member ay may sariling Profile Account: sariling detalye, profile picture, at attendance history. Ang Super Admin at Admin ang makakapag-edit ng detalye at makakapag-upload ng picture para sa member; ang member mismo ay sariling picture lang niya ang mapapalitan at sariling record lang niya ang makikita niya.</p>
+    <section class="panel" id="profilesSection" aria-label="User profiles of the members" style="margin-bottom:18px">
+      <h2 id="profilesTitle">User Profiles — Members</h2>
+      <p class="hint" id="profilesHint">Every member has their own Profile Account: their own details, profile picture, and attendance history. The Super Admin and Admin can edit details and upload a picture for a member; a member can only change their own picture and can only see their own records.</p>
       <div class="pdf-toolbar export-only">
-        <label>Mula <input type="date" id="pdfFrom" aria-label="Simula ng date range para sa PDF" /></label>
-        <label>Hanggang <input type="date" id="pdfTo" aria-label="Katapusan ng date range para sa PDF" /></label>
-        <span class="pdf-note">Date range para sa PDF export ng bawat user. Walang pipiliin = ngayong araw + nakaraang 10 araw ng pasok.</span>
+        <label>From <input type="date" id="pdfFrom" aria-label="Start of the date range for the PDF" /></label>
+        <label>To <input type="date" id="pdfTo" aria-label="End of the date range for the PDF" /></label>
+        <span class="pdf-note">Date range for each user's PDF export. Leave blank = today + the past 10 workdays.</span>
       </div>
       <div class="profile-grid" id="profileGrid"></div>
       <input type="file" id="profileFileInput" accept="image/*" style="display:none" aria-hidden="true" />
-      <p class="privacy-note">Demo lang: ang in-upload na profile picture ay dito lang sa page naka-display (memory lang ng browser) — hindi ito sine-save o sine-send kahit saan at nawawala pagka-refresh.</p>
+      <p class="privacy-note">Demo only: an uploaded profile picture is only displayed on this page (browser memory only) — it is not saved or sent anywhere and disappears on refresh.</p>
     </section>
 
     <div class="grid-bottom">
       <!-- Leave requests -->
       <section class="panel" id="leaves" aria-label="Leave requests">
         <h2>Leave Requests</h2>
-        <p class="hint">Mga naghihintay ng approval.</p>
+        <p class="hint">Waiting for approval.</p>
         <div id="leaveList"></div>
-        <div class="perm-lock-note" id="leaveLockNote">Walang authority ang account mo para mag-approve o mag-decline ng leave. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
+        <div class="perm-lock-note" id="leaveLockNote">Your account does not have the authority to approve or decline leave. Only the Super Admin can grant this authority.</div>
       </section>
 
       <!-- Department breakdown -->
-      <section class="panel" id="employees" aria-label="Attendance bawat department">
-        <h2>Bawat Department</h2>
-        <p class="hint">Porsyento ng pumasok ngayong araw.</p>
+      <section class="panel" id="employees" aria-label="Attendance by department">
+        <h2>By Department</h2>
+        <p class="hint">Percentage who came in today.</p>
         <div id="deptList"></div>
       </section>
     </div>
 
-    <p class="foot-note">Mockup lang ito — sample data ang nakalagay at walang totoong record na nase-save.</p>
+    <p class="foot-note">This is a mockup only — it contains sample data and no real records are saved.</p>
   </main>
 </div>
 
-<div class="photo-modal profile-modal" id="profileModal" role="dialog" aria-modal="true" aria-label="Profile ng member">
+<div class="photo-modal profile-modal" id="profileModal" role="dialog" aria-modal="true" aria-label="Member profile">
   <div class="profile-sheet" id="profileSheet"></div>
 </div>
 
-<div class="photo-modal" id="photoModal" role="dialog" aria-modal="true" aria-label="Photo proof nang malaki">
+<div class="photo-modal" id="photoModal" role="dialog" aria-modal="true" aria-label="Photo proof enlarged">
   <figure>
-    <img id="photoModalImg" src="data:image/png;base64,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" alt="Photo proof ng check-in nang malaki" />
+    <img id="photoModalImg" src="data:image/png;base64,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" alt="Check-in photo proof, enlarged" />
     <figcaption id="photoModalCap"></figcaption>
-    <button class="pm-close" id="photoModalClose" type="button">Isara</button>
+    <button class="pm-close" id="photoModalClose" type="button">Close</button>
   </figure>
 </div>
 
@@ -1037,36 +1074,36 @@
     {id:11, name:"Rhea Mae Fernandez",   dept:"Media",         role:"Media Staff",        email:"rhea.fernandez@attendpro.demo", phone:"0917 123 4511", inT:"7:37 AM",  outT:"—",       status:"present"},
     {id:12, name:"Carlo James Navarro",  dept:"Finance",       role:"Finance Staff",      email:"carlo.navarro@attendpro.demo",  phone:"0917 123 4512", inT:"—",        outT:"—",       status:"absent"}
   ];
-  var TOTAL_STAFF = 12; // kabuuang empleyado sa sample roster — lahat ng bilang dito galing sa iisang listahan
+  var TOTAL_STAFF = 12; // total employees in the sample roster — every count here comes from this one list
 
   var LEAVES = [
-    {id:1, name:"Kristine Joy Lim",   meta:"Sick Leave · Bukas, 1 araw",        reason:"May lagnat, magpapahinga muna.", status:"pending"},
-    {id:2, name:"Ramon Victor Sy",    meta:"Vacation Leave · Dec 1–3, 3 araw",  reason:"Bakasyon kasama ang pamilya.",  status:"pending"},
-    {id:3, name:"Liza Marie Torres",  meta:"Emergency Leave · Ngayon, 1 araw",  reason:"May emergency sa bahay.",       status:"pending"}
+    {id:1, name:"Kristine Joy Lim",   meta:"Sick Leave · Tomorrow, 1 day",     reason:"Has a fever, will rest first.", status:"pending"},
+    {id:2, name:"Ramon Victor Sy",    meta:"Vacation Leave · Dec 1–3, 3 days", reason:"Vacation with family.",       status:"pending"},
+    {id:3, name:"Liza Marie Torres",  meta:"Emergency Leave · Today, 1 day",   reason:"There is an emergency at home.", status:"pending"}
   ];
 
   var WEEK = [
-    {day:"Lun", ontime:10, late:1},
-    {day:"Mar", ontime:11, late:0},
-    {day:"Miy", ontime:9,  late:2},
-    {day:"Huw", ontime:10, late:1},
-    {day:"Biy", ontime:0,  late:0} // ngayong araw — pupunuin galing sa records
+    {day:"Mon", ontime:10, late:1},
+    {day:"Tue", ontime:11, late:0},
+    {day:"Wed", ontime:9,  late:2},
+    {day:"Thu", ontime:10, late:1},
+    {day:"Fri", ontime:0,  late:0} // today — filled in from the records
   ];
 
-  var STATUS_LABEL = {present:"Present", late:"Late", absent:"Absent", leave:"On Leave", working:"Nasa Trabaho"};
+  var STATUS_LABEL = {present:"Present", late:"Late", absent:"Absent", leave:"On Leave", working:"Working"};
   var STATUS_CLASS = {present:"st-present", late:"st-late", absent:"st-absent", leave:"st-leave", working:"st-working"};
 
   var state = { filter:"all", query:"" };
 
-  /* ---------- Audit log (TESDA-style anti-cheat) — memory lang, demo ---------- */
+  /* ---------- Audit log (TESDA-style anti-cheat) — memory only, demo ---------- */
   var AUDIT_LOG = []; /* {id, name, dept, when:Date, photo, lat, lon, place, via, flags:[], verified} */
   var auditSeq = 0;
-  var RAPID_MS = 3 * 60 * 1000; // wala pang 3 minuto mula sa huling check-in ng parehong tao = kahina-hinala
+  var RAPID_MS = 3 * 60 * 1000; // less than 3 minutes since the same person's last check-in = suspicious
 
   function fmtDateTime(d){
     return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " · " + fmtTime(d);
   }
-  var MONTHS_SHORT = ["Ene","Peb","Mar","Abr","May","Hun","Hul","Ago","Set","Okt","Nob","Dis"];
+  var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function escHtml(s){
     return String(s===null||s===undefined?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -1086,28 +1123,28 @@
     $("auditVerified").textContent = v;
     $("auditFlagged").textContent = f;
     if(AUDIT_LOG.length===0){
-      $("auditBody").innerHTML = '<tr class="empty-row"><td colspan="5">Wala pang naka-log na check-in. Mag-check in gamit ang Live Check-In o Time In para makita dito.</td></tr>';
+      $("auditBody").innerHTML = '<tr class="empty-row"><td colspan="5">No check-ins logged yet. Check in using Live Check-In or Time In to see them here.</td></tr>';
       return;
     }
     $("auditBody").innerHTML = AUDIT_LOG.map(function(a){
       var photoHtml = a.photo
-        ? '<img class="audit-thumb" src="'+a.photo+'" alt="Photo proof ni '+escHtml(a.name)+'" data-photo="'+a.id+'" tabindex="0" role="button" aria-label="Buksan ang photo proof ni '+escHtml(a.name)+'">'
-        : '<span class="audit-nophoto">Walang<br>photo</span>';
+        ? '<img class="audit-thumb" src="'+a.photo+'" alt="Photo proof of '+escHtml(a.name)+'" data-photo="'+a.id+'" tabindex="0" role="button" aria-label="Open the photo proof of '+escHtml(a.name)+'">'
+        : '<span class="audit-nophoto">No<br>photo</span>';
       var locHtml = (a.lat!==null && a.lat!==undefined)
-        ? '<div class="audit-loc"><span class="place">'+escHtml(a.place || "Lugar: hindi available")+'</span><br>'+a.lat.toFixed(5)+", "+a.lon.toFixed(5)+'</div>'
-        : '<div class="audit-loc">Walang GPS location</div>';
+        ? '<div class="audit-loc"><span class="place">'+escHtml(a.place || "Place: not available")+'</span><br>'+a.lat.toFixed(5)+", "+a.lon.toFixed(5)+'</div>'
+        : '<div class="audit-loc">No GPS location</div>';
       var badge = a.verified
         ? '<span class="badge badge-verified">Verified</span>'
         : '<span class="badge badge-flagged">Flagged</span>' + (a.flags.length ? '<div class="flag-reasons">'+a.flags.map(escHtml).join("<br>")+'</div>' : "");
       return '<tr>'+
-        '<td class="cell-emp" data-lbl="Empleyado"><div class="emp"><div class="avatar" style="background:'+avatarColor(a.empId||1)+'">'+initials(a.name)+'</div><div><div class="n">'+escHtml(a.name)+'</div><div class="d">'+escHtml(a.dept)+' · '+escHtml(a.via)+'</div></div></div></td>'+
-        '<td data-lbl="Oras / Petsa"><span class="mono" style="font-size:.8rem">'+fmtDateTime(a.when)+'</span></td>'+
+        '<td class="cell-emp" data-lbl="Employee"><div class="emp"><div class="avatar" style="background:'+avatarColor(a.empId||1)+'">'+initials(a.name)+'</div><div><div class="n">'+escHtml(a.name)+'</div><div class="d">'+escHtml(a.dept)+' · '+escHtml(a.via)+'</div></div></div></td>'+
+        '<td data-lbl="Time / Date"><span class="mono" style="font-size:.8rem">'+fmtDateTime(a.when)+'</span></td>'+
         '<td data-lbl="Photo Proof">'+photoHtml+'</td>'+
         '<td data-lbl="Location">'+locHtml+'</td>'+
         '<td data-lbl="Status">'+badge+'</td>'+
       '</tr>';
     }).join("");
-    // photo thumbnails -> malaking view
+    // photo thumbnails -> large view
     $("auditBody").querySelectorAll("[data-photo]").forEach(function(img){
       function open(){
         var id=parseInt(img.getAttribute("data-photo"),10);
@@ -1124,13 +1161,13 @@
     // opts: {name, dept, when?, photo, lat, lon, place, via, skipRapid?}
     var when = opts.when || new Date();
     var flags = [];
-    if(!opts.photo) flags.push("Walang photo proof");
-    if(opts.lat===null || opts.lat===undefined) flags.push("Walang GPS location");
+    if(!opts.photo) flags.push("No photo proof");
+    if(opts.lat===null || opts.lat===undefined) flags.push("No GPS location");
     if(!opts.skipRapid){
       for(var i=0;i<AUDIT_LOG.length;i++){
         var prev=AUDIT_LOG[i];
         if(prev.name===opts.name && Math.abs(when - prev.when) < RAPID_MS){
-          flags.push("Sunod-sunod na check-in (wala pang 3 minuto)");
+          flags.push("Back-to-back check-in (less than 3 minutes apart)");
           break;
         }
       }
@@ -1153,7 +1190,7 @@
   }
 
   function seedAudit(){
-    // Mga manual check-in kanina — walang photo/GPS kaya awtomatikong flagged, gaya ng totoong anti-cheat log.
+    // The manual check-ins from earlier — no photo/GPS so automatically flagged, like a real anti-cheat log.
     var seeds = [
       {name:"Daniel Paul Mendoza", inT:"8:22 AM"},
       {name:"Ana Marie Cruz", inT:"8:17 AM"},
@@ -1165,9 +1202,9 @@
     seeds.forEach(function(s){
       var e=null; EMPLOYEES.forEach(function(x){ if(x.name===s.name) e=x; });
       if(!e) return;
-      addAuditRecord({name:s.name, dept:e.dept, when:parseTime(s.inT, now) || now, photo:null, lat:null, lon:null, via:"manual (walang camera)", skipRapid:true});
+      addAuditRecord({name:s.name, dept:e.dept, when:parseTime(s.inT, now) || now, photo:null, lat:null, lon:null, via:"manual (no camera)", skipRapid:true});
     });
-    AUDIT_LOG.reverse(); // pinakabago sa itaas
+    AUDIT_LOG.reverse(); // newest on top
     renderAudit();
   }
 
@@ -1187,7 +1224,7 @@
     return h + ":" + (m<10?"0":"") + m + " " + ap;
   }
   function parseTime(s, now){
-    // "7:42 AM" -> Date ngayong araw; "—" -> null
+    // "7:42 AM" -> Date today; "—" -> null
     if(!s || s==="—") return null;
     var m = s.match(/(\d+):(\d+)\s*(AM|PM)/i);
     if(!m) return null;
@@ -1198,7 +1235,7 @@
   function workedHours(emp, now){
     var a=parseTime(emp.inT, now), b=parseTime(emp.outT, now);
     if(!a) return "—";
-    if(!b && a>now) return "—"; // sample time in na mas huli sa oras ngayon — huwag magpakita ng 0h 00m
+    if(!b && a>now) return "—"; // sample time in later than the current time — do not show 0h 00m
     var end = b || now;
     var mins = Math.max(0, Math.round((end-a)/60000));
     var h=Math.floor(mins/60), m=mins%60;
@@ -1211,8 +1248,8 @@
   }
 
   /* ---------- Clock ---------- */
-  var DAYS=["Linggo","Lunes","Martes","Miyerkules","Huwebes","Biyernes","Sabado"];
-  var MONTHS=["Enero","Pebrero","Marso","Abril","Mayo","Hunyo","Hulyo","Agosto","Setyembre","Oktubre","Nobyembre","Disyembre"];
+  var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
   function tickClock(){
     var now=new Date();
     var h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
@@ -1238,11 +1275,11 @@
   function renderKpis(){
     var s=computeStats();
     $("kpiPresent").textContent = s.inCount;
-    $("kpiPresentSub").textContent = s.present + " on time · " + s.late + " late — sa " + TOTAL_STAFF + " empleyado";
+    $("kpiPresentSub").textContent = s.present + " on time · " + s.late + " late — of " + TOTAL_STAFF + " employees";
     $("kpiLate").textContent = s.late;
     $("kpiAbsent").textContent = s.absent;
     $("kpiLeave").textContent = s.leave;
-    // Biyernes sa chart = ngayong araw
+    // Friday in the chart = today
     WEEK[4].ontime = s.present; WEEK[4].late = s.late;
     renderChart();
     renderDepts(s);
@@ -1285,7 +1322,7 @@
         if(d.late>0) svg += '<rect x="'+(cx-bw/2)+'" y="'+yLate+'" width="'+bw+'" height="'+Math.max(lateH,2)+'" rx="5" fill="var(--amber)"/>';
         svg += '<text x="'+cx+'" y="'+(yOn-8)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">'+(d.ontime+d.late)+'</text>';
       } else {
-        svg += '<text x="'+cx+'" y="'+(base-30)+'" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">wala pang data</text>';
+        svg += '<text x="'+cx+'" y="'+(base-30)+'" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">no data yet</text>';
       }
       svg += '<text x="'+cx+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink-2)">'+d.day+'</text>';
       if(d.ontime+d.late>0){ totalRate += (d.ontime+d.late)/TOTAL_STAFF; days++; }
@@ -1309,20 +1346,20 @@
       return true;
     });
     if(rows.length===0){
-      $("recordsBody").innerHTML = '<tr class="empty-row"><td colspan="5">Walang nahanap na record. Subukan ang ibang search o filter.</td></tr>';
+      $("recordsBody").innerHTML = '<tr class="empty-row"><td colspan="5">No records found. Try a different search or filter.</td></tr>';
       return;
     }
     $("recordsBody").innerHTML = rows.map(function(e){
       var dispStatus = (e.inT!=="—" && e.outT==="—" && (e.status==="present"||e.status==="late")) ? e.status : e.status;
       var av = (window.ProfilePhotos && window.ProfilePhotos[e.id])
-        ? '<img class="avatar" src="'+window.ProfilePhotos[e.id]+'" alt="Profile picture ni '+e.name+'" style="object-fit:cover">'
+        ? '<img class="avatar" src="'+window.ProfilePhotos[e.id]+'" alt="Profile picture of '+e.name+'" style="object-fit:cover">'
         : '<div class="avatar" style="background:'+avatarColor(e.id)+'">'+initials(e.name)+'</div>';
       return '<tr>'+
-        '<td class="cell-emp" data-lbl="Empleyado"><div class="emp">'+av+'<div><div class="n">'+e.name+'</div><div class="d">'+e.dept+'</div></div></div></td>'+
+        '<td class="cell-emp" data-lbl="Employee"><div class="emp">'+av+'<div><div class="n">'+e.name+'</div><div class="d">'+e.dept+'</div></div></div></td>'+
         '<td data-lbl="Time In"><span class="mono">'+e.inT+'</span></td>'+
         '<td data-lbl="Time Out"><span class="mono">'+e.outT+'</span></td>'+
         '<td data-lbl="Status"><span class="status '+STATUS_CLASS[dispStatus]+'">'+STATUS_LABEL[dispStatus]+'</span></td>'+
-        '<td data-lbl="Oras"><span class="mono">'+workedHours(e, now)+'</span></td>'+
+        '<td data-lbl="Hours"><span class="mono">'+workedHours(e, now)+'</span></td>'+
       '</tr>';
     }).join("");
   }
@@ -1358,17 +1395,17 @@
     e.status = now > lateCutoff ? "late" : "present";
     if(e.status==="absent") e.status="present";
     var la=$("lastAction");
-    la.innerHTML = "<b>"+e.name+"</b> — nag-Time In ng <b>"+e.inT+"</b>"+(e.status==="late" ? " (late, lagpas 8:00 AM)" : " (on time)")+".";
+    la.innerHTML = "<b>"+e.name+"</b> — timed in at <b>"+e.inT+"</b>"+(e.status==="late" ? " (late, past 8:00 AM)" : " (on time)")+".";
     la.classList.add("show");
-    showToast("Time In naitala: "+e.name+" · "+e.inT);
-    logActivity("<b>"+e.name+"</b> nag-Time In (manual) — "+(e.status==="late"?"Late":"On time"));
+    showToast("Time In recorded: "+e.name+" · "+e.inT);
+    logActivity("<b>"+e.name+"</b> timed in (manual) — "+(e.status==="late"?"Late":"On time"));
     var loc = window.__lastKnownLocation || null;
     var rec = addAuditRecord({
       name:e.name, dept:e.dept, photo:null,
       lat: loc ? loc.lat : null, lon: loc ? loc.lon : null, place: loc ? loc.place : null,
-      via:"manual (walang camera)"
+      via:"manual (no camera)"
     });
-    if(!rec.verified) showToast("Na-log sa Audit Log bilang Flagged: "+rec.flags.join(", ")+".");
+    if(!rec.verified) showToast("Logged in the Audit Log as Flagged: "+rec.flags.join(", ")+".");
     renderAll();
   });
   $("btnOut").addEventListener("click", function(){
@@ -1376,10 +1413,10 @@
     var now=new Date();
     e.outT = fmtTime(now);
     var la=$("lastAction");
-    la.innerHTML = "<b>"+e.name+"</b> — nag-Time Out ng <b>"+e.outT+"</b>. Kabuuang oras: <b>"+workedHours(e, now)+"</b>.";
+    la.innerHTML = "<b>"+e.name+"</b> — timed out at <b>"+e.outT+"</b>. Total hours: <b>"+workedHours(e, now)+"</b>.";
     la.classList.add("show");
-    showToast("Time Out naitala: "+e.name+" · "+e.outT);
-    logActivity("<b>"+e.name+"</b> nag-Time Out (manual)");
+    showToast("Time Out recorded: "+e.name+" · "+e.outT);
+    logActivity("<b>"+e.name+"</b> timed out (manual)");
     renderAll();
   });
 
@@ -1404,7 +1441,7 @@
     $("leaveBadge").textContent = pending;
     $("leaveBadge").style.display = pending>0 ? "" : "none";
     if(LEAVES.length===0){
-      $("leaveList").innerHTML = '<p class="hint" style="margin:6px 0 0">Walang leave requests.</p>';
+      $("leaveList").innerHTML = '<p class="hint" style="margin:6px 0 0">No leave requests.</p>';
       return;
     }
     $("leaveList").innerHTML = LEAVES.map(function(l){
@@ -1426,10 +1463,10 @@
         LEAVES.forEach(function(l){
           if(l.id===id){
             l.status = b.getAttribute("data-act")==="approve" ? "approved" : "declined";
-            showToast((l.status==="approved"?"Na-approve":"Na-decline")+" ang leave ni "+l.name+".");
-            logActivity("Leave ni <b>"+l.name+"</b> — "+(l.status==="approved"?"approved":"declined"));
-            // kung approved at "Ngayon" ang leave, markahang On Leave sa records
-            if(l.status==="approved" && /Ngayon/.test(l.meta)){
+            showToast((l.status==="approved"?"Approved":"Declined")+" the leave request of "+l.name+".");
+            logActivity("Leave of <b>"+l.name+"</b> — "+(l.status==="approved"?"approved":"declined"));
+            // if approved and the leave is "Today", mark as On Leave in the records
+            if(l.status==="approved" && /Today/.test(l.meta)){
               EMPLOYEES.forEach(function(e){ if(e.name===l.name){ e.status="leave"; e.inT="—"; e.outT="—"; } });
             }
           }
@@ -1447,7 +1484,7 @@
     });
   });
 
-  /* ---------- Live activity feed + core API para sa facial recognition ---------- */
+  /* ---------- Live activity feed + core API for facial recognition ---------- */
   function logActivity(html){
     var feed=$("activityFeed"); if(!feed) return;
     var li=document.createElement("li");
@@ -1475,7 +1512,7 @@
       if(findEmp(name)) return findEmp(name);
       var e={id:nextEmpId(), name:name, dept:dept||"IT Department", role:"Staff", email:"", phone:"", inT:"—", outT:"—", status:"absent"};
       EMPLOYEES.push(e);
-      logActivity("Bagong demo member na-enroll: <b>"+name+"</b> ("+e.dept+")");
+      logActivity("New demo member enrolled: <b>"+name+"</b> ("+e.dept+")");
       renderAll();
       return e;
     },
@@ -1487,7 +1524,7 @@
       e.inT=fmtTime(now);
       var cutoff=new Date(now); cutoff.setHours(8,0,0,0);
       e.status = now>cutoff ? "late" : "present";
-      logActivity("<b>"+name+"</b> nag-check in gamit ang "+(via||"facial recognition")+" — "+(e.status==="late"?"Late":"On time")+" · "+e.inT);
+      logActivity("<b>"+name+"</b> checked in using "+(via||"facial recognition")+" — "+(e.status==="late"?"Late":"On time")+" · "+e.inT);
       renderAll();
       return {ok:true, time:e.inT, status:e.status};
     },
@@ -1514,7 +1551,7 @@
         if(EMPLOYEES[i].id===id){
           var removed=EMPLOYEES.splice(i,1)[0];
           TOTAL_STAFF = EMPLOYEES.length;
-          logActivity("Tinanggal ang member na si <b>"+removed.name+"</b>.");
+          logActivity("Removed member <b>"+removed.name+"</b>.");
           renderAll();
           return removed;
         }
@@ -1554,18 +1591,18 @@
   var stream=null, loopTimer=null, busy=false;
   var engineReady=false, engineFailed=false, engineLoading=false;
   var lastBox=null, lastDescriptor=null;
-  var enrolled=[]; /* {name, dept, descriptor, thumb} — memory lang, walang storage */
+  var enrolled=[]; /* {name, dept, descriptor, thumb} — memory only, no storage */
   var proposed=null; /* {name, dept, confidence, via} */
   var unknownShown=false;
 
   /* ---------- GPS location (anti-cheat) ---------- */
-  var lastLocation=null; /* {lat, lon, place, at} — memory lang */
+  var lastLocation=null; /* {lat, lon, place, at} — memory only */
   var locBusy=false;
 
   function setLocUI(state, coordsText, placeText){
     var dot=$("locDot");
     dot.className="loc-dot"+(state==="ok"?" ok":state==="err"?" err":"");
-    $("locTitle").textContent = state==="ok" ? "GPS Location: nakuha ✓" : state==="err" ? "GPS Location: hindi makuha" : "GPS Location: kinukuha…";
+    $("locTitle").textContent = state==="ok" ? "GPS Location: captured ✓" : state==="err" ? "GPS Location: unavailable" : "GPS Location: capturing…";
     if(coordsText!==undefined) $("locCoords").textContent=coordsText;
     if(placeText!==undefined) $("locPlace").textContent=placeText||"";
     $("locWarn").classList.toggle("show", state==="err");
@@ -1574,7 +1611,7 @@
     window.__lastKnownLocation = lastLocation ? {lat:lastLocation.lat, lon:lastLocation.lon, place:lastLocation.place} : null;
   }
   function lookupPlace(lat, lon){
-    // Pangalan ng lugar kung available — kung offline o hindi sumagot, coordinates lang ang ipapakita.
+    // Place name if available — if offline or no answer, only the coordinates are shown.
     try{
       fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+lat+"&lon="+lon+"&zoom=16&addressdetails=1")
       .then(function(r){ return r.ok ? r.json() : null; })
@@ -1584,7 +1621,7 @@
         var place=j.display_name ? j.display_name.split(",").slice(0,3).join(",") : (a.city||a.town||a.village||a.county||null);
         if(place && lastLocation && lastLocation.lat===lat && lastLocation.lon===lon){
           lastLocation.place=place;
-          $("locPlace").textContent="Lugar: "+place;
+          $("locPlace").textContent="Place: "+place;
           publishLocation();
         }
       }).catch(function(){});
@@ -1593,47 +1630,47 @@
   function requestLocation(){
     if(locBusy) return Promise.resolve(lastLocation);
     if(!navigator.geolocation){
-      setLocUI("err", "Hindi suportado ang GPS location sa browser na ito.", "");
+      setLocUI("err", "GPS location is not supported in this browser.", "");
       return Promise.resolve(null);
     }
     locBusy=true;
-    setLocUI("busy", "Kinukuha ang kasalukuyang location…", "");
+    setLocUI("busy", "Getting the current location…", "");
     return new Promise(function(resolve){
       navigator.geolocation.getCurrentPosition(function(pos){
         locBusy=false;
         lastLocation={lat:pos.coords.latitude, lon:pos.coords.longitude, place:null, at:Date.now()};
-        setLocUI("ok", "Lat "+lastLocation.lat.toFixed(5)+" · Lon "+lastLocation.lon.toFixed(5)+(pos.coords.accuracy ? " · ±"+Math.round(pos.coords.accuracy)+" m" : ""), "Lugar: kinukuha…");
+        setLocUI("ok", "Lat "+lastLocation.lat.toFixed(5)+" · Lon "+lastLocation.lon.toFixed(5)+(pos.coords.accuracy ? " · ±"+Math.round(pos.coords.accuracy)+" m" : ""), "Place: getting…");
         publishLocation();
         lookupPlace(lastLocation.lat, lastLocation.lon);
         resolve(lastLocation);
       }, function(){
         locBusy=false;
-        setLocUI("err", "Walang location — naka-off ito o hindi pinayagan ng browser.", "");
+        setLocUI("err", "No location — it is turned off or not allowed by the browser.", "");
         publishLocation();
         resolve(null);
       }, {enableHighAccuracy:true, timeout:6000, maximumAge:60000});
     });
   }
   function freshLocation(){
-    // Gamitin ang cached location kung sariwa pa (<2 minuto), kung hindi kumuha ng bago.
+    // Use the cached location if it is still fresh (<2 minutes), otherwise get a new one.
     if(lastLocation && (Date.now()-lastLocation.at)<120000) return Promise.resolve(lastLocation);
     return requestLocation();
   }
   $("btnGetLoc").addEventListener("click", function(){
     requestLocation().then(function(loc){
-      if(loc) Core.toast("GPS location nakuha: "+loc.lat.toFixed(5)+", "+loc.lon.toFixed(5));
-      else Core.toast("Hindi makuha ang location — mai-flag ang check-in na walang GPS.");
+      if(loc) Core.toast("GPS location captured: "+loc.lat.toFixed(5)+", "+loc.lon.toFixed(5));
+      else Core.toast("Could not get the location — the check-in will be flagged as having no GPS.");
     });
   });
 
-  /* ---------- Photo proof: kuha mula sa camera + timestamp overlay ---------- */
+  /* ---------- Photo proof: capture from the camera + timestamp overlay ---------- */
   function captureProofPhoto(name, loc){
-    if(!stream || !video.videoWidth) return null; // simulation / walang camera = walang photo proof
+    if(!stream || !video.videoWidth) return null; // simulation / no camera = no photo proof
     try{
       var w=video.videoWidth, h=video.videoHeight;
       var c=document.createElement("canvas"); c.width=w; c.height=h;
       var g=c.getContext("2d");
-      g.save(); g.translate(w,0); g.scale(-1,1); // i-mirror gaya ng preview
+      g.save(); g.translate(w,0); g.scale(-1,1); // mirror like the preview
       g.drawImage(video, 0, 0, w, h);
       g.restore();
       var now=new Date();
@@ -1645,7 +1682,7 @@
       g.font="700 "+fs1+"px Manrope, sans-serif";
       g.fillText(Core.fmtDateTime(now), 16, h-barH+fs1+12);
       g.font="600 "+fs2+"px Manrope, sans-serif";
-      var locTxt = loc ? ("GPS: "+loc.lat.toFixed(5)+", "+loc.lon.toFixed(5)+(loc.place ? " · "+loc.place : "")) : "GPS: walang location";
+      var locTxt = loc ? ("GPS: "+loc.lat.toFixed(5)+", "+loc.lon.toFixed(5)+(loc.place ? " · "+loc.place : "")) : "GPS: no location";
       g.fillText(name+" · "+locTxt, 16, h-14);
       return c.toDataURL("image/jpeg", 0.78);
     }catch(e){ return null; }
@@ -1665,52 +1702,52 @@
 
   function renderIdleCard(note){
     $("matchCard").className="match-card";
-    $("matchCard").innerHTML='<div class="mc-title">Wala pang na-scan</div><div class="mc-body">'+(note||"Pag may nakitang mukha ang camera, dito lalabas kung kilala siya o hindi. Kailangan munang i-confirm bago maitala ang attendance.")+'</div>';
+    $("matchCard").innerHTML='<div class="mc-title">Nothing scanned yet</div><div class="mc-body">'+(note||"When the camera sees a face, it will show here whether the person is recognized or not. You need to confirm before the attendance is recorded.")+'</div>';
   }
   function renderMatchCard(p){
     var e=Core.findEmployee(p.name);
     var thumb = enrolledThumb(p.name);
     var avatarHtml = thumb
-      ? '<img src="'+thumb+'" alt="Larawan ni '+esc(p.name)+'">'
+      ? '<img src="'+thumb+'" alt="Photo of '+esc(p.name)+'">'
       : '<div class="avatar" style="background:'+Core.avatarColor(e?e.id:1)+'">'+Core.initials(p.name)+'</div>';
     $("matchCard").className="match-card is-match";
     $("matchCard").innerHTML=
-      '<div class="mc-title">✓ May nakitang katugmang mukha'+(p.via==="simulation"?' <span style="color:var(--amber)">(simulation)</span>':'')+'</div>'+
+      '<div class="mc-title">✓ Matching face found'+(p.via==="simulation"?' <span style="color:var(--amber)">(simulation)</span>':'')+'</div>'+
       '<div class="match-person">'+avatarHtml+'<div><div class="mn">'+esc(p.name)+'</div><div class="mm">'+esc(p.dept||"")+'</div></div></div>'+
-      '<div class="mc-body">Tugma ng mukha: <b style="color:var(--ink)">'+p.confidence+'%</b></div>'+
+      '<div class="mc-body">Face match: <b style="color:var(--ink)">'+p.confidence+'%</b></div>'+
       '<div class="conf-bar"><i style="width:'+p.confidence+'%"></i></div>'+
-      '<div class="mc-body">Siya ba ito? I-confirm para maitala ang check-in ngayon. Kung hindi i-confirm, <b>walang</b> mai-mark na present.</div>'+
+      '<div class="mc-body">Is this them? Confirm to record the check-in now. If you do not confirm, <b>no one</b> will be marked present.</div>'+
       '<div class="match-actions">'+
         '<button class="btn btn-in" id="btnConfirmMatch" type="button" style="padding-left:16px;padding-right:16px">Confirm Check-In</button>'+
-        '<button class="btn-ghost" id="btnRejectMatch" type="button">Hindi siya yan</button>'+
+        '<button class="btn-ghost" id="btnRejectMatch" type="button">Not them</button>'+
       '</div>';
     $("btnConfirmMatch").addEventListener("click", confirmMatch);
     $("btnRejectMatch").addEventListener("click", function(){
-      Core.log("Scan ni <b>"+esc(p.name)+"</b> — hindi kinumpirma, walang naitala.");
+      Core.log("Scan of <b>"+esc(p.name)+"</b> — not confirmed, nothing recorded.");
       proposed=null;
-      renderIdleCard("Hindi kinumpirma ang huling scan — walang naitalang attendance. Mag-scan ulit pag handa na.");
+      renderIdleCard("The last scan was not confirmed — no attendance recorded. Scan again when ready.");
     });
   }
   function renderUnknownCard(via){
     $("matchCard").className="match-card is-unknown";
     $("matchCard").innerHTML=
-      '<div class="mc-title">✕ Hindi kilalang mukha'+(via==="simulation"?' <span style="color:var(--amber)">(simulation)</span>':'')+'</div>'+
-      '<div class="mc-body">May nakitang mukha pero <b>hindi ito tumugma</b> sa kahit sinong naka-enroll na demo member. <b>Walang empleyadong na-mark na present.</b></div>'+
-      '<div class="mc-body" style="margin-top:6px">Kung demo member siya, i-enroll muna ang mukha niya sa form sa ibaba habang nakaharap siya sa camera.</div>';
+      '<div class="mc-title">✕ Unknown face'+(via==="simulation"?' <span style="color:var(--amber)">(simulation)</span>':'')+'</div>'+
+      '<div class="mc-body">A face was seen but it <b>did not match</b> any enrolled demo member. <b>No employee was marked present.</b></div>'+
+      '<div class="mc-body" style="margin-top:6px">If they are a demo member, enroll their face first using the form below while they face the camera.</div>';
   }
   function renderDoneCard(name, res, audit){
     var proofHtml = audit && audit.photo
-      ? '<div class="proof-preview"><img src="'+audit.photo+'" alt="Photo proof ni '+esc(name)+'" id="proofImg"><div class="pp-cap">Photo proof — may timestamp at GPS na naka-overlay. I-tap para lumaki.</div></div>'
-      : '<div class="mc-body" style="margin-top:8px;color:var(--red);font-weight:700">Walang photo proof ang check-in na ito kaya Flagged ito sa Audit Log.</div>';
+      ? '<div class="proof-preview"><img src="'+audit.photo+'" alt="Photo proof of '+esc(name)+'" id="proofImg"><div class="pp-cap">Photo proof — with timestamp and GPS overlaid. Tap to enlarge.</div></div>'
+      : '<div class="mc-body" style="margin-top:8px;color:var(--red);font-weight:700">This check-in has no photo proof, so it is Flagged in the Audit Log.</div>';
     var auditHtml = audit
       ? '<div class="mc-body" style="margin-top:8px">Audit Log: '+(audit.verified
-          ? '<b style="color:var(--green-ink)">✓ Verified</b> — kumpleto ang photo proof at GPS location.'
+          ? '<b style="color:var(--green-ink)">✓ Verified</b> — photo proof and GPS location are complete.'
           : '<b style="color:var(--red)">⚠ Flagged</b> — '+esc(audit.flags.join(", "))+'.')+'</div>'
       : "";
     $("matchCard").className="match-card is-done";
     $("matchCard").innerHTML=
-      '<div class="mc-title">✓ Naitala ang check-in</div>'+
-      '<div class="mc-body"><b style="color:var(--ink)">'+esc(name)+'</b> ay Present na — Time In: <b style="color:var(--ink)">'+res.time+'</b>'+(res.status==="late"?" (Late, lagpas 8:00 AM)":" (On time)")+'. Na-update na ang listahan at bilang sa itaas.</div>'+
+      '<div class="mc-title">✓ Check-in recorded</div>'+
+      '<div class="mc-body"><b style="color:var(--ink)">'+esc(name)+'</b> is now Present — Time In: <b style="color:var(--ink)">'+res.time+'</b>'+(res.status==="late"?" (Late, past 8:00 AM)":" (On time)")+'. The list and counts above have been updated.</div>'+
       proofHtml + auditHtml;
     var pi=$("proofImg");
     if(pi && audit) pi.addEventListener("click", function(){ Core.openPhoto(audit.photo, name+" — photo proof"); });
@@ -1725,22 +1762,22 @@
     proposed={name:name, dept:dept, confidence:confidence, via:via};
     unknownShown=false;
     renderMatchCard(proposed);
-    setFaceStatus("Katugma: "+name+" ("+confidence+"%) — naghihintay ng confirm", "warn");
+    setFaceStatus("Match: "+name+" ("+confidence+"%) — waiting for confirmation", "warn");
   }
   function showUnknown(via){
     if(proposed) return;
     if(unknownShown && via!=="simulation") return;
     unknownShown=true;
     renderUnknownCard(via);
-    setFaceStatus("Hindi kilalang mukha — walang na-mark", "bad");
-    if(via==="simulation") Core.log("Simulation: hindi kilalang mukha — walang na-mark na present.");
+    setFaceStatus("Unknown face — no one marked", "bad");
+    if(via==="simulation") Core.log("Simulation: unknown face — no one was marked present.");
   }
   function confirmMatch(){
     if(!proposed) return;
     var p=proposed; proposed=null;
-    setFaceStatus("Kinukuha ang GPS location at photo proof…", "warn");
+    setFaceStatus("Getting GPS location and photo proof…", "warn");
     freshLocation().then(function(loc){
-      // Photo proof: snapshot mula sa camera na may timestamp overlay (simulation = walang photo)
+      // Photo proof: snapshot from the camera with a timestamp overlay (simulation = no photo)
       var photo = captureProofPhoto(p.name, loc);
       var res=Core.markPresent(p.name, p.via==="simulation" ? "facial recognition (simulation)" : "facial recognition");
       var e=Core.findEmployee(p.name);
@@ -1749,16 +1786,16 @@
         photo:photo,
         lat: loc ? loc.lat : null, lon: loc ? loc.lon : null, place: loc ? loc.place : null,
         via: p.via==="simulation" ? "facial recognition (simulation)" : "facial recognition + camera",
-        extraFlag: res.already ? "Duplicate check-in — naka-check in na kanina ("+(res.time||"")+")" : null
+        extraFlag: res.already ? "Duplicate check-in — already checked in earlier ("+(res.time||"")+")" : null
       });
       if(res.already){
         $("matchCard").className="match-card is-done";
-        $("matchCard").innerHTML='<div class="mc-title">Naka-check in na — Flagged sa Audit Log</div><div class="mc-body"><b style="color:var(--ink)">'+esc(p.name)+'</b> ay may Time In na kanina ('+res.time+'). Walang bagong attendance record na ginawa, pero na-log ang pagtatangkang ito bilang <b>Flagged</b>: '+esc(audit.flags.join(", "))+'. </div>';
-        Core.toast(p.name+" ay naka-check in na ("+res.time+") — na-flag sa Audit Log.");
-        Core.log("Flagged: duplicate check-in ni <b>"+esc(p.name)+"</b> — "+esc(audit.flags.join(", "))+".");
+        $("matchCard").innerHTML='<div class="mc-title">Already checked in — Flagged in the Audit Log</div><div class="mc-body"><b style="color:var(--ink)">'+esc(p.name)+'</b> already has a Time In from earlier ('+res.time+'). No new attendance record was created, but this attempt was logged as <b>Flagged</b>: '+esc(audit.flags.join(", "))+'. </div>';
+        Core.toast(p.name+" is already checked in ("+res.time+") — flagged in the Audit Log.");
+        Core.log("Flagged: duplicate check-in of <b>"+esc(p.name)+"</b> — "+esc(audit.flags.join(", "))+".");
       } else if(res.ok){
         renderDoneCard(p.name, res, audit);
-        Core.toast(audit.verified ? "Check-in Verified: "+p.name+" · "+res.time : "Check-in naitala pero Flagged: "+audit.flags.join(", "));
+        Core.toast(audit.verified ? "Check-in Verified: "+p.name+" · "+res.time : "Check-in recorded but Flagged: "+audit.flags.join(", "));
         setFaceStatus((audit.verified?"✓ Verified: ":"⚠ Flagged: ")+p.name+" — Present · "+res.time, audit.verified?"good":"warn");
       }
       setTimeout(function(){ if(!proposed) renderIdleCard(); }, 9000);
@@ -1769,7 +1806,7 @@
   function renderEnrolled(){
     $("enrolledCount").textContent=enrolled.length;
     if(enrolled.length===0){
-      $("enrolledList").innerHTML='<span style="font-size:.84rem;color:var(--ink-3);font-weight:600">Wala pa. Mag-enroll gamit ang camera sa itaas.</span>';
+      $("enrolledList").innerHTML='<span style="font-size:.84rem;color:var(--ink-3);font-weight:600">None yet. Enroll using the camera above.</span>';
       return;
     }
     $("enrolledList").innerHTML=enrolled.map(function(m){
@@ -1781,8 +1818,8 @@
     var ready = !!lastDescriptor;
     $("btnEnroll").disabled = !ready;
     $("enrollHint").textContent = ready
-      ? "May nakitang mukha — puwede nang i-enroll. Ilagay ang pangalan, tapos i-tap ang enroll."
-      : (stream ? "Humahanap ng mukha… humarap sa camera para makapag-enroll." : "Buksan muna ang camera at humarap dito — saka lang puwedeng mag-enroll.");
+      ? "A face was detected — ready to enroll. Enter the name, then tap enroll."
+      : (stream ? "Looking for a face… face the camera to enroll." : "Turn on the camera first and face it — only then can you enroll.");
   }
 
   /* ---------- Face engine (face-api.js, on-device) ---------- */
@@ -1791,7 +1828,7 @@
     engineLoading=true;
     if(typeof window.faceapi==="undefined"){
       engineFailed=true; engineLoading=false;
-      setFaceStatus("Face engine hindi nag-load — simulation mode lang", "warn");
+      setFaceStatus("Face engine did not load — simulation mode only", "warn");
       return Promise.resolve(false);
     }
     return Promise.all([
@@ -1803,7 +1840,7 @@
       return true;
     }).catch(function(){
       engineFailed=true; engineLoading=false;
-      setFaceStatus("Face engine hindi nag-load — simulation mode lang", "warn");
+      setFaceStatus("Face engine did not load — simulation mode only", "warn");
       return false;
     });
   }
@@ -1861,16 +1898,16 @@
           } else {
             drawBox(lastBox, enrolled.length? "#e5484d" : "#f2b04e");
             if(enrolled.length) showUnknown("camera");
-            else { unknownShown=false; setFaceStatus("May mukha — wala pang naka-enroll na miyembro", "warn"); }
+            else { unknownShown=false; setFaceStatus("Face detected — no members enrolled yet", "warn"); }
           }
         } else {
           lastBox=null; lastDescriptor=null; clearBox();
-          if(!proposed) setFaceStatus("Walang mukhang nakikita — humarap sa camera", "");
+          if(!proposed) setFaceStatus("No face visible — face the camera", "");
         }
         updateEnrollBtn();
       }).catch(function(){ busy=false; });
     } else if("FaceDetector" in window){
-      /* Fallback: frame lang, walang recognition */
+      /* Fallback: frame only, no recognition */
       busy=true;
       new window.FaceDetector({fastMode:true}).detect(video).then(function(faces){
         busy=false;
@@ -1879,8 +1916,8 @@
           var b=faces[0].boundingBox;
           lastBox={x:b.x, y:b.y, width:b.width, height:b.height};
           drawBox(lastBox, "#f2b04e");
-          setFaceStatus("May mukha (frame lang — walang recognition sa browser na ito)", "warn");
-        } else { lastBox=null; clearBox(); if(!proposed) setFaceStatus("Walang mukhang nakikita — humarap sa camera",""); }
+          setFaceStatus("Face detected (frame only — no recognition in this browser)", "warn");
+        } else { lastBox=null; clearBox(); if(!proposed) setFaceStatus("No face visible — face the camera",""); }
       }).catch(function(){ busy=false; });
     }
   }
@@ -1888,8 +1925,8 @@
   /* ---------- Camera controls ---------- */
   $("btnCamStart").addEventListener("click", function(){
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-      setFaceStatus("Hindi suportado ang camera sa browser na ito", "bad");
-      Core.toast("Hindi suportado ang camera dito — gamitin ang simulation buttons.");
+      setFaceStatus("Camera is not supported in this browser", "bad");
+      Core.toast("Camera is not supported here — use the simulation buttons.");
       return;
     }
     navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}, audio:false})
@@ -1899,18 +1936,18 @@
       $("camPlaceholder").style.display="none";
       $("btnCamStart").disabled=true;
       $("btnCamStop").disabled=false;
-      setLive(true, "Camera: LIVE · nag-i-scan");
-      requestLocation(); // GPS para sa susunod na check-in — may warning kung naka-off
-      setFaceStatus("Naglo-load ang face engine…", "");
+      setLive(true, "Camera: LIVE · scanning");
+      requestLocation(); // GPS for the next check-in — warns if turned off
+      setFaceStatus("Loading the face engine…", "");
       loadEngine().then(function(ok){
-        if(ok) setFaceStatus("Handa na — humarap sa camera", "");
+        if(ok) setFaceStatus("Ready — face the camera", "");
         loopTimer=setInterval(detectOnce, 700);
       });
     })
     .catch(function(){
-      setLive(false, "Camera: walang access");
-      setFaceStatus("Walang access sa camera — i-allow ito o gamitin ang simulation", "bad");
-      Core.toast("Hindi nabuksan ang camera. Puwede ang simulation buttons sa ibaba.");
+      setLive(false, "Camera: no access");
+      setFaceStatus("No camera access — allow it or use the simulation", "bad");
+      Core.toast("Could not open the camera. You can use the simulation buttons below.");
     });
   });
   $("btnCamStop").addEventListener("click", stopCamera);
@@ -1923,8 +1960,8 @@
     $("camPlaceholder").style.display="grid";
     $("btnCamStart").disabled=false;
     $("btnCamStop").disabled=true;
-    setLive(false, "Camera: naka-off");
-    setFaceStatus("Walang camera", "");
+    setLive(false, "Camera: off");
+    setFaceStatus("No camera", "");
     renderIdleCard();
     updateEnrollBtn();
   }
@@ -1948,8 +1985,8 @@
   }
   $("btnEnroll").addEventListener("click", function(){
     var name=$("enrollName").value.trim();
-    if(!name){ Core.toast("Ilagay muna ang pangalan ng demo member."); $("enrollName").focus(); return; }
-    if(!lastDescriptor){ Core.toast("Wala pang nakitang mukha — humarap muna sa camera."); return; }
+    if(!name){ Core.toast("Enter the demo member's name first."); $("enrollName").focus(); return; }
+    if(!lastDescriptor){ Core.toast("No face detected yet — face the camera first."); return; }
     var dept=$("enrollDept").value;
     var copy=new Float32Array(lastDescriptor);
     var existing=null;
@@ -1957,13 +1994,13 @@
     if(existing){ existing.descriptor=copy; existing.thumb=captureThumb(); }
     else enrolled.push({name:name, dept:dept, descriptor:copy, thumb:captureThumb()});
     Core.addMember(name, dept);
-    Core.toast("Na-enroll si "+name+". Humarap ulit sa camera para ma-recognize.");
-    Core.log("Na-enroll ang mukha ni <b>"+esc(name)+"</b> bilang demo member.");
+    Core.toast(name+" enrolled. Face the camera again to be recognized.");
+    Core.log("Enrolled the face of <b>"+esc(name)+"</b> as a demo member.");
     $("enrollName").value="";
     renderEnrolled();
   });
 
-  /* ---------- Simulation (demo, walang camera) ---------- */
+  /* ---------- Simulation (demo, no camera) ---------- */
   $("btnSimKnown").addEventListener("click", function(){
     var pool;
     if(enrolled.length){
@@ -1978,7 +2015,7 @@
     var pick=pool[Math.floor(Math.random()*pool.length)];
     var conf=88+Math.floor(Math.random()*11);
     proposeMatch(pick.name, pick.dept, conf, "simulation");
-    Core.log("Simulation: na-scan ang mukha ni <b>"+esc(pick.name)+"</b> — naghihintay ng confirm.");
+    Core.log("Simulation: scanned the face of <b>"+esc(pick.name)+"</b> — waiting for confirmation.");
   });
   $("btnSimUnknown").addEventListener("click", function(){
     proposed=null; unknownShown=false;
@@ -2002,13 +2039,13 @@
     return h+":"+(m<10?"0":"")+m+" "+ap;
   }
 
-  /* ---------- Demo accounts + authority (lahat nasa memory lang ng page) ---------- */
+  /* ---------- Demo accounts + authority (all in the page memory only) ---------- */
   var PERM_DEFS = [
-    {key:"time",   label:"Time In / Time Out",    desc:"Makapag-Time In at Time Out ng members"},
-    {key:"enroll", label:"Mag-enroll ng Members", desc:"Makapag-enroll ng bagong demo members gamit ang camera"},
-    {key:"leave",  label:"Mag-approve ng Leave",  desc:"Makapag-approve o decline ng leave requests"},
-    {key:"audit",  label:"Makita ang Audit Log",  desc:"Makita ang Audit Log at ang log ng authority changes"},
-    {key:"export", label:"Mag-export ng Reports", desc:"Makapag-download ng attendance report bilang CSV"}
+    {key:"time",   label:"Time In / Time Out",    desc:"Can time members in and out"},
+    {key:"enroll", label:"Enroll Members", desc:"Can enroll new demo members using the camera"},
+    {key:"leave",  label:"Approve Leave",  desc:"Can approve or decline leave requests"},
+    {key:"audit",  label:"View the Audit Log",  desc:"Can view the Audit Log and the authority changes log"},
+    {key:"export", label:"Export Reports", desc:"Can download the attendance report as CSV"}
   ];
   function allPerms(v){ var o={}; PERM_DEFS.forEach(function(p){ o[p.key]=v; }); return o; }
   var ACCOUNTS = [
@@ -2019,9 +2056,9 @@
     {username:"member", email:"member@attendpro.demo", password:"member123", name:"Maria Clara Santos", role:"member", empId:1,
      perms: allPerms(false)}
   ];
-  var currentUser = null; /* ang account object na naka-login, o null */
+  var currentUser = null; /* the logged-in account object, or null */
 
-  /* ---------- Authority log (naka-display sa loob ng Audit Log section) ---------- */
+  /* ---------- Authority log (displayed inside the Audit Log section) ---------- */
   var AUTHORITY_LOG = []; /* {when:Date, text} */
   function logAuthority(text){
     AUTHORITY_LOG.unshift({when:new Date(), text:text});
@@ -2030,7 +2067,7 @@
   function renderAuthorityLog(){
     var el=$("authorityList"); if(!el) return;
     if(AUTHORITY_LOG.length===0){
-      el.innerHTML='<li><span style="color:var(--ink-3);font-weight:600">Wala pang authority changes sa session na ito.</span></li>';
+      el.innerHTML='<li><span style="color:var(--ink-3);font-weight:600">No authority changes in this session yet.</span></li>';
       return;
     }
     el.innerHTML = AUTHORITY_LOG.map(function(a){
@@ -2044,7 +2081,7 @@
   function grantedList(perms){
     var out=[];
     PERM_DEFS.forEach(function(p){ if(perms[p.key]) out.push(p.label); });
-    return out.length ? out.join(", ") : "wala";
+    return out.length ? out.join(", ") : "none";
   }
 
   /* ---------- Login / logout ---------- */
@@ -2096,12 +2133,12 @@
     applySession();
     if(window.__renderProfiles) window.__renderProfiles();
     var rTxt = acct.role==="super" ? "Super Admin" : acct.role==="member" ? "Member / User" : "Admin";
-    Core.log("Nag-login si <b>"+esc(acct.name)+"</b> bilang <b>"+rTxt+"</b>.");
-    Core.toast("Maligayang pagdating, "+acct.name+" — naka-login bilang "+rTxt+".");
+    Core.log("<b>"+esc(acct.name)+"</b> logged in as <b>"+rTxt+"</b>.");
+    Core.toast("Welcome, "+acct.name+" — logged in as "+rTxt+".");
     window.scrollTo(0,0);
   }
   function doLogout(){
-    if(currentUser) Core.log("Nag-logout si <b>"+esc(currentUser.name)+"</b>.");
+    if(currentUser) Core.log("<b>"+esc(currentUser.name)+"</b> logged out.");
     var stopBtn=$("btnCamStop");
     if(stopBtn && !stopBtn.disabled) stopBtn.click();
     currentUser=null;
@@ -2111,8 +2148,8 @@
   $("loginForm").addEventListener("submit", function(ev){
     ev.preventDefault();
     var acct=findAccount($("loginUser").value);
-    if(!acct){ showLoginError("Walang account na ganyan ang username o email. Subukan ang demo accounts sa ibaba."); return; }
-    if(acct.password !== $("loginPass").value){ showLoginError("Mali ang password para kay "+acct.username+". Subukan ulit o i-tap ang demo account sa ibaba."); return; }
+    if(!acct){ showLoginError("No account with that username or email. Try the demo accounts below."); return; }
+    if(acct.password !== $("loginPass").value){ showLoginError("Wrong password for "+acct.username+". Try again or tap a demo account below."); return; }
     doLogin(acct);
   });
   document.querySelectorAll("[data-demo-login]").forEach(function(btn){
@@ -2141,7 +2178,7 @@
   }
   $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
 
-  /* ---------- Admin management (Super Admin lang ang nakakakita) ---------- */
+  /* ---------- Admin management (only the Super Admin can see this) ---------- */
   function renderAdminList(){
     var wrap=$("adminList"); if(!wrap || !currentUser || currentUser.role!=="super") return;
     wrap.innerHTML = ACCOUNTS.map(function(a){
@@ -2151,13 +2188,13 @@
         return '<span class="perm-chip'+(on?" on":"")+'">'+(on?"✓ ":"✕ ")+p.label+'</span>';
       }).join("");
       var actions = isSuper
-        ? '<span style="font-size:.8rem;color:var(--ink-3);font-weight:700">Pangunahing account — hindi puwedeng baguhin o tanggalin</span>'
-        : '<button class="btn-sm" type="button" data-edit-acct="'+esc(a.username)+'">Baguhin ang Authority</button>'+
-          '<button class="btn-sm btn-danger-sm" type="button" data-del-acct="'+esc(a.username)+'">Tanggalin</button>';
+        ? '<span style="font-size:.8rem;color:var(--ink-3);font-weight:700">Primary account — cannot be changed or removed</span>'
+        : '<button class="btn-sm" type="button" data-edit-acct="'+esc(a.username)+'">Edit Authority</button>'+
+          '<button class="btn-sm btn-danger-sm" type="button" data-del-acct="'+esc(a.username)+'">Remove</button>';
       var editBlock = isSuper ? "" :
         '<div class="perm-edit" id="edit-'+esc(a.username)+'">'+
           '<div class="perm-checks">'+permChecksHtml("edit-"+a.username, a.perms)+'</div>'+
-          '<button class="btn btn-in" type="button" data-save-acct="'+esc(a.username)+'" style="padding:9px 16px;min-height:2.5rem">I-save ang Authority</button>'+
+          '<button class="btn btn-in" type="button" data-save-acct="'+esc(a.username)+'" style="padding:9px 16px;min-height:2.5rem">Save Authority</button>'+
         '</div>';
       return '<div class="acct-card">'+
         '<div class="acct-head"><div class="avatar" style="background:'+(isSuper?"var(--green)":"var(--blue)")+'">'+Core.initials(a.name)+'</div>'+
@@ -2186,16 +2223,16 @@
             changes.push({key:p.key, granted:!!next[p.key]});
           }
         });
-        if(changes.length===0){ Core.toast("Walang nagbago sa authority ni "+acct.name+"."); return; }
+        if(changes.length===0){ Core.toast("Nothing changed in "+acct.name+"'s authority."); return; }
         acct.perms=next;
         changes.forEach(function(c){
           var txt = c.granted
-            ? "<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbigay</b> ng authority na <b>"+esc(permLabel(c.key))+"</b> kay <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+")."
-            : "<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbawi</b> ng authority na <b>"+esc(permLabel(c.key))+"</b> mula kay <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+").";
+            ? "<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>granted</b> the authority <b>"+esc(permLabel(c.key))+"</b> to <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+")."
+            : "<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>revoked</b> the authority <b>"+esc(permLabel(c.key))+"</b> from <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+").";
           logAuthority(txt);
           Core.log(txt);
         });
-        Core.toast("Na-update ang authority ni "+acct.name+": "+changes.map(function(c){ return (c.granted?"+":"−")+" "+permLabel(c.key); }).join(", ")+". Na-log ito sa Audit Log.");
+        Core.toast("Updated "+acct.name+"'s authority: "+changes.map(function(c){ return (c.granted?"+":"−")+" "+permLabel(c.key); }).join(", ")+". Logged in the Audit Log.");
         renderAdminList();
       });
     });
@@ -2205,64 +2242,64 @@
         var acct=findAccount(uname); if(!acct) return;
         if(!btn.classList.contains("confirming")){
           btn.classList.add("confirming");
-          btn.textContent="Sigurado? I-tap ulit para tanggalin";
-          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Tanggalin"; }, 3500);
+          btn.textContent="Are you sure? Tap again to remove";
+          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Remove"; }, 3500);
           return;
         }
         ACCOUNTS = ACCOUNTS.filter(function(x){ return x.username!==uname; });
-        var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagtanggal</b> ng Admin account ni <b>"+esc(acct.name)+"</b> (@"+esc(uname)+").";
+        var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>removed</b> the Admin account of <b>"+esc(acct.name)+"</b> (@"+esc(uname)+").";
         logAuthority(txt);
         Core.log(txt);
-        Core.toast("Tinanggal ang Admin account ni "+acct.name+". Na-log ito sa Audit Log.");
+        Core.toast("Removed the Admin account of "+acct.name+". Logged in the Audit Log.");
         renderAdminList();
       });
     });
   }
 
   $("btnCreateAdmin").addEventListener("click", function(){
-    if(!currentUser || currentUser.role!=="super"){ Core.toast("Super Admin lang ang makakagawa ng Admin account."); return; }
+    if(!currentUser || currentUser.role!=="super"){ Core.toast("Only the Super Admin can create an Admin account."); return; }
     var name=$("newAdminName").value.trim();
     var user=$("newAdminUser").value.trim().toLowerCase().replace(/\s+/g,"");
     var pass=$("newAdminPass").value;
-    if(!name){ Core.toast("Ilagay ang pangalan ng bagong Admin."); $("newAdminName").focus(); return; }
-    if(!user){ Core.toast("Ilagay ang username ng bagong Admin."); $("newAdminUser").focus(); return; }
-    if(!pass){ Core.toast("Ilagay ang demo password ng bagong Admin."); $("newAdminPass").focus(); return; }
-    if(findAccount(user)){ Core.toast("May account nang gumagamit ng username na \""+user+"\"."); return; }
+    if(!name){ Core.toast("Enter the new Admin's name."); $("newAdminName").focus(); return; }
+    if(!user){ Core.toast("Enter the new Admin's username."); $("newAdminUser").focus(); return; }
+    if(!pass){ Core.toast("Enter the new Admin's demo password."); $("newAdminPass").focus(); return; }
+    if(findAccount(user)){ Core.toast("An account is already using the username \""+user+"\"."); return; }
     var perms=readPermChecks($("newAdminPerms"));
     var acct={username:user, email:user+"@attendpro.demo", password:pass, name:name, role:"admin", perms:perms};
     ACCOUNTS.push(acct);
-    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>gumawa</b> ng Admin account para kay <b>"+esc(name)+"</b> (@"+esc(user)+") na may authority: <b>"+esc(grantedList(perms))+"</b>.";
+    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>created</b> an Admin account for <b>"+esc(name)+"</b> (@"+esc(user)+") with authority: <b>"+esc(grantedList(perms))+"</b>.";
     logAuthority(txt);
     Core.log(txt);
-    Core.toast("Nagawa ang Admin account ni "+name+" (@"+user+"). Puwede na siyang mag-login gamit ito. Na-log ito sa Audit Log.");
+    Core.toast("Created the Admin account for "+name+" (@"+user+"). They can now log in with it. Logged in the Audit Log.");
     $("newAdminName").value=""; $("newAdminUser").value=""; $("newAdminPass").value="";
     $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
     renderAdminList();
   });
 
-  /* ---------- Member management (Super Admin lang) ---------- */
+  /* ---------- Member management (Super Admin only) ---------- */
   function renderMemberMgmt(){
     var wrap=$("memberMgmtList"); if(!wrap || !currentUser || currentUser.role!=="super") return;
     var emps=Core.getEmployees();
-    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">Walang members.</p>'; return; }
+    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">No members.</p>'; return; }
     wrap.innerHTML = emps.map(function(e){
       return '<div class="member-mgmt-row"><div class="avatar" style="background:'+Core.avatarColor(e.id)+'">'+Core.initials(e.name)+'</div>'+
         '<div class="mn2"><div class="n">'+esc(e.name)+'</div><div class="d">'+esc(e.dept)+'</div></div>'+
-        '<button class="btn-sm btn-danger-sm" type="button" data-del-member="'+e.id+'">Tanggalin</button></div>';
+        '<button class="btn-sm btn-danger-sm" type="button" data-del-member="'+e.id+'">Remove</button></div>';
     }).join("");
     wrap.querySelectorAll("[data-del-member]").forEach(function(btn){
       btn.addEventListener("click", function(){
         if(!btn.classList.contains("confirming")){
           btn.classList.add("confirming");
-          btn.textContent="Sigurado? I-tap ulit";
-          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Tanggalin"; }, 3500);
+          btn.textContent="Are you sure? Tap again";
+          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Remove"; }, 3500);
           return;
         }
         var removed=Core.removeMember(parseInt(btn.getAttribute("data-del-member"),10));
         if(removed){
-          var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagtanggal</b> ng member na si <b>"+esc(removed.name)+"</b> ("+esc(removed.dept)+").";
+          var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>removed</b> the member <b>"+esc(removed.name)+"</b> ("+esc(removed.dept)+").";
           logAuthority(txt);
-          Core.toast("Tinanggal ang member na si "+removed.name+". Na-log ito sa Audit Log.");
+          Core.toast("Removed the member "+removed.name+". Logged in the Audit Log.");
         }
         renderMemberMgmt();
       });
@@ -2273,7 +2310,7 @@
   $("btnExport").addEventListener("click", function(){
     var emps=Core.getEmployees();
     function q(v){ return '"'+String(v===null||v===undefined?"":v).replace(/"/g,'""')+'"'; }
-    var lines=["Pangalan,Department,Time In,Time Out,Status"];
+    var lines=["Name,Department,Time In,Time Out,Status"];
     emps.forEach(function(e){ lines.push([q(e.name),q(e.dept),q(e.inT),q(e.outT),q(e.status)].join(",")); });
     var blob=new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
     var url=URL.createObjectURL(blob);
@@ -2282,27 +2319,27 @@
     document.body.appendChild(a); a.click();
     document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    Core.log("<b>"+esc(currentUser ? currentUser.name : "")+"</b> ay nag-export ng attendance report (CSV).");
-    Core.toast("Na-download ang attendance report (CSV).");
+    Core.log("<b>"+esc(currentUser ? currentUser.name : "")+"</b> exported the attendance report (CSV).");
+    Core.toast("Downloaded the attendance report (CSV).");
   });
 
-  /* ---------- Clear audit log (Super Admin lang; button ay super-only) ---------- */
+  /* ---------- Clear audit log (Super Admin only; button is super-only) ---------- */
   $("btnClearAudit").addEventListener("click", function(){
-    if(!currentUser || currentUser.role!=="super"){ Core.toast("Super Admin lang ang makakapagbura ng Audit Log."); return; }
+    if(!currentUser || currentUser.role!=="super"){ Core.toast("Only the Super Admin can clear the Audit Log."); return; }
     var btn=$("btnClearAudit");
     if(!btn.classList.contains("confirming")){
       btn.classList.add("confirming");
-      btn.textContent="Sigurado? I-tap ulit para burahin ang Audit Log";
-      setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Burahin ang Audit Log (Super Admin lang)"; }, 3500);
+      btn.textContent="Are you sure? Tap again to clear the Audit Log";
+      setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Clear Audit Log (Super Admin only)"; }, 3500);
       return;
     }
     btn.classList.remove("confirming");
-    btn.textContent="Burahin ang Audit Log (Super Admin lang)";
+    btn.textContent="Clear Audit Log (Super Admin only)";
     Core.clearAudit();
-    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbura</b> ng check-in Audit Log.";
+    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) <b>cleared</b> the check-in Audit Log.";
     logAuthority(txt);
     Core.log(txt);
-    Core.toast("Nabura ang check-in Audit Log. Naka-log ang pagbura sa authority log.");
+    Core.toast("Cleared the check-in Audit Log. The clearing was logged in the authority log.");
   });
 
   window.AuthState = { getUser: function(){ return currentUser; } };
@@ -2319,12 +2356,12 @@
   function $(id){ return document.getElementById(id); }
   var Core = window.AttendanceCore;
   function esc(s){ return String(s===null||s===undefined?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-  var STATUS_LABEL = {present:"Present", late:"Late", absent:"Absent", leave:"On Leave", working:"Nasa Trabaho"};
+  var STATUS_LABEL = {present:"Present", late:"Late", absent:"Absent", leave:"On Leave", working:"Working"};
   var STATUS_CLASS = {present:"st-present", late:"st-late", absent:"st-absent", leave:"st-leave", working:"st-working"};
-  var MONTHS_S = ["Ene","Peb","Mar","Abr","May","Hun","Hul","Ago","Set","Okt","Nob","Dis"];
+  var MONTHS_S = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var DEPTS = ["IT Department","Media","Operations","Admin","Finance","HR"];
 
-  /* ---------- Profile pictures (memory lang — walang storage, walang upload sa server) ---------- */
+  /* ---------- Profile pictures (memory only — no storage, no server upload) ---------- */
   var PHOTOS = {}; /* empId -> dataURL */
   window.ProfilePhotos = PHOTOS;
 
@@ -2341,14 +2378,14 @@
     return null;
   }
   function photoHtml(e, cls, avCls){
-    if(PHOTOS[e.id]) return '<img class="'+cls+'" src="'+PHOTOS[e.id]+'" alt="Profile picture ni '+esc(e.name)+'">';
+    if(PHOTOS[e.id]) return '<img class="'+cls+'" src="'+PHOTOS[e.id]+'" alt="Profile picture of '+esc(e.name)+'">';
     return '<div class="'+avCls+'" style="background:'+Core.avatarColor(e.id)+'">'+Core.initials(e.name)+'</div>';
   }
 
-  /* ---------- Attendance history (sample/demo data, deterministic bawat member) ---------- */
+  /* ---------- Attendance history (sample/demo data, deterministic per member) ---------- */
   function dateLabel(d){ return MONTHS_S[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear(); }
   function historyFor(emp){
-    var out=[{date:new Date(), label:"Ngayon — "+dateLabel(new Date()), status:emp.status, inT:emp.inT, outT:emp.outT}];
+    var out=[{date:new Date(), label:"Today — "+dateLabel(new Date()), status:emp.status, inT:emp.inT, outT:emp.outT}];
     var seed=emp.id*97+13, added=0, back=1;
     while(added<10 && back<40){
       var dt=new Date(); dt.setDate(dt.getDate()-back); back++;
@@ -2389,15 +2426,15 @@
     var u=currentUser();
     var emps=Core.getEmployees();
     if(u && u.role==="member") emps=emps.filter(function(e){ return e.id===u.empId; });
-    $("profilesTitle").textContent = (u && u.role==="member") ? "Aking Profile" : "User Profiles — Mga Miyembro";
-    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">Walang profile na maipakita.</p>'; return; }
+    $("profilesTitle").textContent = (u && u.role==="member") ? "My Profile" : "User Profiles — Members";
+    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">No profiles to show.</p>'; return; }
     wrap.innerHTML = emps.map(function(e){
       return '<div class="profile-card"><div class="pc-top">'+photoHtml(e,"pc-photo","pc-avatar")+
         '<div><div class="pc-name">'+esc(e.name)+'</div><div class="pc-meta">'+esc(e.dept)+' · '+esc(e.role)+'</div>'+
-        '<span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' ngayon</span></div></div>'+
+        '<span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' today</span></div></div>'+
         '<div class="pc-actions">'+
-          '<button class="btn-sm btn-approve" type="button" data-view-profile="'+e.id+'">Tingnan ang Profile</button>'+
-          '<button class="btn-sm" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Palitan ang Picture Ko" : "Mag-upload ng Picture")+'</button>'+
+          '<button class="btn-sm btn-approve" type="button" data-view-profile="'+e.id+'">View Profile</button>'+
+          '<button class="btn-sm" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Change My Picture" : "Upload a Picture")+'</button>'+
           (canExport() ? '<button class="btn-sm" type="button" data-pdf-user="'+e.id+'">PDF</button>' : '')+
         '</div></div>';
     }).join("");
@@ -2420,7 +2457,7 @@
   var pendingUploadFor=null;
   function startUpload(empId){
     var u=currentUser();
-    if(u && u.role==="member" && u.empId!==empId){ Core.toast("Sariling picture mo lang ang puwede mong palitan."); return; }
+    if(u && u.role==="member" && u.empId!==empId){ Core.toast("You can only change your own picture."); return; }
     pendingUploadFor=empId;
     $("profileFileInput").click();
   }
@@ -2428,14 +2465,14 @@
     var file=ev.target.files && ev.target.files[0];
     ev.target.value="";
     if(!file || pendingUploadFor===null) return;
-    if(!/^image\//.test(file.type)){ Core.toast("Larawan (image) lang ang puwedeng i-upload."); return; }
+    if(!/^image\//.test(file.type)){ Core.toast("Only an image can be uploaded."); return; }
     var reader=new FileReader();
     reader.onload=function(){
       PHOTOS[pendingUploadFor]=reader.result;
       var e=findEmp(pendingUploadFor);
-      Core.updateMember(pendingUploadFor, {}); /* re-render ng records table para lumabas ang picture doon */
-      Core.log("Nag-upload ng profile picture para kay <b>"+esc(e ? e.name : "")+"</b>.");
-      Core.toast("Na-update ang profile picture ni "+(e ? e.name : "")+". Dito lang ito sa page naka-display (demo).");
+      Core.updateMember(pendingUploadFor, {}); /* re-render the records table so the picture shows there */
+      Core.log("Uploaded a profile picture for <b>"+esc(e ? e.name : "")+"</b>.");
+      Core.toast("Updated the profile picture of "+(e ? e.name : "")+". It is only displayed on this page (demo).");
       renderProfiles();
       if(openProfileId===pendingUploadFor) openProfile(pendingUploadFor);
       pendingUploadFor=null;
@@ -2454,14 +2491,14 @@
     var c=countsOf(hist);
     var deptOpts=DEPTS.map(function(d){ return '<option'+(d===e.dept?" selected":"")+'>'+d+'</option>'; }).join("");
     var editHtml = canEdit
-      ? '<h3>I-edit ang Detalye</h3>'+
-        '<div class="field"><label for="pfName">Pangalan</label><input type="text" id="pfName" value="'+esc(e.name)+'"></div>'+
+      ? '<h3>Edit Details</h3>'+
+        '<div class="field"><label for="pfName">Name</label><input type="text" id="pfName" value="'+esc(e.name)+'"></div>'+
         '<div class="field"><label for="pfDept">Department</label><select id="pfDept">'+deptOpts+'</select></div>'+
-        '<div class="field"><label for="pfRole">Role / Posisyon</label><input type="text" id="pfRole" value="'+esc(e.role)+'"></div>'+
+        '<div class="field"><label for="pfRole">Role / Position</label><input type="text" id="pfRole" value="'+esc(e.role)+'"></div>'+
         '<div class="field"><label for="pfEmail">Email</label><input type="text" id="pfEmail" value="'+esc(e.email)+'"></div>'+
         '<div class="field"><label for="pfPhone">Contact Number</label><input type="text" id="pfPhone" value="'+esc(e.phone)+'"></div>'+
-        '<button class="btn btn-in" type="button" id="pfSave" style="padding:10px 18px">I-save ang Detalye</button>'
-      : '<p class="privacy-note">Ang Super Admin at Admin lang ang makakapag-edit ng detalye ng profile. Bilang member, sariling profile picture mo lang ang mapapalitan mo at sariling record mo lang ang makikita mo.</p>';
+        '<button class="btn btn-in" type="button" id="pfSave" style="padding:10px 18px">Save Details</button>'
+      : '<p class="privacy-note">Only the Super Admin and Admin can edit profile details. As a member, you can only change your own profile picture and see your own records.</p>';
     var histRows = hist.map(function(h){
       return '<div class="hist-row"><span class="hd">'+esc(h.label)+'</span>'+
         '<span class="status '+STATUS_CLASS[h.status]+'">'+STATUS_LABEL[h.status]+'</span>'+
@@ -2471,21 +2508,21 @@
       '<div class="profile-head">'+photoHtml(e,"ph-photo","ph-avatar")+
         '<div style="flex:1;min-width:200px"><div class="ph-name">'+esc(e.name)+'</div>'+
         '<div class="ph-meta">'+esc(e.dept)+' · '+esc(e.role)+'</div>'+
-        '<div style="margin-top:7px"><span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' ngayon</span></div></div>'+
+        '<div style="margin-top:7px"><span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' today</span></div></div>'+
         '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-          '<button class="btn-ghost" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Palitan ang Picture Ko" : "Mag-upload ng Picture")+'</button>'+
-          (canExport() ? '<button class="btn-ghost" type="button" data-pdf-user="'+e.id+'">I-export ang Profile (PDF)</button>' : '')+
+          '<button class="btn-ghost" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Change My Picture" : "Upload a Picture")+'</button>'+
+          (canExport() ? '<button class="btn-ghost" type="button" data-pdf-user="'+e.id+'">Export Profile (PDF)</button>' : '')+
         '</div></div>'+
       '<div class="profile-cols"><div>'+
         '<h3>Mga Detalye</h3>'+
         '<dl class="detail-list">'+
-          '<dt>Pangalan</dt><dd>'+esc(e.name)+'</dd>'+
+          '<dt>Name</dt><dd>'+esc(e.name)+'</dd>'+
           '<dt>Department</dt><dd>'+esc(e.dept)+'</dd>'+
           '<dt>Role</dt><dd>'+esc(e.role)+'</dd>'+
           '<dt>Email</dt><dd>'+esc(e.email || "—")+'</dd>'+
           '<dt>Contact</dt><dd>'+esc(e.phone || "—")+'</dd>'+
-          '<dt>Time In ngayon</dt><dd>'+esc(e.inT)+'</dd>'+
-          '<dt>Time Out ngayon</dt><dd>'+esc(e.outT)+'</dd>'+
+          '<dt>Time In today</dt><dd>'+esc(e.inT)+'</dd>'+
+          '<dt>Time Out today</dt><dd>'+esc(e.outT)+'</dd>'+
         '</dl>'+ editHtml +
       '</div><div>'+
         '<h3>Attendance History</h3>'+
@@ -2495,19 +2532,19 @@
           '<span class="audit-stat">Absent: <b>'+c.absent+'</b></span>'+
           '<span class="audit-stat">On Leave: <b>'+c.leave+'</b></span>'+
         '</div>'+ histRows +
-        '<p class="privacy-note">Sample history ito para sa demo: ngayong araw (totoong record sa page) + nakaraang 10 araw ng pasok na sample data.</p>'+
+        '<p class="privacy-note">This is sample history for the demo: today (the real record on this page) + the past 10 workdays of sample data.</p>'+
       '</div></div>'+
-      '<div style="margin-top:18px;text-align:right"><button class="btn-ghost" type="button" id="pfClose">Isara</button></div>';
+      '<div style="margin-top:18px;text-align:right"><button class="btn-ghost" type="button" id="pfClose">Close</button></div>';
     $("profileModal").classList.add("open");
     bindProfileButtons($("profileSheet"));
     $("pfClose").addEventListener("click", closeProfile);
     var saveBtn=$("pfSave");
     if(saveBtn) saveBtn.addEventListener("click", function(){
       var fields={ name:$("pfName").value.trim(), dept:$("pfDept").value, role:$("pfRole").value.trim(), email:$("pfEmail").value.trim(), phone:$("pfPhone").value.trim() };
-      if(!fields.name){ Core.toast("Hindi puwedeng walang pangalan ang profile."); return; }
+      if(!fields.name){ Core.toast("The profile name cannot be empty."); return; }
       Core.updateMember(id, fields);
-      Core.log("<b>"+esc(u ? u.name : "")+"</b> ay nag-edit ng profile details ni <b>"+esc(fields.name)+"</b>.");
-      Core.toast("Na-save ang detalye ng profile ni "+fields.name+".");
+      Core.log("<b>"+esc(u ? u.name : "")+"</b> edited the profile details of <b>"+esc(fields.name)+"</b>.");
+      Core.toast("Saved the profile details of "+fields.name+".");
       renderProfiles();
       openProfile(id);
     });
@@ -2516,9 +2553,9 @@
   $("profileModal").addEventListener("click", function(ev){ if(ev.target===$("profileModal")) closeProfile(); });
   document.addEventListener("keydown", function(ev){ if(ev.key==="Escape") closeProfile(); });
 
-  /* ---------- PDF export (client-side jsPDF — walang server) ---------- */
+  /* ---------- PDF export (client-side jsPDF — no server) ---------- */
   function newDoc(){
-    if(!window.jspdf || !window.jspdf.jsPDF){ Core.toast("Hindi nag-load ang PDF library — i-check ang internet connection at subukan ulit."); return null; }
+    if(!window.jspdf || !window.jspdf.jsPDF){ Core.toast("The PDF library did not load — check your internet connection and try again."); return null; }
     return new window.jspdf.jsPDF({unit:"mm", format:"a4"});
   }
   function imgFormat(dataUrl){
@@ -2533,7 +2570,7 @@
     doc.setTextColor(22,33,28); doc.setFontSize(16); doc.text(title, 14, 30);
     doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(90,100,95);
     doc.text(subtitle, 14, 36);
-    doc.text("Ginawa: "+Core.fmtDateTime(new Date())+" · Demo data lang — sample records ng mockup.", 14, 41);
+    doc.text("Generated: "+Core.fmtDateTime(new Date())+" · Demo data only — sample records from the mockup.", 14, 41);
     return 48;
   }
   function needPage(doc, y, h){ if(y+h>282){ doc.addPage(); return 16; } return y; }
@@ -2550,20 +2587,20 @@
     doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(70,80,75);
     doc.text("Department: "+e.dept+"   ·   Role: "+e.role, 14, y+11);
     doc.text("Email: "+(e.email||"—")+"   ·   Contact: "+(e.phone||"—"), 14, y+16.5);
-    doc.text("Buod sa napiling range — Present: "+c.present+" · Late: "+c.late+" · Absent: "+c.absent+" · On Leave: "+c.leave, 14, y+22);
+    doc.text("Summary for the selected range — Present: "+c.present+" · Late: "+c.late+" · Absent: "+c.absent+" · On Leave: "+c.leave, 14, y+22);
     y=Math.max(y+27, PHOTOS[e.id] ? photoBottom : y+27);
     doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.setTextColor(22,33,28);
-    doc.text("Petsa", 14, y); doc.text("Status", 62, y); doc.text("Time In", 96, y); doc.text("Time Out", 126, y); doc.text("Remarks", 158, y);
+    doc.text("Date", 14, y); doc.text("Status", 62, y); doc.text("Time In", 96, y); doc.text("Time Out", 126, y); doc.text("Remarks", 158, y);
     doc.setDrawColor(200,205,200); doc.line(14, y+1.6, 196, y+1.6);
     y+=6.5;
     doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
     if(hist.length===0){
-      doc.setTextColor(120,128,124); doc.text("Walang record sa napiling date range.", 14, y); y+=6;
+      doc.setTextColor(120,128,124); doc.text("No records in the selected date range.", 14, y); y+=6;
     }
     hist.forEach(function(h){
       y=needPage(doc, y, 7);
       doc.setTextColor(22,33,28);
-      doc.text(h.label.replace(/^Ngayon — /,""), 14, y);
+      doc.text(h.label.replace(/^Today — /,""), 14, y);
       doc.text(STATUS_LABEL[h.status] || h.status, 62, y);
       doc.text(h.inT, 96, y); doc.text(h.outT, 126, y);
       doc.text(h.status==="late" ? "Late" : h.status==="present" || h.status==="working" ? "On time" : h.status==="leave" ? "Leave" : "—", 158, y);
@@ -2572,41 +2609,41 @@
     return y+6;
   }
   function rangeText(range){
-    if(!range.from && !range.to) return "Saklaw: ngayong araw + nakaraang 10 araw ng pasok (walang napiling date range)";
+    if(!range.from && !range.to) return "Range: today + the past 10 workdays (no date range selected)";
     function f(d){ return d ? MONTHS_S[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear() : "—"; }
-    return "Saklaw: "+f(range.from)+" hanggang "+f(range.to);
+    return "Range: "+f(range.from)+" to "+f(range.to);
   }
   function exportUserPdf(id){
-    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    if(!canExport()){ Core.toast("Only the Super Admin and Admins with export authority can export a PDF."); return; }
     var e=findEmp(id); if(!e) return;
     var doc=newDoc(); if(!doc) return;
     var range=readRange("pdfFrom","pdfTo");
     var y=pdfHeader(doc, "Attendance Report — "+e.name, rangeText(range));
     userSection(doc, e, range, y);
     doc.save("attendance-"+e.name.replace(/\s+/g,"-").toLowerCase()+".pdf");
-    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng PDF report ni <b>"+esc(e.name)+"</b>.");
-    Core.toast("Na-download ang PDF report ni "+e.name+".");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> exported the PDF report of <b>"+esc(e.name)+"</b>.");
+    Core.toast("Downloaded the PDF report of "+e.name+".");
   }
   function exportRosterPdf(){
-    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    if(!canExport()){ Core.toast("Only the Super Admin and Admins with export authority can export a PDF."); return; }
     var doc=newDoc(); if(!doc) return;
     var range=readRange("repFrom","repTo");
-    var y=pdfHeader(doc, "Attendance Report — Buong Roster", rangeText(range));
+    var y=pdfHeader(doc, "Attendance Report — Full Roster", rangeText(range));
     Core.getEmployees().forEach(function(e){ y=userSection(doc, e, range, y); });
     doc.save("attendance-roster.pdf");
-    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng PDF report ng buong roster.");
-    Core.toast("Na-download ang PDF report ng buong roster.");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> exported the PDF report of the full roster.");
+    Core.toast("Downloaded the PDF report of the full roster.");
   }
   function exportAuditPdf(){
-    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    if(!canExport()){ Core.toast("Only the Super Admin and Admins with export authority can export a PDF."); return; }
     var doc=newDoc(); if(!doc) return;
-    var y=pdfHeader(doc, "Audit Log — Kasaysayan ng Check-In", "Bawat check-in: photo proof, GPS location, at Verified/Flagged status.");
+    var y=pdfHeader(doc, "Audit Log — Check-In History", "Every check-in: photo proof, GPS location, and Verified/Flagged status.");
     var entries=Core.getAudit();
     var v=0; entries.forEach(function(a){ if(a.verified) v++; });
     doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(22,33,28);
-    doc.text("Kabuuang log: "+entries.length+" · Verified: "+v+" · Flagged: "+(entries.length-v), 14, y);
+    doc.text("Total logs: "+entries.length+" · Verified: "+v+" · Flagged: "+(entries.length-v), 14, y);
     y+=8;
-    if(entries.length===0){ doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.text("Wala pang naka-log na check-in.", 14, y); y+=7; }
+    if(entries.length===0){ doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.text("No check-ins logged yet.", 14, y); y+=7; }
     entries.forEach(function(a){
       y=needPage(doc, y, 24);
       var textBottom=y;
@@ -2614,11 +2651,11 @@
       doc.text(a.name+" — "+(a.verified ? "VERIFIED" : "FLAGGED"), 14, y+4);
       doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(70,80,75);
       doc.text(Core.fmtDateTime(new Date(a.when))+" · "+a.dept+" · via "+a.via, 14, y+9.5);
-      var locTxt = (a.lat!==null && a.lat!==undefined) ? ("Location: "+(a.place || "")+" ("+Number(a.lat).toFixed(5)+", "+Number(a.lon).toFixed(5)+")") : "Location: walang GPS location";
+      var locTxt = (a.lat!==null && a.lat!==undefined) ? ("Location: "+(a.place || "")+" ("+Number(a.lat).toFixed(5)+", "+Number(a.lon).toFixed(5)+")") : "Location: no GPS location";
       doc.text(locTxt, 14, y+15);
       textBottom=y+15;
       if(!a.verified && a.flags.length){
-        var wrapped=doc.splitTextToSize("Flagged dahil: "+a.flags.join(", "), 150);
+        var wrapped=doc.splitTextToSize("Flagged because: "+a.flags.join(", "), 150);
         doc.setTextColor(180,35,24); doc.text(wrapped, 14, y+20.5);
         textBottom=y+20.5+(wrapped.length-1)*4.6;
       }
@@ -2631,7 +2668,7 @@
     if(auth.length){
       y=needPage(doc, y, 14);
       doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(22,33,28);
-      doc.text("Log ng Authority at Admin Changes", 14, y); y+=7;
+      doc.text("Authority & Admin Changes Log", 14, y); y+=7;
       doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
       auth.forEach(function(en){
         var plain=en.text.replace(/<[^>]+>/g,"");
@@ -2642,8 +2679,8 @@
       });
     }
     doc.save("audit-log.pdf");
-    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng Audit Log bilang PDF.");
-    Core.toast("Na-download ang Audit Log (PDF).");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> exported the Audit Log as a PDF.");
+    Core.toast("Downloaded the Audit Log (PDF).");
   }
   $("btnExportPdfRoster").addEventListener("click", exportRosterPdf);
   $("btnExportPdfAudit").addEventListener("click", exportAuditPdf);
@@ -2659,7 +2696,7 @@
   var Core = window.AttendanceCore;
   if(!Core) return;
 
-  /* ---------- Chart tabs: Araw / Linggo / Buwan ---------- */
+  /* ---------- Chart tabs: Day / Week / Month ---------- */
   var views={day:$("chartDay"), week:$("chartWeek"), month:$("chartMonth")};
   var tabs=document.querySelectorAll(".chart-tab");
   tabs.forEach(function(t){
@@ -2685,7 +2722,7 @@
     return c;
   }
 
-  /* ---------- Araw: donut chart ---------- */
+  /* ---------- Day: donut chart ---------- */
   function renderDay(){
     var c=todayCounts();
     var total=Math.max(c.total,1);
@@ -2707,22 +2744,22 @@
     });
     var pct=Math.round((c.present+c.late)/total*100);
     svg+='<text x="75" y="72" text-anchor="middle" font-size="21" font-weight="800" fill="var(--ink)">'+pct+'%</text>';
-    svg+='<text x="75" y="90" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-3)">pumasok ngayon</text>';
+    svg+='<text x="75" y="90" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-3)">came in today</text>';
     $("dayDonut").innerHTML=svg;
     $("dayLegend").innerHTML = segs.map(function(s){
       var p = c.total ? Math.round(s.v/c.total*100) : 0;
       return '<div class="dl-row"><i class="swatch" style="background:'+s.color+'"></i>'+s.label+'<b>'+s.v+' · '+p+'%</b></div>';
-    }).join("") + '<div class="dl-row" style="border-top:1px solid var(--line);padding-top:9px"><span> Kabuuang empleyado</span><b>'+c.total+'</b></div>';
+    }).join("") + '<div class="dl-row" style="border-top:1px solid var(--line);padding-top:9px"><span> Total employees</span><b>'+c.total+'</b></div>';
   }
 
-  /* ---------- Buwan: stacked bars bawat linggo (sample data; Linggo 4 = ngayon, partial) ---------- */
+  /* ---------- Month: stacked bars per week (sample data; Week 4 = today, partial) ---------- */
   function renderMonth(){
     var t=todayCounts();
     var WEEKS=[
-      {label:"Linggo 1", ontime:52, late:4, absent:4},
-      {label:"Linggo 2", ontime:54, late:3, absent:3},
-      {label:"Linggo 3", ontime:50, late:5, absent:5},
-      {label:"Linggo 4*", ontime:t.present, late:t.late, absent:t.absent}
+      {label:"Week 1", ontime:52, late:4, absent:4},
+      {label:"Week 2", ontime:54, late:3, absent:3},
+      {label:"Week 3", ontime:50, late:5, absent:5},
+      {label:"Week 4*", ontime:t.present, late:t.late, absent:t.absent}
     ];
     var max=60, W=560, base=182, top=18, plotH=base-top;
     var slot=(W-40)/4, bw=56;
@@ -2751,7 +2788,7 @@
     $("monthRate").textContent = sumSlots ? Math.round(sumIn/sumSlots*100)+"%" : "—";
   }
 
-  /* I-refresh ang Araw/Buwan graphs tuwing nagbabago ang records (Time In/Out, enroll, delete) */
+  /* Refresh the Day/Month graphs whenever the records change (Time In/Out, enroll, delete) */
   var pending=false;
   function refresh(){
     if(pending) return; pending=true;
@@ -2764,7 +2801,7 @@
   var rb=$("recordsBody");
   if(rb && window.MutationObserver) new MutationObserver(refresh).observe(rb, {childList:true});
 
-  /* ---------- Sidebar: i-highlight ang huling pinindot na menu ---------- */
+  /* ---------- Sidebar: highlight the last clicked menu item ---------- */
   var navItems=document.querySelectorAll(".nav-item");
   navItems.forEach(function(n){
     n.addEventListener("click", function(){
