@@ -1,17 +1,39 @@
-# Attendance System
+# Attendance System — Real-time attendance system with facial recognition check-in, dashboard, and member enrollment.
 
-Real-time attendance system with facial recognition check-in, dashboard, and member enrollment.
+Demo only: sample roster, all face processing runs in the browser on-device, no face data is saved or sent anywhere. Open `index.html` in a browser to use it.
 
-## How to use
+## Links (live)
 
-Open `attendance-system-mockup.html` in a browser (or serve it with GitHub Pages — rename it to `index.html` for that).
+- GitHub repo: https://github.com/arielkinge541-crypto/Attendance-System
+- GitHub Pages: https://arielkinge541-crypto.github.io/Attendance-System/
+- Dashboard (direct): https://arielkinge541-crypto.github.io/Attendance-System/attendance-system-mockup.html
 
-- **Dashboard** — live clock, Present / Late / Absent / On Leave counts, weekly chart, records with search and filter.
-- **Live Check-In** — opens the camera, frames the face, matches it against enrolled demo members, and asks for confirmation before marking Present. Unknown faces are not marked and cannot check in.
-- **Enroll** — name + photo from the camera, for demo members.
-- **Simulation buttons** — test a known face and an unknown face when no camera is available.
+## Run it as a website on your own server (Docker)
 
-## Notes
+```bash
+docker compose up -d --build
+# open http://YOUR-SERVER:8080/
+```
 
-- Demo only: the roster is sample data. All face processing runs in the browser; no face data is saved or sent anywhere.
-- The black hexagon logo is Ariel's IT Department logo, shown in the header, check-in screen, and camera screen.
+## Py AutoDeploy — auto-deploy on every push
+
+On the server, inside the cloned repo folder:
+
+```bash
+# One-time deploy (pull + rebuild + restart)
+python3 deploy.py
+
+# Watch mode — checks for new pushes every 60s and redeploys by itself
+python3 deploy.py --watch
+
+# Webhook mode — GitLab/GitHub calls this on push (instant deploy)
+python3 deploy.py --webhook --port 9000
+# then set the repo webhook to http://YOUR-SERVER:9000/deploy
+```
+
+## GitLab
+
+`.gitlab-ci.yml` is included: on every push to the default branch it builds
+the Docker image, publishes the site to GitLab Pages (free link), and — if you
+set the `DEPLOY_WEBHOOK_URL` variable in GitLab Settings > CI/CD > Variables —
+tells your server to auto-deploy via Py AutoDeploy.
