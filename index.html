@@ -289,6 +289,211 @@
   .photo-modal figcaption{color:#e9f0eb;font-weight:700;font-size:.88rem;margin-top:12px;line-height:1.5}
   .photo-modal .pm-close{margin-top:14px;background:#fff;color:#16211c;border:0;border-radius:10px;padding:10px 20px;font-weight:800;font-size:.9rem;min-height:2.75rem}
 
+  /* ---------- Login system + roles + admin management ---------- */
+  body.locked .app{display:none}
+  .login-screen{
+    min-height:100vh;display:grid;place-items:center;padding:22px 16px 40px;
+    background:var(--bg);
+  }
+  body:not(.locked) .login-screen{display:none}
+  .login-card{
+    width:100%;max-width:520px;background:var(--surface);border:1px solid var(--line);
+    border-radius:18px;box-shadow:var(--shadow);padding:30px 30px 26px;
+  }
+  .login-brand{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+  .login-brand img{width:52px;height:52px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:6px;object-fit:contain}
+  .login-brand .lb-name{font-weight:800;font-size:1.3rem;letter-spacing:-.02em;line-height:1.15}
+  .login-brand .lb-sub{font-size:.8rem;color:var(--ink-3);font-weight:600}
+  .login-card h1{font-size:1.45rem;font-weight:800;letter-spacing:-.02em;margin:14px 0 4px}
+  .login-card .login-hint{font-size:.9rem;color:var(--ink-2);margin:0 0 18px}
+  .login-card input[type="password"]{
+    width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem;
+  }
+  .login-card input[type="password"]:focus{outline:2px solid var(--green);outline-offset:1px;border-color:transparent}
+  .login-error{display:none;background:var(--red-soft);color:var(--red);border-radius:10px;padding:10px 13px;font-size:.86rem;font-weight:700;margin-bottom:12px;line-height:1.45}
+  .login-error.show{display:block}
+  .btn-login{width:100%;margin-top:4px}
+  .demo-accounts{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+  .demo-accounts h2{font-size:.86rem;font-weight:800;margin:0 0 4px}
+  .demo-accounts p{font-size:.82rem;color:var(--ink-2);margin:0 0 12px}
+  .demo-acct{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    border:1px solid var(--line);background:var(--surface);border-radius:12px;
+    padding:12px 14px;margin-bottom:9px;color:var(--ink);
+  }
+  .demo-acct:hover{border-color:var(--green);background:var(--green-soft)}
+  .demo-acct .avatar{width:40px;height:40px;font-size:.85rem}
+  .demo-acct .da-body{flex:1;min-width:0}
+  .demo-acct .da-name{font-weight:800;font-size:.94rem;line-height:1.25}
+  .demo-acct .da-cred{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-2);margin-top:2px;word-break:break-all}
+  .demo-acct .da-go{font-weight:800;font-size:.82rem;color:var(--green-ink);flex:none}
+  .role-badge{display:inline-flex;align-items:center;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:2px 9px;vertical-align:middle}
+  .role-super{background:var(--green);color:#fff}
+  .role-admin{background:var(--blue-soft);color:var(--blue)}
+  .login-note{font-size:.78rem;color:var(--ink-3);font-weight:600;line-height:1.55;margin:14px 0 0}
+
+  .user-chip{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 6px;box-shadow:var(--shadow)}
+  .user-chip .avatar{width:34px;height:34px;font-size:.78rem}
+  .user-chip .uc-name{font-weight:800;font-size:.88rem;line-height:1.2}
+  .user-chip .uc-role{font-size:.72rem;color:var(--ink-3);font-weight:700}
+  .btn-logout{background:var(--red-soft);color:var(--red);border:0;border-radius:999px;padding:8px 15px;font-weight:800;font-size:.82rem;min-height:2.25rem}
+  .side-logout{width:100%;margin-top:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--red);border-radius:10px;padding:9px 12px;font-weight:800;font-size:.85rem;min-height:2.5rem}
+
+  /* Permission gating (demo, UI-level) */
+  body.role-admin .super-only{display:none!important}
+  body.no-audit #auditSection{display:none}
+  body.no-audit [data-goto="auditSection"]{display:none}
+  body.no-time #btnIn,body.no-time #btnOut{opacity:.45;pointer-events:none}
+  body.no-enroll #enrollName,body.no-enroll #enrollDept,body.no-enroll #btnEnroll{opacity:.45;pointer-events:none}
+  body.no-leave .leave-actions{display:none}
+  .perm-lock-note{display:none;background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:9px 12px;font-size:.82rem;font-weight:700;line-height:1.45;margin-top:10px}
+  body.no-time #timeLockNote{display:block}
+  body.no-enroll #enrollLockNote{display:block}
+  body.no-leave #leaveLockNote{display:block}
+
+  /* Admin management */
+  .acct-card{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:11px;background:var(--surface)}
+  .acct-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .acct-head .avatar{width:40px;height:40px;font-size:.85rem}
+  .acct-head .an{font-weight:800;font-size:.96rem;line-height:1.25}
+  .acct-head .au{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-2)}
+  .acct-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn-danger-sm{background:var(--red-soft);border-color:var(--red-soft);color:var(--red)}
+  .btn-danger-sm.confirming{background:var(--red);border-color:var(--red);color:#fff}
+  .perm-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+  .perm-chip{font-size:.74rem;font-weight:800;border-radius:999px;padding:4px 11px;background:var(--surface-2);color:var(--ink-3)}
+  .perm-chip.on{background:var(--green-soft);color:var(--green-ink)}
+  .perm-edit{display:none;margin-top:13px;border-top:1px solid var(--line);padding-top:12px}
+  .perm-edit.open{display:block}
+  .perm-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .perm-check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--surface)}
+  .perm-check input{width:19px;height:19px;margin:1px 0 0;accent-color:var(--green);flex:none;cursor:pointer}
+  .perm-check .pc-label{font-weight:800;font-size:.86rem;line-height:1.3}
+  .perm-check .pc-desc{font-size:.78rem;color:var(--ink-2);font-weight:600;line-height:1.4}
+  .create-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .member-mgmt-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .member-mgmt-row:last-child{border-bottom:0}
+  .member-mgmt-row .avatar{width:32px;height:32px;font-size:.72rem}
+  .member-mgmt-row .mn2{flex:1;min-width:0}
+  .member-mgmt-row .mn2 .n{font-weight:700;font-size:.9rem;line-height:1.25}
+  .member-mgmt-row .mn2 .d{font-size:.76rem;color:var(--ink-3);font-weight:600}
+  .authority-list{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto}
+  .authority-list li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.85rem;align-items:baseline}
+  .authority-list li:last-child{border-bottom:0}
+  .authority-list .ft{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3);flex:none;font-weight:600}
+  @media (max-width:760px){
+    .login-card{padding:24px 20px 22px}
+    .perm-checks,.create-grid{grid-template-columns:1fr}
+    .user-chip .uc-meta{display:none}
+    .acct-actions{margin-left:0}
+  }
+
+  /* ---------- User profiles ---------- */
+  .profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .profile-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+  .profile-card .pc-top{display:flex;align-items:center;gap:12px}
+  .profile-card .pc-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}
+  .profile-card .pc-avatar{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.05rem;flex:none}
+  .profile-card .pc-name{font-weight:800;font-size:.98rem;line-height:1.25}
+  .profile-card .pc-meta{font-size:.78rem;color:var(--ink-3);font-weight:600;line-height:1.4}
+  .profile-card .pc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+  .profile-modal{background:rgba(8,12,10,.86)}
+  .profile-sheet{background:var(--surface);color:var(--ink);border-radius:16px;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:24px;text-align:left}
+  .profile-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .profile-head .ph-photo{width:84px;height:84px;border-radius:50%;object-fit:cover;flex:none}
+  .profile-head .ph-avatar{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.5rem;flex:none}
+  .profile-head .ph-name{font-size:1.25rem;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+  .profile-head .ph-meta{color:var(--ink-2);font-weight:600;font-size:.88rem;margin-top:2px}
+  .profile-cols{display:grid;grid-template-columns:1fr 1.2fr;gap:20px;margin-top:18px;align-items:start}
+  .profile-cols h3{font-size:.92rem;font-weight:800;margin:0 0 10px}
+  .detail-list{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.88rem;margin:0 0 14px}
+  .detail-list dt{color:var(--ink-3);font-weight:700}
+  .detail-list dd{margin:0;font-weight:600;word-break:break-word}
+  .hist-summary{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+  .hist-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.85rem;flex-wrap:wrap}
+  .hist-row:last-child{border-bottom:0}
+  .hist-row .hd{font-weight:700;min-width:118px}
+  .hist-row .ht{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2)}
+  /* Member (user) mode: sariling profile lang ang nakikita */
+  body.role-member .kpis,
+  body.role-member #liveSection,
+  body.role-member .grid-2,
+  body.role-member #records,
+  body.role-member #auditSection,
+  body.role-member #adminMgmt,
+  body.role-member .grid-bottom{display:none!important}
+  body.role-member .nav-item:not(#navProfiles){display:none}
+  body.role-member .nav-label{display:none}
+  @media (max-width:760px){
+    .profile-cols{grid-template-columns:1fr}
+    .profile-sheet{padding:18px 16px}
+  }
+
+  /* ---------- PDF export ---------- */
+  body.no-export .export-only{display:none!important}
+  .pdf-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+  .pdf-toolbar label{font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px}
+  .pdf-toolbar .pdf-note{font-size:.78rem;color:var(--ink-3);font-weight:600}
+  input[type="date"]{
+    padding:7px 10px;border:1px solid var(--line);border-radius:9px;
+    background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;min-height:2.25rem;
+  }
+  input[type="date"]:focus{outline:2px solid var(--green);outline-offset:1px;border-color:transparent}
+
+  /* ---------- UI polish (itsura at daloy lang — walang binagong feature) ---------- */
+  :root{--radius:16px;--shadow:0 1px 2px rgba(22,33,28,.05),0 10px 30px -14px rgba(22,33,28,.16)}
+  html{scroll-behavior:smooth}
+  section[id]{scroll-margin-top:14px}
+  .main{max-width:1280px}
+  .topbar{
+    position:sticky;top:0;z-index:30;background:var(--bg);
+    padding:14px 0 12px;margin-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .sidebar{box-shadow:1px 0 0 rgba(22,33,28,.02)}
+  .brand{padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .nav-item{transition:background .15s ease,color .15s ease}
+  .nav-item.active{font-weight:800}
+  .panel{padding:24px}
+  .panel h2{font-size:1.08rem}
+  .panel .hint{line-height:1.55}
+  .kpi{transition:box-shadow .18s ease}
+  .kpi:hover{box-shadow:0 2px 4px rgba(22,33,28,.06),0 16px 36px -14px rgba(22,33,28,.22)}
+  .kpi .num{font-size:2.1rem}
+  .btn,.btn-ghost,.btn-sm,.btn-danger-ghost,.chip,.demo-acct,.side-logout,.btn-logout{transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease}
+  button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+  thead th{background:var(--surface-2)}
+  thead th:first-child{border-top-left-radius:10px}
+  thead th:last-child{border-top-right-radius:10px}
+  tbody td{padding-top:13px;padding-bottom:13px}
+  .login-card{padding:36px 34px 28px;border-radius:20px}
+  .profile-card{transition:box-shadow .18s ease}
+  .profile-card:hover{box-shadow:var(--shadow)}
+  .acct-card{background:var(--surface)}
+  .toast{border-radius:999px;padding:13px 22px}
+  .clock .time{font-size:2.8rem}
+  .match-card,.loc-card,.match-person .avatar{border-radius:12px}
+  /* Chart tabs: Araw / Linggo / Buwan */
+  .chart-tabs{display:inline-flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:14px;flex-wrap:wrap}
+  .chart-tab{border:0;background:transparent;color:var(--ink-2);border-radius:999px;padding:8px 18px;font-weight:800;font-size:.86rem;min-height:2.25rem}
+  .chart-tab:hover{color:var(--ink)}
+  .chart-tab.active{background:var(--surface);color:var(--green-ink);box-shadow:0 1px 3px rgba(22,33,28,.14)}
+  .day-flex{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .day-legend{display:flex;flex-direction:column;gap:9px;font-size:.9rem;font-weight:700;color:var(--ink-2);min-width:210px}
+  .day-legend .dl-row{display:flex;align-items:center;gap:9px}
+  .day-legend .dl-row b{color:var(--ink);margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:.88rem}
+  .chart-note{font-size:.8rem;color:var(--ink-3);font-weight:600;margin-top:8px;line-height:1.5}
+  @media (max-width:760px){
+    .sidebar{position:sticky!important;top:0;z-index:40;box-shadow:0 6px 18px -12px rgba(22,33,28,.25)}
+    .panel{padding:18px 16px}
+    .topbar{padding-top:10px}
+    .day-flex{gap:14px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .kpi,.btn,.btn-ghost,.btn-sm,.chip,.nav-item,.profile-card{transition:none}
+  }
+
   /* ---------- Mobile ---------- */
   @media (max-width:1020px){
     .live-grid{grid-template-columns:1fr}
@@ -325,7 +530,65 @@
   }
 </style>
 </head>
-<body>
+<body class="locked">
+
+  <!-- ============ LOGIN SCREEN ============ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="data:image/png;base64,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" alt="Logo" />
+        <div>
+          <div class="lb-name">AttendPro</div>
+          <div class="lb-sub">Attendance System</div>
+        </div>
+      </div>
+      <h1>Mag-login muna</h1>
+      <p class="login-hint">Kailangan munang mag-login bago makita ang dashboard. Dalawang role ang puwede: <b>Super Admin</b> (lahat ng authority) at <b>Admin</b> (ayon sa authority na ibinigay ng Super Admin).</p>
+      <div class="login-error" id="loginError" role="alert"></div>
+      <form id="loginForm" autocomplete="off">
+        <div class="field">
+          <label for="loginUser">Username o Email</label>
+          <input type="text" id="loginUser" placeholder="hal. superadmin o admin" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="loginPass">Password</label>
+          <input type="password" id="loginPass" placeholder="Ilagay ang password" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-in btn-login" type="submit">Mag-login</button>
+      </form>
+
+      <div class="demo-accounts">
+        <h2>Demo Accounts — i-tap para mag-login agad</h2>
+        <p>Hindi na kailangang mag-type: i-tap ang account at diretso ka nang papasok bilang role na iyon.</p>
+        <button class="demo-acct" type="button" data-demo-login="superadmin">
+          <span class="avatar" style="background:var(--green)">SA</span>
+          <span class="da-body">
+            <span class="da-name">Super Admin <span class="role-badge role-super">Super Admin</span></span>
+            <span class="da-cred" style="display:block">username: superadmin · password: super123</span>
+          </span>
+          <span class="da-go">Pumasok →</span>
+        </button>
+        <button class="demo-acct" type="button" data-demo-login="admin">
+          <span class="avatar" style="background:var(--blue)">AD</span>
+          <span class="da-body">
+            <span class="da-name">Admin <span class="role-badge role-admin">Admin</span></span>
+            <span class="da-cred" style="display:block">username: admin · password: admin123</span>
+          </span>
+          <span class="da-go">Pumasok →</span>
+        </button>
+        <button class="demo-acct" type="button" data-demo-login="member">
+          <span class="avatar" style="background:var(--amber)">MC</span>
+          <span class="da-body">
+            <span class="da-name">Member / User <span class="role-badge" style="background:var(--amber-soft);color:var(--amber)">Member</span></span>
+            <span class="da-cred" style="display:block">username: member · password: member123 — si Maria Clara Santos; sariling profile at record lang niya ang makikita niya</span>
+          </span>
+          <span class="da-go">Pumasok →</span>
+        </button>
+      </div>
+      <p class="login-note">Demo lang ito: sample accounts at sample data ang gamit, lahat ng pagproseso ay dito lang sa browser ng device na ito — walang totoong password na sine-save o sine-send kahit saan, at walang face data na sine-save o sine-send. Demo session lang ang login: pag ni-refresh ang page, kailangan ulit mag-login.</p>
+    </div>
+  </div>
+
 <div class="app">
 
   <!-- ============ SIDEBAR ============ -->
@@ -370,15 +633,24 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
       <span class="nav-txt">Reports</span>
     </button>
+    <button class="nav-item" type="button" data-goto="profilesSection" id="navProfiles">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-3.8 3.9-5.5 7.5-5.5s6.6 1.7 7.5 5.5"/></svg>
+      <span class="nav-txt">User Profiles</span>
+    </button>
+    <button class="nav-item super-only" type="button" data-goto="adminMgmt" id="navAdminMgmt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M12 8v4M12 15.5v.5"/></svg>
+      <span class="nav-txt">Admin Accounts</span>
+    </button>
 
     <div class="side-foot">
       <div class="side-user">
-        <div class="avatar" aria-hidden="true">AR</div>
+        <div class="avatar" id="sideAvatar" aria-hidden="true">—</div>
         <div>
-          <div class="n">Admin</div>
-          <div class="r">HR / Tagapamahala</div>
+          <div class="n" id="sideUserName">Hindi naka-login</div>
+          <div class="r" id="sideUserRole">—</div>
         </div>
       </div>
+      <button class="side-logout" id="btnLogoutSide" type="button">Mag-logout</button>
     </div>
   </aside>
 
@@ -388,6 +660,14 @@
       <div>
         <h1>Dashboard <span class="mock-tag">Mockup</span></h1>
         <div class="date-line" id="todayLine">—</div>
+      </div>
+      <div class="user-chip" id="userChip" aria-label="Naka-login ngayon">
+        <div class="avatar" id="topAvatar" aria-hidden="true">—</div>
+        <div class="uc-meta">
+          <div class="uc-name" id="topUserName">Hindi naka-login</div>
+          <div class="uc-role" id="topUserRole">—</div>
+        </div>
+        <button class="btn-logout" id="btnLogout" type="button">Logout</button>
       </div>
     </div>
 
@@ -485,6 +765,7 @@
             </div>
             <button class="btn-ghost" id="btnEnroll" type="button" style="margin-top:9px" disabled>Kumuha ng Larawan at I-enroll</button>
             <p class="privacy-note" id="enrollHint">Buksan muna ang camera at humarap dito — saka lang puwedeng mag-enroll.</p>
+            <div class="perm-lock-note" id="enrollLockNote">Walang authority ang account mo para mag-enroll ng members. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
           </div>
 
           <div class="side-block">
@@ -534,18 +815,56 @@
           </button>
         </div>
         <div class="last-action" id="lastAction" role="status"></div>
+        <div class="perm-lock-note" id="timeLockNote">Walang authority ang account mo para mag-Time In / Time Out. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
       </section>
 
       <!-- Weekly chart -->
       <section class="panel" id="reports" aria-label="Attendance ngayong linggo">
-        <h2>Attendance Ngayong Linggo</h2>
-        <p class="hint">Bilang ng pumasok bawat araw (Lunes hanggang Biyernes).</p>
+        <h2>Mga Graph ng Attendance</h2>
+        <p class="hint">Pumili ng saklaw: <b>Araw</b> para sa ngayon, <b>Linggo</b> para sa Lunes–Biyernes, o <b>Buwan</b> para sa bawat linggo ng buwan. Kulay: berde = on time, dilaw = late, pula = absent, asul = on leave.</p>
         <div class="chart-wrap">
-          <svg id="weekChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart ng attendance mula Lunes hanggang Biyernes" style="display:block"></svg>
-          <div class="chart-legend">
-            <span><i class="swatch" style="background:var(--green)"></i>On time</span>
-            <span><i class="swatch" style="background:var(--amber)"></i>Late</span>
-            <span style="margin-left:auto">Attendance rate ngayong linggo: <b id="weekRate" style="color:var(--ink)">—</b></span>
+          <div class="chart-tabs" role="tablist" aria-label="Piliin ang saklaw ng graph">
+            <button class="chart-tab" type="button" data-chart="day" role="tab">Araw</button>
+            <button class="chart-tab active" type="button" data-chart="week" role="tab">Linggo</button>
+            <button class="chart-tab" type="button" data-chart="month" role="tab">Buwan</button>
+          </div>
+
+          <div id="chartDay" class="chart-view" hidden>
+            <div class="day-flex">
+              <svg id="dayDonut" viewBox="0 0 150 150" width="168" height="168" role="img" aria-label="Donut chart ng attendance ngayong araw" style="display:block;flex:none"></svg>
+              <div class="day-legend" id="dayLegend"></div>
+            </div>
+            <p class="chart-note">Buod ng attendance ngayong araw, galing mismo sa records sa ibaba — nag-a-update ito tuwing may nag-Time In o Time Out.</p>
+          </div>
+
+          <div id="chartWeek" class="chart-view">
+            <svg id="weekChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart ng attendance mula Lunes hanggang Biyernes" style="display:block"></svg>
+            <div class="chart-legend">
+              <span><i class="swatch" style="background:var(--green)"></i>On time</span>
+              <span><i class="swatch" style="background:var(--amber)"></i>Late</span>
+              <span style="margin-left:auto">Attendance rate ngayong linggo: <b id="weekRate" style="color:var(--ink)">—</b></span>
+            </div>
+          </div>
+
+          <div id="chartMonth" class="chart-view" hidden>
+            <svg id="monthChart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Bar chart ng attendance bawat linggo ng buwan" style="display:block"></svg>
+            <div class="chart-legend">
+              <span><i class="swatch" style="background:var(--green)"></i>On time</span>
+              <span><i class="swatch" style="background:var(--amber)"></i>Late</span>
+              <span><i class="swatch" style="background:var(--red)"></i>Absent</span>
+              <span style="margin-left:auto">Attendance rate ngayong buwan: <b id="monthRate" style="color:var(--ink)">—</b></span>
+            </div>
+            <p class="chart-note">Bawat bar = isang linggo (12 empleyado × 5 araw = 60 puwesto). Ang Linggo 4 ay hanggang ngayong araw pa lang ang datos (partial), galing sa records ngayon.</p>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button class="btn-ghost export-only" id="btnExport" type="button">I-export ang Report (CSV)</button>
+            <button class="btn-ghost export-only" id="btnExportPdfRoster" type="button">Buong Roster (PDF)</button>
+            <button class="btn-ghost export-only" id="btnExportPdfAudit" type="button">Audit Log (PDF)</button>
+          </div>
+          <div class="export-only" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">Mula <input type="date" id="repFrom" aria-label="Simula ng date range para sa PDF report" /></label>
+            <label style="font-size:.82rem;font-weight:700;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px">Hanggang <input type="date" id="repTo" aria-label="Katapusan ng date range para sa PDF report" /></label>
+            <span style="font-size:.8rem;color:var(--ink-3);font-weight:600">Date range para sa PDF. Walang pipiliin = ngayong araw + nakaraang 10 araw ng pasok.</span>
           </div>
         </div>
       </section>
@@ -603,6 +922,65 @@
         <tbody id="auditBody"></tbody>
       </table>
       <p class="privacy-note">I-tap ang photo proof para makita nang malaki — may naka-overlay na petsa, oras, pangalan, at GPS coordinates sa litrato mismo. Demo lang ang log na ito: nasa memory lang ng page at nawawala pagka-refresh.</p>
+      <div class="super-only" style="margin-top:14px">
+        <button class="btn-danger-ghost" id="btnClearAudit" type="button">Burahin ang Audit Log (Super Admin lang)</button>
+      </div>
+
+      <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px">
+        <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Log ng Authority at Admin Changes</h3>
+        <p class="hint" style="margin-bottom:10px">Bawat pagbigay o pagbawi ng authority ng Super Admin, paggawa o pagtanggal ng Admin account, at pagtanggal ng member ay naka-log dito: sino ang gumawa, kanino, anong authority, at anong oras.</p>
+        <ul class="authority-list" id="authorityList">
+          <li><span style="color:var(--ink-3);font-weight:600">Wala pang authority changes sa session na ito.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ ADMIN MANAGEMENT (SUPER ADMIN LANG) ============ -->
+    <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin lang" style="margin-bottom:18px">
+      <h2>Admin Management <span class="role-badge role-super">Super Admin lang</span></h2>
+      <p class="hint">Dito lang puwedeng magbigay o magbawi ng authority. Ang Admin ay <b>hindi</b> puwedeng magbigay ng authority sa iba at hindi niya nakikita ang screen na ito. Bawat pagbabago ay naka-log sa Audit Log sa itaas.</p>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Gumawa ng Bagong Admin Account</h3>
+      <div class="create-grid">
+        <div class="field" style="margin:0">
+          <label for="newAdminName">Pangalan</label>
+          <input type="text" id="newAdminName" placeholder="hal. Juan Dela Cruz" />
+        </div>
+        <div class="field" style="margin:0">
+          <label for="newAdminUser">Username</label>
+          <input type="text" id="newAdminUser" placeholder="hal. juan.admin" />
+        </div>
+        <div class="field" style="margin:0">
+          <label for="newAdminPass">Password (demo)</label>
+          <input type="password" id="newAdminPass" placeholder="Demo password" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Authority na ibibigay sa bagong Admin</label>
+        <div class="perm-checks" id="newAdminPerms"></div>
+      </div>
+      <button class="btn btn-in" id="btnCreateAdmin" type="button" style="padding-left:18px;padding-right:18px">Gumawa ng Admin Account</button>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 8px">Mga Account</h3>
+      <div id="adminList"></div>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 4px">Pamamahala ng Members</h3>
+      <p class="hint">Ang Super Admin lang ang makakapagtanggal ng member. Ang pagtanggal ay naka-log din sa Audit Log.</p>
+      <div id="memberMgmtList"></div>
+    </section>
+
+    <!-- ============ USER PROFILES ============ -->
+    <section class="panel" id="profilesSection" aria-label="User profiles ng mga miyembro" style="margin-bottom:18px">
+      <h2 id="profilesTitle">User Profiles — Mga Miyembro</h2>
+      <p class="hint" id="profilesHint">Bawat member ay may sariling Profile Account: sariling detalye, profile picture, at attendance history. Ang Super Admin at Admin ang makakapag-edit ng detalye at makakapag-upload ng picture para sa member; ang member mismo ay sariling picture lang niya ang mapapalitan at sariling record lang niya ang makikita niya.</p>
+      <div class="pdf-toolbar export-only">
+        <label>Mula <input type="date" id="pdfFrom" aria-label="Simula ng date range para sa PDF" /></label>
+        <label>Hanggang <input type="date" id="pdfTo" aria-label="Katapusan ng date range para sa PDF" /></label>
+        <span class="pdf-note">Date range para sa PDF export ng bawat user. Walang pipiliin = ngayong araw + nakaraang 10 araw ng pasok.</span>
+      </div>
+      <div class="profile-grid" id="profileGrid"></div>
+      <input type="file" id="profileFileInput" accept="image/*" style="display:none" aria-hidden="true" />
+      <p class="privacy-note">Demo lang: ang in-upload na profile picture ay dito lang sa page naka-display (memory lang ng browser) — hindi ito sine-save o sine-send kahit saan at nawawala pagka-refresh.</p>
     </section>
 
     <div class="grid-bottom">
@@ -611,6 +989,7 @@
         <h2>Leave Requests</h2>
         <p class="hint">Mga naghihintay ng approval.</p>
         <div id="leaveList"></div>
+        <div class="perm-lock-note" id="leaveLockNote">Walang authority ang account mo para mag-approve o mag-decline ng leave. Ang Super Admin lang ang makakapagbigay ng authority na ito.</div>
       </section>
 
       <!-- Department breakdown -->
@@ -623,6 +1002,10 @@
 
     <p class="foot-note">Mockup lang ito — sample data ang nakalagay at walang totoong record na nase-save.</p>
   </main>
+</div>
+
+<div class="photo-modal profile-modal" id="profileModal" role="dialog" aria-modal="true" aria-label="Profile ng member">
+  <div class="profile-sheet" id="profileSheet"></div>
 </div>
 
 <div class="photo-modal" id="photoModal" role="dialog" aria-modal="true" aria-label="Photo proof nang malaki">
@@ -641,18 +1024,18 @@
 
   /* ---------- Sample data (mockup) ---------- */
   var EMPLOYEES = [
-    {id:1,  name:"Maria Clara Santos",   dept:"IT Department", inT:"7:42 AM",  outT:"—",       status:"present"},
-    {id:2,  name:"Jose Miguel Reyes",    dept:"IT Department", inT:"7:55 AM",  outT:"—",       status:"present"},
-    {id:3,  name:"Ana Marie Cruz",       dept:"Media",         inT:"8:17 AM",  outT:"—",       status:"late"},
-    {id:4,  name:"Juan Carlos Dela Peña",dept:"Operations",    inT:"7:31 AM",  outT:"—",       status:"present"},
-    {id:5,  name:"Kristine Joy Lim",     dept:"Admin",         inT:"—",        outT:"—",       status:"leave"},
-    {id:6,  name:"Mark Anthony Tan",     dept:"Media",         inT:"8:05 AM",  outT:"—",       status:"late"},
-    {id:7,  name:"Sarah Jane Gomez",     dept:"Finance",       inT:"7:48 AM",  outT:"—",       status:"present"},
-    {id:8,  name:"Paolo Enrico Aquino",  dept:"IT Department", inT:"—",        outT:"—",       status:"absent"},
-    {id:9,  name:"Grace Ann Villanueva", dept:"HR",            inT:"7:59 AM",  outT:"—",       status:"present"},
-    {id:10, name:"Daniel Paul Mendoza",  dept:"Operations",    inT:"8:22 AM",  outT:"—",       status:"late"},
-    {id:11, name:"Rhea Mae Fernandez",   dept:"Media",         inT:"7:37 AM",  outT:"—",       status:"present"},
-    {id:12, name:"Carlo James Navarro",  dept:"Finance",       inT:"—",        outT:"—",       status:"absent"}
+    {id:1,  name:"Maria Clara Santos",   dept:"IT Department", role:"IT Specialist",      email:"maria.santos@attendpro.demo",   phone:"0917 123 4501", inT:"7:42 AM",  outT:"—",       status:"present"},
+    {id:2,  name:"Jose Miguel Reyes",    dept:"IT Department", role:"Systems Support",    email:"jose.reyes@attendpro.demo",     phone:"0917 123 4502", inT:"7:55 AM",  outT:"—",       status:"present"},
+    {id:3,  name:"Ana Marie Cruz",       dept:"Media",         role:"Media Staff",        email:"ana.cruz@attendpro.demo",       phone:"0917 123 4503", inT:"8:17 AM",  outT:"—",       status:"late"},
+    {id:4,  name:"Juan Carlos Dela Peña",dept:"Operations",    role:"Operations Staff",   email:"juan.delapena@attendpro.demo",  phone:"0917 123 4504", inT:"7:31 AM",  outT:"—",       status:"present"},
+    {id:5,  name:"Kristine Joy Lim",     dept:"Admin",         role:"Admin Staff",        email:"kristine.lim@attendpro.demo",   phone:"0917 123 4505", inT:"—",        outT:"—",       status:"leave"},
+    {id:6,  name:"Mark Anthony Tan",     dept:"Media",         role:"Videographer",       email:"mark.tan@attendpro.demo",       phone:"0917 123 4506", inT:"8:05 AM",  outT:"—",       status:"late"},
+    {id:7,  name:"Sarah Jane Gomez",     dept:"Finance",       role:"Finance Staff",      email:"sarah.gomez@attendpro.demo",    phone:"0917 123 4507", inT:"7:48 AM",  outT:"—",       status:"present"},
+    {id:8,  name:"Paolo Enrico Aquino",  dept:"IT Department", role:"Network Support",    email:"paolo.aquino@attendpro.demo",   phone:"0917 123 4508", inT:"—",        outT:"—",       status:"absent"},
+    {id:9,  name:"Grace Ann Villanueva", dept:"HR",            role:"HR Staff",           email:"grace.villanueva@attendpro.demo",phone:"0917 123 4509", inT:"7:59 AM",  outT:"—",       status:"present"},
+    {id:10, name:"Daniel Paul Mendoza",  dept:"Operations",    role:"Operations Staff",   email:"daniel.mendoza@attendpro.demo", phone:"0917 123 4510", inT:"8:22 AM",  outT:"—",       status:"late"},
+    {id:11, name:"Rhea Mae Fernandez",   dept:"Media",         role:"Media Staff",        email:"rhea.fernandez@attendpro.demo", phone:"0917 123 4511", inT:"7:37 AM",  outT:"—",       status:"present"},
+    {id:12, name:"Carlo James Navarro",  dept:"Finance",       role:"Finance Staff",      email:"carlo.navarro@attendpro.demo",  phone:"0917 123 4512", inT:"—",        outT:"—",       status:"absent"}
   ];
   var TOTAL_STAFF = 12; // kabuuang empleyado sa sample roster — lahat ng bilang dito galing sa iisang listahan
 
@@ -931,8 +1314,11 @@
     }
     $("recordsBody").innerHTML = rows.map(function(e){
       var dispStatus = (e.inT!=="—" && e.outT==="—" && (e.status==="present"||e.status==="late")) ? e.status : e.status;
+      var av = (window.ProfilePhotos && window.ProfilePhotos[e.id])
+        ? '<img class="avatar" src="'+window.ProfilePhotos[e.id]+'" alt="Profile picture ni '+e.name+'" style="object-fit:cover">'
+        : '<div class="avatar" style="background:'+avatarColor(e.id)+'">'+initials(e.name)+'</div>';
       return '<tr>'+
-        '<td class="cell-emp" data-lbl="Empleyado"><div class="emp"><div class="avatar" style="background:'+avatarColor(e.id)+'">'+initials(e.name)+'</div><div><div class="n">'+e.name+'</div><div class="d">'+e.dept+'</div></div></div></td>'+
+        '<td class="cell-emp" data-lbl="Empleyado"><div class="emp">'+av+'<div><div class="n">'+e.name+'</div><div class="d">'+e.dept+'</div></div></div></td>'+
         '<td data-lbl="Time In"><span class="mono">'+e.inT+'</span></td>'+
         '<td data-lbl="Time Out"><span class="mono">'+e.outT+'</span></td>'+
         '<td data-lbl="Status"><span class="status '+STATUS_CLASS[dispStatus]+'">'+STATUS_LABEL[dispStatus]+'</span></td>'+
@@ -1087,7 +1473,7 @@
     findEmployee: findEmp,
     addMember: function(name, dept){
       if(findEmp(name)) return findEmp(name);
-      var e={id:nextEmpId(), name:name, dept:dept||"IT Department", inT:"—", outT:"—", status:"absent"};
+      var e={id:nextEmpId(), name:name, dept:dept||"IT Department", role:"Staff", email:"", phone:"", inT:"—", outT:"—", status:"absent"};
       EMPLOYEES.push(e);
       logActivity("Bagong demo member na-enroll: <b>"+name+"</b> ("+e.dept+")");
       renderAll();
@@ -1104,6 +1490,46 @@
       logActivity("<b>"+name+"</b> nag-check in gamit ang "+(via||"facial recognition")+" — "+(e.status==="late"?"Late":"On time")+" · "+e.inT);
       renderAll();
       return {ok:true, time:e.inT, status:e.status};
+    },
+    getEmployees: function(){
+      return EMPLOYEES.map(function(e){ return {id:e.id, name:e.name, dept:e.dept, role:e.role||"Staff", email:e.email||"", phone:e.phone||"", inT:e.inT, outT:e.outT, status:e.status}; });
+    },
+    updateMember: function(id, fields){
+      for(var i=0;i<EMPLOYEES.length;i++){
+        if(EMPLOYEES[i].id===id){
+          var e=EMPLOYEES[i];
+          if(fields.name!==undefined && fields.name) e.name=fields.name;
+          if(fields.dept!==undefined && fields.dept) e.dept=fields.dept;
+          if(fields.role!==undefined) e.role=fields.role;
+          if(fields.email!==undefined) e.email=fields.email;
+          if(fields.phone!==undefined) e.phone=fields.phone;
+          renderAll();
+          return e;
+        }
+      }
+      return null;
+    },
+    removeMember: function(id){
+      for(var i=0;i<EMPLOYEES.length;i++){
+        if(EMPLOYEES[i].id===id){
+          var removed=EMPLOYEES.splice(i,1)[0];
+          TOTAL_STAFF = EMPLOYEES.length;
+          logActivity("Tinanggal ang member na si <b>"+removed.name+"</b>.");
+          renderAll();
+          return removed;
+        }
+      }
+      return null;
+    },
+    clearAudit: function(){
+      AUDIT_LOG.length=0;
+      renderAudit();
+    },
+    getAudit: function(){
+      return AUDIT_LOG.map(function(a){
+        return {name:a.name, dept:a.dept, when:a.when, via:a.via, photo:a.photo,
+                lat:a.lat, lon:a.lon, place:a.place, verified:a.verified, flags:a.flags.slice()};
+      });
     }
   };
 
@@ -1561,6 +1987,795 @@
 
   renderEnrolled();
   updateEnrollBtn();
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  var Core = window.AttendanceCore;
+  function esc(s){ return String(s===null||s===undefined?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function fmtClock(d){
+    var h=d.getHours(), m=d.getMinutes();
+    var ap=h>=12?"PM":"AM"; h=h%12; if(h===0)h=12;
+    return h+":"+(m<10?"0":"")+m+" "+ap;
+  }
+
+  /* ---------- Demo accounts + authority (lahat nasa memory lang ng page) ---------- */
+  var PERM_DEFS = [
+    {key:"time",   label:"Time In / Time Out",    desc:"Makapag-Time In at Time Out ng members"},
+    {key:"enroll", label:"Mag-enroll ng Members", desc:"Makapag-enroll ng bagong demo members gamit ang camera"},
+    {key:"leave",  label:"Mag-approve ng Leave",  desc:"Makapag-approve o decline ng leave requests"},
+    {key:"audit",  label:"Makita ang Audit Log",  desc:"Makita ang Audit Log at ang log ng authority changes"},
+    {key:"export", label:"Mag-export ng Reports", desc:"Makapag-download ng attendance report bilang CSV"}
+  ];
+  function allPerms(v){ var o={}; PERM_DEFS.forEach(function(p){ o[p.key]=v; }); return o; }
+  var ACCOUNTS = [
+    {username:"superadmin", email:"super@attendpro.demo", password:"super123", name:"Super Admin", role:"super",
+     perms: allPerms(true)},
+    {username:"admin", email:"admin@attendpro.demo", password:"admin123", name:"Admin", role:"admin",
+     perms:{time:true, enroll:true, leave:true, audit:false, export:false}},
+    {username:"member", email:"member@attendpro.demo", password:"member123", name:"Maria Clara Santos", role:"member", empId:1,
+     perms: allPerms(false)}
+  ];
+  var currentUser = null; /* ang account object na naka-login, o null */
+
+  /* ---------- Authority log (naka-display sa loob ng Audit Log section) ---------- */
+  var AUTHORITY_LOG = []; /* {when:Date, text} */
+  function logAuthority(text){
+    AUTHORITY_LOG.unshift({when:new Date(), text:text});
+    renderAuthorityLog();
+  }
+  function renderAuthorityLog(){
+    var el=$("authorityList"); if(!el) return;
+    if(AUTHORITY_LOG.length===0){
+      el.innerHTML='<li><span style="color:var(--ink-3);font-weight:600">Wala pang authority changes sa session na ito.</span></li>';
+      return;
+    }
+    el.innerHTML = AUTHORITY_LOG.map(function(a){
+      return '<li><span class="ft">'+esc(Core.fmtDateTime(a.when))+'</span><span>'+a.text+'</span></li>';
+    }).join("");
+  }
+  function permLabel(key){
+    for(var i=0;i<PERM_DEFS.length;i++) if(PERM_DEFS[i].key===key) return PERM_DEFS[i].label;
+    return key;
+  }
+  function grantedList(perms){
+    var out=[];
+    PERM_DEFS.forEach(function(p){ if(perms[p.key]) out.push(p.label); });
+    return out.length ? out.join(", ") : "wala";
+  }
+
+  /* ---------- Login / logout ---------- */
+  function findAccount(idf){
+    var q=String(idf||"").trim().toLowerCase();
+    for(var i=0;i<ACCOUNTS.length;i++){
+      if(ACCOUNTS[i].username.toLowerCase()===q || ACCOUNTS[i].email.toLowerCase()===q) return ACCOUNTS[i];
+    }
+    return null;
+  }
+  function showLoginError(msg){
+    var e=$("loginError");
+    e.textContent=msg;
+    e.classList.add("show");
+  }
+  function applySession(){
+    var b=document.body;
+    b.classList.remove("role-super","role-admin","role-member","no-time","no-enroll","no-leave","no-audit","no-export");
+    if(!currentUser){
+      b.classList.add("locked");
+      return;
+    }
+    b.classList.remove("locked");
+    b.classList.add(currentUser.role==="super" ? "role-super" : currentUser.role==="member" ? "role-member" : "role-admin");
+    var p = currentUser.role==="super" ? allPerms(true) : currentUser.perms;
+    if(!p.time) b.classList.add("no-time");
+    if(!p.enroll) b.classList.add("no-enroll");
+    if(!p.leave) b.classList.add("no-leave");
+    if(!p.audit) b.classList.add("no-audit");
+    if(!p.export) b.classList.add("no-export");
+    var roleTxt = currentUser.role==="super" ? "Super Admin" : currentUser.role==="member" ? "Member / User" : "Admin";
+    var avColor = currentUser.role==="super" ? "var(--green)" : currentUser.role==="member" ? "var(--amber)" : "var(--blue)";
+    var ini = Core.initials(currentUser.name);
+    $("topAvatar").textContent=ini;
+    $("topAvatar").style.background = avColor;
+    $("topUserName").textContent=currentUser.name;
+    $("topUserRole").textContent=roleTxt+" · @"+currentUser.username;
+    $("sideAvatar").textContent=ini;
+    $("sideAvatar").style.background = avColor;
+    $("sideUserName").textContent=currentUser.name;
+    $("sideUserRole").textContent=roleTxt+" · @"+currentUser.username;
+    if(currentUser.role==="super"){ renderAdminList(); renderMemberMgmt(); }
+    renderAuthorityLog();
+  }
+  function doLogin(acct){
+    currentUser=acct;
+    $("loginError").classList.remove("show");
+    $("loginPass").value="";
+    applySession();
+    if(window.__renderProfiles) window.__renderProfiles();
+    var rTxt = acct.role==="super" ? "Super Admin" : acct.role==="member" ? "Member / User" : "Admin";
+    Core.log("Nag-login si <b>"+esc(acct.name)+"</b> bilang <b>"+rTxt+"</b>.");
+    Core.toast("Maligayang pagdating, "+acct.name+" — naka-login bilang "+rTxt+".");
+    window.scrollTo(0,0);
+  }
+  function doLogout(){
+    if(currentUser) Core.log("Nag-logout si <b>"+esc(currentUser.name)+"</b>.");
+    var stopBtn=$("btnCamStop");
+    if(stopBtn && !stopBtn.disabled) stopBtn.click();
+    currentUser=null;
+    applySession();
+    window.scrollTo(0,0);
+  }
+  $("loginForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var acct=findAccount($("loginUser").value);
+    if(!acct){ showLoginError("Walang account na ganyan ang username o email. Subukan ang demo accounts sa ibaba."); return; }
+    if(acct.password !== $("loginPass").value){ showLoginError("Mali ang password para kay "+acct.username+". Subukan ulit o i-tap ang demo account sa ibaba."); return; }
+    doLogin(acct);
+  });
+  document.querySelectorAll("[data-demo-login]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var acct=findAccount(btn.getAttribute("data-demo-login"));
+      if(acct) doLogin(acct);
+    });
+  });
+  $("btnLogout").addEventListener("click", doLogout);
+  $("btnLogoutSide").addEventListener("click", doLogout);
+
+  /* ---------- Permission checkbox groups ---------- */
+  function permChecksHtml(prefix, perms){
+    return PERM_DEFS.map(function(p){
+      var checked = perms && perms[p.key] ? " checked" : "";
+      return '<label class="perm-check"><input type="checkbox" data-perm="'+p.key+'" id="'+prefix+'-'+p.key+'"'+checked+'>'+
+        '<span><span class="pc-label">'+p.label+'</span><br><span class="pc-desc">'+p.desc+'</span></span></label>';
+    }).join("");
+  }
+  function readPermChecks(container){
+    var out=allPerms(false);
+    container.querySelectorAll("input[data-perm]").forEach(function(inp){
+      out[inp.getAttribute("data-perm")] = inp.checked;
+    });
+    return out;
+  }
+  $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
+
+  /* ---------- Admin management (Super Admin lang ang nakakakita) ---------- */
+  function renderAdminList(){
+    var wrap=$("adminList"); if(!wrap || !currentUser || currentUser.role!=="super") return;
+    wrap.innerHTML = ACCOUNTS.map(function(a){
+      var isSuper = a.role==="super";
+      var chips = PERM_DEFS.map(function(p){
+        var on = isSuper || a.perms[p.key];
+        return '<span class="perm-chip'+(on?" on":"")+'">'+(on?"✓ ":"✕ ")+p.label+'</span>';
+      }).join("");
+      var actions = isSuper
+        ? '<span style="font-size:.8rem;color:var(--ink-3);font-weight:700">Pangunahing account — hindi puwedeng baguhin o tanggalin</span>'
+        : '<button class="btn-sm" type="button" data-edit-acct="'+esc(a.username)+'">Baguhin ang Authority</button>'+
+          '<button class="btn-sm btn-danger-sm" type="button" data-del-acct="'+esc(a.username)+'">Tanggalin</button>';
+      var editBlock = isSuper ? "" :
+        '<div class="perm-edit" id="edit-'+esc(a.username)+'">'+
+          '<div class="perm-checks">'+permChecksHtml("edit-"+a.username, a.perms)+'</div>'+
+          '<button class="btn btn-in" type="button" data-save-acct="'+esc(a.username)+'" style="padding:9px 16px;min-height:2.5rem">I-save ang Authority</button>'+
+        '</div>';
+      return '<div class="acct-card">'+
+        '<div class="acct-head"><div class="avatar" style="background:'+(isSuper?"var(--green)":"var(--blue)")+'">'+Core.initials(a.name)+'</div>'+
+        '<div><div class="an">'+esc(a.name)+' <span class="role-badge '+(isSuper?"role-super":"role-admin")+'">'+(isSuper?"Super Admin":"Admin")+'</span></div>'+
+        '<div class="au">@'+esc(a.username)+' · '+esc(a.email)+'</div></div>'+
+        '<div class="acct-actions">'+actions+'</div></div>'+
+        '<div class="perm-chips">'+chips+'</div>'+ editBlock +
+      '</div>';
+    }).join("");
+
+    wrap.querySelectorAll("[data-edit-acct]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var box=$("edit-"+btn.getAttribute("data-edit-acct"));
+        if(box) box.classList.toggle("open");
+      });
+    });
+    wrap.querySelectorAll("[data-save-acct]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var uname=btn.getAttribute("data-save-acct");
+        var acct=findAccount(uname); if(!acct) return;
+        var box=$("edit-"+uname); if(!box) return;
+        var next=readPermChecks(box);
+        var changes=[];
+        PERM_DEFS.forEach(function(p){
+          if(!!acct.perms[p.key] !== !!next[p.key]){
+            changes.push({key:p.key, granted:!!next[p.key]});
+          }
+        });
+        if(changes.length===0){ Core.toast("Walang nagbago sa authority ni "+acct.name+"."); return; }
+        acct.perms=next;
+        changes.forEach(function(c){
+          var txt = c.granted
+            ? "<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbigay</b> ng authority na <b>"+esc(permLabel(c.key))+"</b> kay <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+")."
+            : "<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbawi</b> ng authority na <b>"+esc(permLabel(c.key))+"</b> mula kay <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+").";
+          logAuthority(txt);
+          Core.log(txt);
+        });
+        Core.toast("Na-update ang authority ni "+acct.name+": "+changes.map(function(c){ return (c.granted?"+":"−")+" "+permLabel(c.key); }).join(", ")+". Na-log ito sa Audit Log.");
+        renderAdminList();
+      });
+    });
+    wrap.querySelectorAll("[data-del-acct]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var uname=btn.getAttribute("data-del-acct");
+        var acct=findAccount(uname); if(!acct) return;
+        if(!btn.classList.contains("confirming")){
+          btn.classList.add("confirming");
+          btn.textContent="Sigurado? I-tap ulit para tanggalin";
+          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Tanggalin"; }, 3500);
+          return;
+        }
+        ACCOUNTS = ACCOUNTS.filter(function(x){ return x.username!==uname; });
+        var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagtanggal</b> ng Admin account ni <b>"+esc(acct.name)+"</b> (@"+esc(uname)+").";
+        logAuthority(txt);
+        Core.log(txt);
+        Core.toast("Tinanggal ang Admin account ni "+acct.name+". Na-log ito sa Audit Log.");
+        renderAdminList();
+      });
+    });
+  }
+
+  $("btnCreateAdmin").addEventListener("click", function(){
+    if(!currentUser || currentUser.role!=="super"){ Core.toast("Super Admin lang ang makakagawa ng Admin account."); return; }
+    var name=$("newAdminName").value.trim();
+    var user=$("newAdminUser").value.trim().toLowerCase().replace(/\s+/g,"");
+    var pass=$("newAdminPass").value;
+    if(!name){ Core.toast("Ilagay ang pangalan ng bagong Admin."); $("newAdminName").focus(); return; }
+    if(!user){ Core.toast("Ilagay ang username ng bagong Admin."); $("newAdminUser").focus(); return; }
+    if(!pass){ Core.toast("Ilagay ang demo password ng bagong Admin."); $("newAdminPass").focus(); return; }
+    if(findAccount(user)){ Core.toast("May account nang gumagamit ng username na \""+user+"\"."); return; }
+    var perms=readPermChecks($("newAdminPerms"));
+    var acct={username:user, email:user+"@attendpro.demo", password:pass, name:name, role:"admin", perms:perms};
+    ACCOUNTS.push(acct);
+    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>gumawa</b> ng Admin account para kay <b>"+esc(name)+"</b> (@"+esc(user)+") na may authority: <b>"+esc(grantedList(perms))+"</b>.";
+    logAuthority(txt);
+    Core.log(txt);
+    Core.toast("Nagawa ang Admin account ni "+name+" (@"+user+"). Puwede na siyang mag-login gamit ito. Na-log ito sa Audit Log.");
+    $("newAdminName").value=""; $("newAdminUser").value=""; $("newAdminPass").value="";
+    $("newAdminPerms").innerHTML = permChecksHtml("new", {time:true, enroll:true, leave:true, audit:false, export:false});
+    renderAdminList();
+  });
+
+  /* ---------- Member management (Super Admin lang) ---------- */
+  function renderMemberMgmt(){
+    var wrap=$("memberMgmtList"); if(!wrap || !currentUser || currentUser.role!=="super") return;
+    var emps=Core.getEmployees();
+    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">Walang members.</p>'; return; }
+    wrap.innerHTML = emps.map(function(e){
+      return '<div class="member-mgmt-row"><div class="avatar" style="background:'+Core.avatarColor(e.id)+'">'+Core.initials(e.name)+'</div>'+
+        '<div class="mn2"><div class="n">'+esc(e.name)+'</div><div class="d">'+esc(e.dept)+'</div></div>'+
+        '<button class="btn-sm btn-danger-sm" type="button" data-del-member="'+e.id+'">Tanggalin</button></div>';
+    }).join("");
+    wrap.querySelectorAll("[data-del-member]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if(!btn.classList.contains("confirming")){
+          btn.classList.add("confirming");
+          btn.textContent="Sigurado? I-tap ulit";
+          setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Tanggalin"; }, 3500);
+          return;
+        }
+        var removed=Core.removeMember(parseInt(btn.getAttribute("data-del-member"),10));
+        if(removed){
+          var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagtanggal</b> ng member na si <b>"+esc(removed.name)+"</b> ("+esc(removed.dept)+").";
+          logAuthority(txt);
+          Core.toast("Tinanggal ang member na si "+removed.name+". Na-log ito sa Audit Log.");
+        }
+        renderMemberMgmt();
+      });
+    });
+  }
+
+  /* ---------- Export report (CSV download) ---------- */
+  $("btnExport").addEventListener("click", function(){
+    var emps=Core.getEmployees();
+    function q(v){ return '"'+String(v===null||v===undefined?"":v).replace(/"/g,'""')+'"'; }
+    var lines=["Pangalan,Department,Time In,Time Out,Status"];
+    emps.forEach(function(e){ lines.push([q(e.name),q(e.dept),q(e.inT),q(e.outT),q(e.status)].join(",")); });
+    var blob=new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download="attendance-report.csv";
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    Core.log("<b>"+esc(currentUser ? currentUser.name : "")+"</b> ay nag-export ng attendance report (CSV).");
+    Core.toast("Na-download ang attendance report (CSV).");
+  });
+
+  /* ---------- Clear audit log (Super Admin lang; button ay super-only) ---------- */
+  $("btnClearAudit").addEventListener("click", function(){
+    if(!currentUser || currentUser.role!=="super"){ Core.toast("Super Admin lang ang makakapagbura ng Audit Log."); return; }
+    var btn=$("btnClearAudit");
+    if(!btn.classList.contains("confirming")){
+      btn.classList.add("confirming");
+      btn.textContent="Sigurado? I-tap ulit para burahin ang Audit Log";
+      setTimeout(function(){ btn.classList.remove("confirming"); btn.textContent="Burahin ang Audit Log (Super Admin lang)"; }, 3500);
+      return;
+    }
+    btn.classList.remove("confirming");
+    btn.textContent="Burahin ang Audit Log (Super Admin lang)";
+    Core.clearAudit();
+    var txt="<b>"+esc(currentUser.name)+"</b> (Super Admin) ay <b>nagbura</b> ng check-in Audit Log.";
+    logAuthority(txt);
+    Core.log(txt);
+    Core.toast("Nabura ang check-in Audit Log. Naka-log ang pagbura sa authority log.");
+  });
+
+  window.AuthState = { getUser: function(){ return currentUser; } };
+  window.AuthorityLogData = AUTHORITY_LOG;
+  applySession();
+  renderAuthorityLog();
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  var Core = window.AttendanceCore;
+  function esc(s){ return String(s===null||s===undefined?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  var STATUS_LABEL = {present:"Present", late:"Late", absent:"Absent", leave:"On Leave", working:"Nasa Trabaho"};
+  var STATUS_CLASS = {present:"st-present", late:"st-late", absent:"st-absent", leave:"st-leave", working:"st-working"};
+  var MONTHS_S = ["Ene","Peb","Mar","Abr","May","Hun","Hul","Ago","Set","Okt","Nob","Dis"];
+  var DEPTS = ["IT Department","Media","Operations","Admin","Finance","HR"];
+
+  /* ---------- Profile pictures (memory lang — walang storage, walang upload sa server) ---------- */
+  var PHOTOS = {}; /* empId -> dataURL */
+  window.ProfilePhotos = PHOTOS;
+
+  function currentUser(){ return window.AuthState ? window.AuthState.getUser() : null; }
+  function canExport(){
+    var u=currentUser(); if(!u) return false;
+    if(u.role==="super") return true;
+    if(u.role==="admin") return !!u.perms.export;
+    return false;
+  }
+  function findEmp(id){
+    var emps=Core.getEmployees();
+    for(var i=0;i<emps.length;i++) if(emps[i].id===id) return emps[i];
+    return null;
+  }
+  function photoHtml(e, cls, avCls){
+    if(PHOTOS[e.id]) return '<img class="'+cls+'" src="'+PHOTOS[e.id]+'" alt="Profile picture ni '+esc(e.name)+'">';
+    return '<div class="'+avCls+'" style="background:'+Core.avatarColor(e.id)+'">'+Core.initials(e.name)+'</div>';
+  }
+
+  /* ---------- Attendance history (sample/demo data, deterministic bawat member) ---------- */
+  function dateLabel(d){ return MONTHS_S[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear(); }
+  function historyFor(emp){
+    var out=[{date:new Date(), label:"Ngayon — "+dateLabel(new Date()), status:emp.status, inT:emp.inT, outT:emp.outT}];
+    var seed=emp.id*97+13, added=0, back=1;
+    while(added<10 && back<40){
+      var dt=new Date(); dt.setDate(dt.getDate()-back); back++;
+      var day=dt.getDay(); if(day===0||day===6) continue;
+      var r=(seed + added*37)%10, st, inT, outT;
+      if(r<=5){ st="present"; inT="7:"+(38+((seed+added*7)%20))+" AM"; outT="5:0"+(added%6)+" PM"; }
+      else if(r<=7){ st="late"; inT="8:"+(8+((seed+added*5)%18))+" AM"; outT="5:0"+(added%6)+" PM"; }
+      else if(r===8){ st="absent"; inT="—"; outT="—"; }
+      else { st="leave"; inT="—"; outT="—"; }
+      out.push({date:dt, label:dateLabel(dt), status:st, inT:inT, outT:outT});
+      added++;
+    }
+    return out;
+  }
+  function inRange(entry, from, to){
+    var d=new Date(entry.date); d.setHours(0,0,0,0);
+    if(from && d<from) return false;
+    if(to && d>to) return false;
+    return true;
+  }
+  function readRange(fromId, toId){
+    function parse(id){
+      var el=$(id); if(!el || !el.value) return null;
+      var parts=el.value.split("-");
+      return new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    }
+    return {from:parse(fromId), to:parse(toId)};
+  }
+  function countsOf(list){
+    var c={present:0, late:0, absent:0, leave:0};
+    list.forEach(function(h){ if(c[h.status]!==undefined) c[h.status]++; else if(h.status==="working") c.present++; });
+    return c;
+  }
+
+  /* ---------- Profile cards ---------- */
+  function renderProfiles(){
+    var wrap=$("profileGrid"); if(!wrap) return;
+    var u=currentUser();
+    var emps=Core.getEmployees();
+    if(u && u.role==="member") emps=emps.filter(function(e){ return e.id===u.empId; });
+    $("profilesTitle").textContent = (u && u.role==="member") ? "Aking Profile" : "User Profiles — Mga Miyembro";
+    if(emps.length===0){ wrap.innerHTML='<p class="hint" style="margin:4px 0 0">Walang profile na maipakita.</p>'; return; }
+    wrap.innerHTML = emps.map(function(e){
+      return '<div class="profile-card"><div class="pc-top">'+photoHtml(e,"pc-photo","pc-avatar")+
+        '<div><div class="pc-name">'+esc(e.name)+'</div><div class="pc-meta">'+esc(e.dept)+' · '+esc(e.role)+'</div>'+
+        '<span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' ngayon</span></div></div>'+
+        '<div class="pc-actions">'+
+          '<button class="btn-sm btn-approve" type="button" data-view-profile="'+e.id+'">Tingnan ang Profile</button>'+
+          '<button class="btn-sm" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Palitan ang Picture Ko" : "Mag-upload ng Picture")+'</button>'+
+          (canExport() ? '<button class="btn-sm" type="button" data-pdf-user="'+e.id+'">PDF</button>' : '')+
+        '</div></div>';
+    }).join("");
+    bindProfileButtons(wrap);
+  }
+  function bindProfileButtons(root){
+    root.querySelectorAll("[data-view-profile]").forEach(function(b){
+      b.addEventListener("click", function(){ openProfile(parseInt(b.getAttribute("data-view-profile"),10)); });
+    });
+    root.querySelectorAll("[data-upload-for]").forEach(function(b){
+      b.addEventListener("click", function(){ startUpload(parseInt(b.getAttribute("data-upload-for"),10)); });
+    });
+    root.querySelectorAll("[data-pdf-user]").forEach(function(b){
+      b.addEventListener("click", function(){ exportUserPdf(parseInt(b.getAttribute("data-pdf-user"),10)); });
+    });
+  }
+  window.__renderProfiles = renderProfiles;
+
+  /* ---------- Profile picture upload ---------- */
+  var pendingUploadFor=null;
+  function startUpload(empId){
+    var u=currentUser();
+    if(u && u.role==="member" && u.empId!==empId){ Core.toast("Sariling picture mo lang ang puwede mong palitan."); return; }
+    pendingUploadFor=empId;
+    $("profileFileInput").click();
+  }
+  $("profileFileInput").addEventListener("change", function(ev){
+    var file=ev.target.files && ev.target.files[0];
+    ev.target.value="";
+    if(!file || pendingUploadFor===null) return;
+    if(!/^image\//.test(file.type)){ Core.toast("Larawan (image) lang ang puwedeng i-upload."); return; }
+    var reader=new FileReader();
+    reader.onload=function(){
+      PHOTOS[pendingUploadFor]=reader.result;
+      var e=findEmp(pendingUploadFor);
+      Core.updateMember(pendingUploadFor, {}); /* re-render ng records table para lumabas ang picture doon */
+      Core.log("Nag-upload ng profile picture para kay <b>"+esc(e ? e.name : "")+"</b>.");
+      Core.toast("Na-update ang profile picture ni "+(e ? e.name : "")+". Dito lang ito sa page naka-display (demo).");
+      renderProfiles();
+      if(openProfileId===pendingUploadFor) openProfile(pendingUploadFor);
+      pendingUploadFor=null;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------- Profile detail (modal) ---------- */
+  var openProfileId=null;
+  function openProfile(id){
+    var e=findEmp(id); if(!e) return;
+    var u=currentUser();
+    var canEdit = u && (u.role==="super" || u.role==="admin");
+    openProfileId=id;
+    var hist=historyFor(e);
+    var c=countsOf(hist);
+    var deptOpts=DEPTS.map(function(d){ return '<option'+(d===e.dept?" selected":"")+'>'+d+'</option>'; }).join("");
+    var editHtml = canEdit
+      ? '<h3>I-edit ang Detalye</h3>'+
+        '<div class="field"><label for="pfName">Pangalan</label><input type="text" id="pfName" value="'+esc(e.name)+'"></div>'+
+        '<div class="field"><label for="pfDept">Department</label><select id="pfDept">'+deptOpts+'</select></div>'+
+        '<div class="field"><label for="pfRole">Role / Posisyon</label><input type="text" id="pfRole" value="'+esc(e.role)+'"></div>'+
+        '<div class="field"><label for="pfEmail">Email</label><input type="text" id="pfEmail" value="'+esc(e.email)+'"></div>'+
+        '<div class="field"><label for="pfPhone">Contact Number</label><input type="text" id="pfPhone" value="'+esc(e.phone)+'"></div>'+
+        '<button class="btn btn-in" type="button" id="pfSave" style="padding:10px 18px">I-save ang Detalye</button>'
+      : '<p class="privacy-note">Ang Super Admin at Admin lang ang makakapag-edit ng detalye ng profile. Bilang member, sariling profile picture mo lang ang mapapalitan mo at sariling record mo lang ang makikita mo.</p>';
+    var histRows = hist.map(function(h){
+      return '<div class="hist-row"><span class="hd">'+esc(h.label)+'</span>'+
+        '<span class="status '+STATUS_CLASS[h.status]+'">'+STATUS_LABEL[h.status]+'</span>'+
+        '<span class="ht">In: '+esc(h.inT)+' · Out: '+esc(h.outT)+'</span></div>';
+    }).join("");
+    $("profileSheet").innerHTML =
+      '<div class="profile-head">'+photoHtml(e,"ph-photo","ph-avatar")+
+        '<div style="flex:1;min-width:200px"><div class="ph-name">'+esc(e.name)+'</div>'+
+        '<div class="ph-meta">'+esc(e.dept)+' · '+esc(e.role)+'</div>'+
+        '<div style="margin-top:7px"><span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+' ngayon</span></div></div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+          '<button class="btn-ghost" type="button" data-upload-for="'+e.id+'">'+((u && u.role==="member") ? "Palitan ang Picture Ko" : "Mag-upload ng Picture")+'</button>'+
+          (canExport() ? '<button class="btn-ghost" type="button" data-pdf-user="'+e.id+'">I-export ang Profile (PDF)</button>' : '')+
+        '</div></div>'+
+      '<div class="profile-cols"><div>'+
+        '<h3>Mga Detalye</h3>'+
+        '<dl class="detail-list">'+
+          '<dt>Pangalan</dt><dd>'+esc(e.name)+'</dd>'+
+          '<dt>Department</dt><dd>'+esc(e.dept)+'</dd>'+
+          '<dt>Role</dt><dd>'+esc(e.role)+'</dd>'+
+          '<dt>Email</dt><dd>'+esc(e.email || "—")+'</dd>'+
+          '<dt>Contact</dt><dd>'+esc(e.phone || "—")+'</dd>'+
+          '<dt>Time In ngayon</dt><dd>'+esc(e.inT)+'</dd>'+
+          '<dt>Time Out ngayon</dt><dd>'+esc(e.outT)+'</dd>'+
+        '</dl>'+ editHtml +
+      '</div><div>'+
+        '<h3>Attendance History</h3>'+
+        '<div class="hist-summary">'+
+          '<span class="audit-stat">Present: <b>'+c.present+'</b></span>'+
+          '<span class="audit-stat">Late: <b>'+c.late+'</b></span>'+
+          '<span class="audit-stat">Absent: <b>'+c.absent+'</b></span>'+
+          '<span class="audit-stat">On Leave: <b>'+c.leave+'</b></span>'+
+        '</div>'+ histRows +
+        '<p class="privacy-note">Sample history ito para sa demo: ngayong araw (totoong record sa page) + nakaraang 10 araw ng pasok na sample data.</p>'+
+      '</div></div>'+
+      '<div style="margin-top:18px;text-align:right"><button class="btn-ghost" type="button" id="pfClose">Isara</button></div>';
+    $("profileModal").classList.add("open");
+    bindProfileButtons($("profileSheet"));
+    $("pfClose").addEventListener("click", closeProfile);
+    var saveBtn=$("pfSave");
+    if(saveBtn) saveBtn.addEventListener("click", function(){
+      var fields={ name:$("pfName").value.trim(), dept:$("pfDept").value, role:$("pfRole").value.trim(), email:$("pfEmail").value.trim(), phone:$("pfPhone").value.trim() };
+      if(!fields.name){ Core.toast("Hindi puwedeng walang pangalan ang profile."); return; }
+      Core.updateMember(id, fields);
+      Core.log("<b>"+esc(u ? u.name : "")+"</b> ay nag-edit ng profile details ni <b>"+esc(fields.name)+"</b>.");
+      Core.toast("Na-save ang detalye ng profile ni "+fields.name+".");
+      renderProfiles();
+      openProfile(id);
+    });
+  }
+  function closeProfile(){ openProfileId=null; $("profileModal").classList.remove("open"); }
+  $("profileModal").addEventListener("click", function(ev){ if(ev.target===$("profileModal")) closeProfile(); });
+  document.addEventListener("keydown", function(ev){ if(ev.key==="Escape") closeProfile(); });
+
+  /* ---------- PDF export (client-side jsPDF — walang server) ---------- */
+  function newDoc(){
+    if(!window.jspdf || !window.jspdf.jsPDF){ Core.toast("Hindi nag-load ang PDF library — i-check ang internet connection at subukan ulit."); return null; }
+    return new window.jspdf.jsPDF({unit:"mm", format:"a4"});
+  }
+  function imgFormat(dataUrl){
+    if(/^data:image\/png/i.test(dataUrl)) return "PNG";
+    if(/^data:image\/webp/i.test(dataUrl)) return "WEBP";
+    return "JPEG";
+  }
+  function pdfHeader(doc, title, subtitle){
+    doc.setFillColor(14,107,74); doc.rect(0,0,210,20,"F");
+    doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(13);
+    doc.text("AttendPro — Attendance System", 14, 12.5);
+    doc.setTextColor(22,33,28); doc.setFontSize(16); doc.text(title, 14, 30);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(90,100,95);
+    doc.text(subtitle, 14, 36);
+    doc.text("Ginawa: "+Core.fmtDateTime(new Date())+" · Demo data lang — sample records ng mockup.", 14, 41);
+    return 48;
+  }
+  function needPage(doc, y, h){ if(y+h>282){ doc.addPage(); return 16; } return y; }
+  function userSection(doc, e, range, y){
+    var hist=historyFor(e).filter(function(h){ return inRange(h, range.from, range.to); });
+    var c=countsOf(hist);
+    y=needPage(doc, y, 62);
+    var photoBottom=y;
+    if(PHOTOS[e.id]){
+      try{ doc.addImage(PHOTOS[e.id], imgFormat(PHOTOS[e.id]), 168, y, 28, 28); photoBottom=y+31; }catch(err){}
+    }
+    doc.setTextColor(22,33,28); doc.setFont("helvetica","bold"); doc.setFontSize(13);
+    doc.text(e.name, 14, y+5);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(70,80,75);
+    doc.text("Department: "+e.dept+"   ·   Role: "+e.role, 14, y+11);
+    doc.text("Email: "+(e.email||"—")+"   ·   Contact: "+(e.phone||"—"), 14, y+16.5);
+    doc.text("Buod sa napiling range — Present: "+c.present+" · Late: "+c.late+" · Absent: "+c.absent+" · On Leave: "+c.leave, 14, y+22);
+    y=Math.max(y+27, PHOTOS[e.id] ? photoBottom : y+27);
+    doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.setTextColor(22,33,28);
+    doc.text("Petsa", 14, y); doc.text("Status", 62, y); doc.text("Time In", 96, y); doc.text("Time Out", 126, y); doc.text("Remarks", 158, y);
+    doc.setDrawColor(200,205,200); doc.line(14, y+1.6, 196, y+1.6);
+    y+=6.5;
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+    if(hist.length===0){
+      doc.setTextColor(120,128,124); doc.text("Walang record sa napiling date range.", 14, y); y+=6;
+    }
+    hist.forEach(function(h){
+      y=needPage(doc, y, 7);
+      doc.setTextColor(22,33,28);
+      doc.text(h.label.replace(/^Ngayon — /,""), 14, y);
+      doc.text(STATUS_LABEL[h.status] || h.status, 62, y);
+      doc.text(h.inT, 96, y); doc.text(h.outT, 126, y);
+      doc.text(h.status==="late" ? "Late" : h.status==="present" || h.status==="working" ? "On time" : h.status==="leave" ? "Leave" : "—", 158, y);
+      y+=5.6;
+    });
+    return y+6;
+  }
+  function rangeText(range){
+    if(!range.from && !range.to) return "Saklaw: ngayong araw + nakaraang 10 araw ng pasok (walang napiling date range)";
+    function f(d){ return d ? MONTHS_S[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear() : "—"; }
+    return "Saklaw: "+f(range.from)+" hanggang "+f(range.to);
+  }
+  function exportUserPdf(id){
+    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    var e=findEmp(id); if(!e) return;
+    var doc=newDoc(); if(!doc) return;
+    var range=readRange("pdfFrom","pdfTo");
+    var y=pdfHeader(doc, "Attendance Report — "+e.name, rangeText(range));
+    userSection(doc, e, range, y);
+    doc.save("attendance-"+e.name.replace(/\s+/g,"-").toLowerCase()+".pdf");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng PDF report ni <b>"+esc(e.name)+"</b>.");
+    Core.toast("Na-download ang PDF report ni "+e.name+".");
+  }
+  function exportRosterPdf(){
+    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    var doc=newDoc(); if(!doc) return;
+    var range=readRange("repFrom","repTo");
+    var y=pdfHeader(doc, "Attendance Report — Buong Roster", rangeText(range));
+    Core.getEmployees().forEach(function(e){ y=userSection(doc, e, range, y); });
+    doc.save("attendance-roster.pdf");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng PDF report ng buong roster.");
+    Core.toast("Na-download ang PDF report ng buong roster.");
+  }
+  function exportAuditPdf(){
+    if(!canExport()){ Core.toast("Super Admin at Admin na may export authority lang ang makakapag-export ng PDF."); return; }
+    var doc=newDoc(); if(!doc) return;
+    var y=pdfHeader(doc, "Audit Log — Kasaysayan ng Check-In", "Bawat check-in: photo proof, GPS location, at Verified/Flagged status.");
+    var entries=Core.getAudit();
+    var v=0; entries.forEach(function(a){ if(a.verified) v++; });
+    doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(22,33,28);
+    doc.text("Kabuuang log: "+entries.length+" · Verified: "+v+" · Flagged: "+(entries.length-v), 14, y);
+    y+=8;
+    if(entries.length===0){ doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.text("Wala pang naka-log na check-in.", 14, y); y+=7; }
+    entries.forEach(function(a){
+      y=needPage(doc, y, 24);
+      var textBottom=y;
+      doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(22,33,28);
+      doc.text(a.name+" — "+(a.verified ? "VERIFIED" : "FLAGGED"), 14, y+4);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(70,80,75);
+      doc.text(Core.fmtDateTime(new Date(a.when))+" · "+a.dept+" · via "+a.via, 14, y+9.5);
+      var locTxt = (a.lat!==null && a.lat!==undefined) ? ("Location: "+(a.place || "")+" ("+Number(a.lat).toFixed(5)+", "+Number(a.lon).toFixed(5)+")") : "Location: walang GPS location";
+      doc.text(locTxt, 14, y+15);
+      textBottom=y+15;
+      if(!a.verified && a.flags.length){
+        var wrapped=doc.splitTextToSize("Flagged dahil: "+a.flags.join(", "), 150);
+        doc.setTextColor(180,35,24); doc.text(wrapped, 14, y+20.5);
+        textBottom=y+20.5+(wrapped.length-1)*4.6;
+      }
+      if(a.photo){
+        try{ doc.addImage(a.photo, imgFormat(a.photo), 168, y, 28, 21); textBottom=Math.max(textBottom, y+21); }catch(err){}
+      }
+      y=textBottom+7;
+    });
+    var auth=(window.AuthorityLogData || []);
+    if(auth.length){
+      y=needPage(doc, y, 14);
+      doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(22,33,28);
+      doc.text("Log ng Authority at Admin Changes", 14, y); y+=7;
+      doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+      auth.forEach(function(en){
+        var plain=en.text.replace(/<[^>]+>/g,"");
+        var lines=doc.splitTextToSize(Core.fmtDateTime(new Date(en.when))+" — "+plain, 182);
+        y=needPage(doc, y, lines.length*4.8+2);
+        doc.setTextColor(50,60,55); doc.text(lines, 14, y);
+        y+=lines.length*4.8+2.4;
+      });
+    }
+    doc.save("audit-log.pdf");
+    Core.log("<b>"+esc(currentUser() ? currentUser().name : "")+"</b> ay nag-export ng Audit Log bilang PDF.");
+    Core.toast("Na-download ang Audit Log (PDF).");
+  }
+  $("btnExportPdfRoster").addEventListener("click", exportRosterPdf);
+  $("btnExportPdfAudit").addEventListener("click", exportAuditPdf);
+
+  renderProfiles();
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  var Core = window.AttendanceCore;
+  if(!Core) return;
+
+  /* ---------- Chart tabs: Araw / Linggo / Buwan ---------- */
+  var views={day:$("chartDay"), week:$("chartWeek"), month:$("chartMonth")};
+  var tabs=document.querySelectorAll(".chart-tab");
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){
+      tabs.forEach(function(x){ x.classList.remove("active"); });
+      t.classList.add("active");
+      var key=t.getAttribute("data-chart");
+      Object.keys(views).forEach(function(k){ if(views[k]) views[k].hidden = (k!==key); });
+      if(key==="day") renderDay();
+      if(key==="month") renderMonth();
+    });
+  });
+
+  function todayCounts(){
+    var c={present:0, late:0, absent:0, leave:0, total:0};
+    Core.getEmployees().forEach(function(e){
+      c.total++;
+      if(e.status==="present"||e.status==="working") c.present++;
+      else if(e.status==="late") c.late++;
+      else if(e.status==="absent") c.absent++;
+      else if(e.status==="leave") c.leave++;
+    });
+    return c;
+  }
+
+  /* ---------- Araw: donut chart ---------- */
+  function renderDay(){
+    var c=todayCounts();
+    var total=Math.max(c.total,1);
+    var R=54, C=2*Math.PI*R, off=0;
+    var segs=[
+      {v:c.present, color:"var(--green)", label:"Present (on time)"},
+      {v:c.late,    color:"var(--amber)", label:"Late"},
+      {v:c.absent,  color:"var(--red)",   label:"Absent"},
+      {v:c.leave,   color:"var(--blue)",  label:"On Leave"}
+    ];
+    var svg='<circle cx="75" cy="75" r="'+R+'" fill="none" style="stroke:var(--surface-2)" stroke-width="17"/>';
+    segs.forEach(function(s){
+      if(s.v<=0) return;
+      var len=(s.v/total)*C;
+      svg+='<circle cx="75" cy="75" r="'+R+'" fill="none" style="stroke:'+s.color+'" stroke-width="17" '+
+           'stroke-dasharray="'+Math.max(len-2,0.5)+' '+C+'" stroke-dashoffset="'+(-off)+'" '+
+           'transform="rotate(-90 75 75)" stroke-linecap="butt"/>';
+      off+=len;
+    });
+    var pct=Math.round((c.present+c.late)/total*100);
+    svg+='<text x="75" y="72" text-anchor="middle" font-size="21" font-weight="800" fill="var(--ink)">'+pct+'%</text>';
+    svg+='<text x="75" y="90" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-3)">pumasok ngayon</text>';
+    $("dayDonut").innerHTML=svg;
+    $("dayLegend").innerHTML = segs.map(function(s){
+      var p = c.total ? Math.round(s.v/c.total*100) : 0;
+      return '<div class="dl-row"><i class="swatch" style="background:'+s.color+'"></i>'+s.label+'<b>'+s.v+' · '+p+'%</b></div>';
+    }).join("") + '<div class="dl-row" style="border-top:1px solid var(--line);padding-top:9px"><span> Kabuuang empleyado</span><b>'+c.total+'</b></div>';
+  }
+
+  /* ---------- Buwan: stacked bars bawat linggo (sample data; Linggo 4 = ngayon, partial) ---------- */
+  function renderMonth(){
+    var t=todayCounts();
+    var WEEKS=[
+      {label:"Linggo 1", ontime:52, late:4, absent:4},
+      {label:"Linggo 2", ontime:54, late:3, absent:3},
+      {label:"Linggo 3", ontime:50, late:5, absent:5},
+      {label:"Linggo 4*", ontime:t.present, late:t.late, absent:t.absent}
+    ];
+    var max=60, W=560, base=182, top=18, plotH=base-top;
+    var slot=(W-40)/4, bw=56;
+    var svg="";
+    [0,15,30,45,60].forEach(function(v){
+      var y=base-(v/max)*plotH;
+      svg+='<line x1="34" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/>';
+      svg+='<text x="28" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace">'+v+'</text>';
+    });
+    var sumIn=0, sumSlots=0;
+    WEEKS.forEach(function(w,i){
+      var cx=34+slot*i+slot/2;
+      var total=w.ontime+w.late+w.absent;
+      var yCur=base;
+      [["absent","var(--red)"],["late","var(--amber)"],["ontime","var(--green)"]].forEach(function(pair){
+        var v=w[pair[0]]; if(v<=0) return;
+        var h=(v/max)*plotH;
+        yCur-=h;
+        svg+='<rect x="'+(cx-bw/2)+'" y="'+yCur+'" width="'+bw+'" height="'+Math.max(h,2)+'" rx="4" fill="'+pair[1]+'"/>';
+      });
+      svg+='<text x="'+cx+'" y="'+(yCur-8)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">'+(w.ontime+w.late)+'</text>';
+      svg+='<text x="'+cx+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink-2)">'+w.label+'</text>';
+      sumIn+=w.ontime+w.late; sumSlots+= (i<3 ? 60 : Math.max(total,1));
+    });
+    $("monthChart").innerHTML=svg;
+    $("monthRate").textContent = sumSlots ? Math.round(sumIn/sumSlots*100)+"%" : "—";
+  }
+
+  /* I-refresh ang Araw/Buwan graphs tuwing nagbabago ang records (Time In/Out, enroll, delete) */
+  var pending=false;
+  function refresh(){
+    if(pending) return; pending=true;
+    setTimeout(function(){
+      pending=false;
+      if(views.day && !views.day.hidden) renderDay();
+      if(views.month && !views.month.hidden) renderMonth();
+    }, 60);
+  }
+  var rb=$("recordsBody");
+  if(rb && window.MutationObserver) new MutationObserver(refresh).observe(rb, {childList:true});
+
+  /* ---------- Sidebar: i-highlight ang huling pinindot na menu ---------- */
+  var navItems=document.querySelectorAll(".nav-item");
+  navItems.forEach(function(n){
+    n.addEventListener("click", function(){
+      navItems.forEach(function(x){ x.classList.remove("active"); });
+      n.classList.add("active");
+      if(!n.getAttribute("data-goto")) window.scrollTo({top:0, behavior:"smooth"});
+    });
+  });
+
+  renderDay();
+  renderMonth();
 })();
 </script>
 </body>
