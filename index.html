@@ -382,6 +382,32 @@
   .authority-list li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.85rem;align-items:baseline}
   .authority-list li:last-child{border-bottom:0}
   .authority-list .ft{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3);flex:none;font-weight:600}
+
+  /* ---------- Username & password management ---------- */
+  input[type="password"]{
+    width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem;
+  }
+  input[type="password"]:focus{outline:2px solid var(--green);outline-offset:1px;border-color:transparent}
+  .cred-edit{display:none;margin-top:13px;border-top:1px solid var(--line);padding-top:12px}
+  .cred-edit.open{display:block}
+  .cred-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+  .cred-note{display:none;margin-top:10px;background:var(--blue-soft);color:var(--blue);border-radius:10px;padding:9px 12px;font-size:.84rem;font-weight:700;line-height:1.5;word-break:break-all}
+  .cred-note.show{display:block}
+  .myacct-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .myacct-box{border:1px solid var(--line);border-radius:12px;padding:15px 16px;background:var(--surface-2)}
+  .myacct-box h3{font-size:.92rem;font-weight:800;margin:0 0 4px}
+  .myacct-box .mb-hint{font-size:.82rem;color:var(--ink-2);margin:0 0 12px;line-height:1.5}
+  @media (max-width:760px){ .myacct-grid{grid-template-columns:1fr} }
+
+  /* ---------- Photo proof inside a user profile ---------- */
+  .profile-proof{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface-2);margin-bottom:18px}
+  .profile-proof img{width:100%;max-width:320px;border-radius:10px;border:1px solid var(--line);display:block;cursor:zoom-in}
+  .profile-proof .pp-none{border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center;color:var(--ink-3);font-weight:700;font-size:.84rem;background:var(--surface);line-height:1.5}
+  .profile-proof .pp-meta{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .profile-proof .pp-meta .ht{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2);font-weight:600}
+  .profile-proof .pp-loc{font-size:.82rem;color:var(--ink-2);font-weight:600;margin-top:5px;line-height:1.5}
+  .profile-proof .pp-cap{font-size:.76rem;color:var(--ink-3);font-weight:600;margin-top:6px;line-height:1.5}
   @media (max-width:760px){
     .login-card{padding:24px 20px 22px}
     .perm-checks,.create-grid{grid-template-columns:1fr}
@@ -423,7 +449,7 @@
   body.role-member #auditSection,
   body.role-member #adminMgmt,
   body.role-member .grid-bottom{display:none!important}
-  body.role-member .nav-item:not(#navProfiles){display:none}
+  body.role-member .nav-item:not(#navProfiles):not(#navMyAccount){display:none}
   body.role-member .nav-label{display:none}
   @media (max-width:760px){
     .profile-cols{grid-template-columns:1fr}
@@ -585,7 +611,7 @@
       <form id="loginForm" autocomplete="off">
         <div class="field">
           <label for="loginUser">Username or Email</label>
-          <input type="text" id="loginUser" placeholder="e.g. superadmin or admin" autocomplete="username" />
+          <input type="text" id="loginUser" placeholder="Enter your username or email" autocomplete="username" />
         </div>
         <div class="field">
           <label for="loginPass">Password</label>
@@ -594,34 +620,6 @@
         <button class="btn btn-in btn-login" type="submit">Log in</button>
       </form>
 
-      <div class="demo-accounts">
-        <h2>Demo Accounts — tap to log in instantly</h2>
-        <p>No typing needed: tap an account and you will go straight in with that role.</p>
-        <button class="demo-acct" type="button" data-demo-login="superadmin">
-          <span class="avatar" style="background:var(--green)">SA</span>
-          <span class="da-body">
-            <span class="da-name">Super Admin <span class="role-badge role-super">Super Admin</span></span>
-            <span class="da-cred" style="display:block">username: superadmin · password: super123</span>
-          </span>
-          <span class="da-go">Enter →</span>
-        </button>
-        <button class="demo-acct" type="button" data-demo-login="admin">
-          <span class="avatar" style="background:var(--blue)">AD</span>
-          <span class="da-body">
-            <span class="da-name">Admin <span class="role-badge role-admin">Admin</span></span>
-            <span class="da-cred" style="display:block">username: admin · password: admin123</span>
-          </span>
-          <span class="da-go">Enter →</span>
-        </button>
-        <button class="demo-acct" type="button" data-demo-login="member">
-          <span class="avatar" style="background:var(--amber)">MC</span>
-          <span class="da-body">
-            <span class="da-name">Member / User <span class="role-badge" style="background:var(--amber-soft);color:var(--amber)">Member</span></span>
-            <span class="da-cred" style="display:block">username: member · password: member123 — Maria Clara Santos; she can only see her own profile and records</span>
-          </span>
-          <span class="da-go">Enter →</span>
-        </button>
-      </div>
       <p class="login-note">This is a demo only: it uses sample accounts and sample data, and all processing happens right here in this device's browser — no real password is saved or sent anywhere, and no face data is saved or sent. The login is a demo session only: if you refresh the page, you will need to log in again.</p>
     </div>
   </div>
@@ -674,6 +672,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-3.8 3.9-5.5 7.5-5.5s6.6 1.7 7.5 5.5"/></svg>
       <span class="nav-txt">User Profiles</span>
     </button>
+    <button class="nav-item" type="button" data-goto="myAccount" id="navMyAccount">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.5"/><path d="M11.3 12.2L20 3.5M16.8 6.7l3 3M14.2 9.3l2.3 2.3"/></svg>
+      <span class="nav-txt">Account Settings</span>
+    </button>
     <button class="nav-item super-only" type="button" data-goto="adminMgmt" id="navAdminMgmt">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M12 8v4M12 15.5v.5"/></svg>
       <span class="nav-txt">Admin Accounts</span>
@@ -707,6 +709,13 @@
         <button class="btn-logout" id="btnLogout" type="button">Logout</button>
       </div>
     </div>
+
+    <!-- ============ MY ACCOUNT (username & password) ============ -->
+    <section class="panel" id="myAccount" aria-label="My account — username and password settings" style="margin-bottom:18px">
+      <h2>My Account — Username &amp; Password</h2>
+      <p class="hint" id="myAccountHint">Manage your own sign-in details.</p>
+      <div id="myAccountBody"></div>
+    </section>
 
     <!-- KPI -->
     <section class="kpis" aria-label="Summary of today's attendance">
@@ -965,7 +974,7 @@
 
       <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px">
         <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Authority &amp; Admin Changes Log</h3>
-        <p class="hint" style="margin-bottom:10px">Every grant or revocation of authority by the Super Admin, creation or removal of an Admin account, and removal of a member is logged here: who did it, to whom, which authority, and at what time.</p>
+        <p class="hint" style="margin-bottom:10px">Every grant or revocation of authority by the Super Admin, creation or removal of an Admin account, removal of a member, and every username change, password change, and password reset is logged here: who did it, to whom, and at what time. Passwords themselves are never written to this log.</p>
         <ul class="authority-list" id="authorityList">
           <li><span style="color:var(--ink-3);font-weight:600">No authority changes in this session yet.</span></li>
         </ul>
@@ -975,7 +984,7 @@
     <!-- ============ ADMIN MANAGEMENT (SUPER ADMIN LANG) ============ -->
     <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin only" style="margin-bottom:18px">
       <h2>Admin Management <span class="role-badge role-super">Super Admin only</span></h2>
-      <p class="hint">This is the only place where authority can be granted or revoked. An Admin <b>cannot</b> grant authority to others and cannot see this screen. Every change is logged in the Audit Log above.</p>
+      <p class="hint">This is the only place where authority can be granted or revoked. An Admin <b>cannot</b> grant authority to others and cannot see this screen. As Super Admin, you can also change the <b>username and password</b> of any Admin or user account here, or <b>reset</b> a password to a temporary one. An Admin can only change their own username and password, and a member can only change their own password (in My Account). Every change is logged in the Audit Log above.</p>
 
       <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Create a New Admin Account</h3>
       <div class="create-grid">
@@ -1009,7 +1018,7 @@
     <!-- ============ USER PROFILES ============ -->
     <section class="panel" id="profilesSection" aria-label="User profiles of the members" style="margin-bottom:18px">
       <h2 id="profilesTitle">User Profiles — Members</h2>
-      <p class="hint" id="profilesHint">Every member has their own Profile Account: their own details, profile picture, and attendance history. The Super Admin and Admin can edit details and upload a picture for a member; a member can only change their own picture and can only see their own records.</p>
+      <p class="hint" id="profilesHint">Every member has their own Profile Account: their own details, profile picture, and attendance history. The Super Admin and Admin can edit details and upload a picture for a member; a member can only change their own picture and can only see their own records. The Super Admin and Admin can also see each member's check-in photo proof in their profile (and in the Audit Log) — tap it to view it larger; a member only ever sees their own proof.</p>
       <div class="pdf-toolbar export-only">
         <label>From <input type="date" id="pdfFrom" aria-label="Start of the date range for the PDF" /></label>
         <label>To <input type="date" id="pdfTo" aria-label="End of the date range for the PDF" /></label>
@@ -2049,10 +2058,10 @@
   ];
   function allPerms(v){ var o={}; PERM_DEFS.forEach(function(p){ o[p.key]=v; }); return o; }
   var ACCOUNTS = [
-    {username:"superadmin", email:"super@attendpro.demo", password:"super123", name:"Super Admin", role:"super",
+    {username:"super admin", email:"super@attendpro.demo", password:"password", name:"Super Admin", role:"super",
      perms: allPerms(true)},
-    {username:"admin", email:"admin@attendpro.demo", password:"admin123", name:"Admin", role:"admin",
-     perms:{time:true, enroll:true, leave:true, audit:false, export:false}},
+    {username:"admin", email:"admin@attendpro.demo", password:"password", name:"Admin", role:"admin",
+     perms:{time:true, enroll:true, leave:true, audit:true, export:false}},
     {username:"member", email:"member@attendpro.demo", password:"member123", name:"Maria Clara Santos", role:"member", empId:1,
      perms: allPerms(false)}
   ];
@@ -2082,6 +2091,101 @@
     var out=[];
     PERM_DEFS.forEach(function(p){ if(perms[p.key]) out.push(p.label); });
     return out.length ? out.join(", ") : "none";
+  }
+  function roleLabel(role){ return role==="super" ? "Super Admin" : role==="member" ? "Member / User" : "Admin"; }
+
+  /* ---------- Demo account cards on the login screen stay in sync ---------- */
+  function syncDemoCards(){
+    var map={super:"daCredSuper", admin:"daCredAdmin", member:"daCredMember"};
+    ACCOUNTS.forEach(function(a){
+      var el=$(map[a.role]); if(!el) return;
+      var txt="username: "+a.username+" · password: "+a.password;
+      if(a.role==="member") txt+=" — Maria Clara Santos; she can only see her own profile and records";
+      el.textContent=txt;
+    });
+  }
+
+  /* ---------- Username & password changes (every change is logged in the Audit Log) ---------- */
+  function usernameTaken(name, except){
+    var q=String(name||"").toLowerCase();
+    for(var i=0;i<ACCOUNTS.length;i++){
+      if(ACCOUNTS[i]!==except && ACCOUNTS[i].username.toLowerCase()===q) return true;
+    }
+    return false;
+  }
+  function actorText(){
+    return "<b>"+esc(currentUser.name)+"</b> ("+roleLabel(currentUser.role)+")";
+  }
+  function applyUsernameChange(acct, rawUser){
+    var nu=String(rawUser||"").trim().toLowerCase().replace(/\s+/g,"");
+    if(!nu) return {err:"Enter a username."};
+    if(nu===acct.username) return {same:true};
+    if(usernameTaken(nu, acct)) return {err:"The username \""+nu+"\" is already used by another account."};
+    var old=acct.username;
+    acct.username=nu;
+    var txt = acct===currentUser
+      ? actorText()+" changed their own username from @"+esc(old)+" to @"+esc(nu)+"."
+      : actorText()+" changed the username of <b>"+esc(acct.name)+"</b> from @"+esc(old)+" to @"+esc(nu)+".";
+    logAuthority(txt); Core.log(txt);
+    return {ok:true, old:old, now:nu};
+  }
+  function applyPasswordChange(acct, newPass, isReset){
+    acct.password=newPass;
+    var txt;
+    if(isReset) txt = actorText()+" <b>reset</b> the password of <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+") and set a temporary password.";
+    else if(acct===currentUser) txt = actorText()+" changed their own password.";
+    else txt = actorText()+" changed the password of <b>"+esc(acct.name)+"</b> (@"+esc(acct.username)+").";
+    logAuthority(txt); Core.log(txt);
+  }
+
+  /* ---------- My Account panel (own username & password, by role) ---------- */
+  function renderMyAccount(){
+    var wrap=$("myAccountBody"); if(!wrap) return;
+    if(!currentUser){ wrap.innerHTML=""; return; }
+    var u=currentUser;
+    var canUser = u.role==="super" || u.role==="admin";
+    $("myAccountHint").textContent = u.role==="super"
+      ? "As Super Admin, you can change your own username and password here. To change the username or password of any Admin or user — or to reset a password — use Admin Management below. Every change is logged in the Audit Log."
+      : u.role==="admin"
+      ? "You can change your own username and password here. You cannot change anyone else's — only the Super Admin can do that. Every change is logged in the Audit Log."
+      : "You can change your own password here. Your username can only be changed by the Super Admin. Every change is logged in the Audit Log.";
+    var userBox = canUser
+      ? '<div class="field"><label for="myUsername">Username</label><input type="text" id="myUsername" value="'+esc(u.username)+'" autocomplete="username"></div>'+
+        '<button class="btn btn-in" type="button" id="btnMyUsername" style="padding:9px 16px;min-height:2.5rem">Save Username</button>'
+      : '<div class="field"><label>Username</label><input type="text" value="'+esc(u.username)+'" disabled aria-disabled="true"></div>'+
+        '<p class="mb-hint" style="margin:0">Only the Super Admin can change your username.</p>';
+    wrap.innerHTML =
+      '<div class="myacct-grid">'+
+        '<div class="myacct-box"><h3>Username</h3>'+
+          '<p class="mb-hint">Signed in as <b>'+esc(u.name)+'</b> · '+roleLabel(u.role)+'</p>'+ userBox +'</div>'+
+        '<div class="myacct-box"><h3>Password</h3>'+
+          '<p class="mb-hint">To change your password, enter your current password first, then the new one.</p>'+
+          '<div class="field"><label for="myPassCurrent">Current Password</label><input type="password" id="myPassCurrent" autocomplete="current-password"></div>'+
+          '<div class="field"><label for="myPassNew">New Password</label><input type="password" id="myPassNew" autocomplete="new-password"></div>'+
+          '<div class="field"><label for="myPassConfirm">Confirm New Password</label><input type="password" id="myPassConfirm" autocomplete="new-password"></div>'+
+          '<button class="btn btn-in" type="button" id="btnMyPassword" style="padding:9px 16px;min-height:2.5rem">Change My Password</button>'+
+        '</div>'+
+      '</div>';
+    if(canUser){
+      $("btnMyUsername").addEventListener("click", function(){
+        var res=applyUsernameChange(u, $("myUsername").value);
+        if(res.err){ Core.toast(res.err); return; }
+        if(res.same){ Core.toast("That is already your username — nothing changed."); return; }
+        syncDemoCards(); applySession();
+        Core.toast("Your username was changed from @"+res.old+" to @"+res.now+". Logged in the Audit Log.");
+      });
+    }
+    $("btnMyPassword").addEventListener("click", function(){
+      var cur=$("myPassCurrent").value, nw=$("myPassNew").value, cf=$("myPassConfirm").value;
+      if(cur!==u.password){ Core.toast("Your current password is incorrect — the password was not changed."); return; }
+      if(!nw || nw.length<6){ Core.toast("Enter a new password of at least 6 characters."); return; }
+      if(nw!==cf){ Core.toast("The new password and its confirmation do not match."); return; }
+      if(nw===u.password){ Core.toast("That is already your password — nothing changed."); return; }
+      applyPasswordChange(u, nw, false);
+      syncDemoCards();
+      $("myPassCurrent").value=""; $("myPassNew").value=""; $("myPassConfirm").value="";
+      Core.toast("Your password was changed. Logged in the Audit Log.");
+    });
   }
 
   /* ---------- Login / logout ---------- */
@@ -2124,6 +2228,8 @@
     $("sideUserName").textContent=currentUser.name;
     $("sideUserRole").textContent=roleTxt+" · @"+currentUser.username;
     if(currentUser.role==="super"){ renderAdminList(); renderMemberMgmt(); }
+    renderMyAccount();
+    syncDemoCards();
     renderAuthorityLog();
   }
   function doLogin(acct){
@@ -2148,13 +2254,20 @@
   $("loginForm").addEventListener("submit", function(ev){
     ev.preventDefault();
     var acct=findAccount($("loginUser").value);
-    if(!acct){ showLoginError("No account with that username or email. Try the demo accounts below."); return; }
-    if(acct.password !== $("loginPass").value){ showLoginError("Wrong password for "+acct.username+". Try again or tap a demo account below."); return; }
+    if(!acct){ showLoginError("No account with that username or email. Check your spelling and try again."); return; }
+    if(acct.password !== $("loginPass").value){ showLoginError("Wrong password for "+acct.username+". Please try again."); return; }
     doLogin(acct);
   });
   document.querySelectorAll("[data-demo-login]").forEach(function(btn){
     btn.addEventListener("click", function(){
-      var acct=findAccount(btn.getAttribute("data-demo-login"));
+      var key=btn.getAttribute("data-demo-login");
+      var acct=findAccount(key);
+      if(!acct){
+        // The username may have been changed in this session — fall back to the account's role.
+        var roleMap={superadmin:"super", admin:"admin", member:"member"};
+        var role=roleMap[key];
+        if(role) for(var i=0;i<ACCOUNTS.length;i++) if(ACCOUNTS[i].role===role){ acct=ACCOUNTS[i]; break; }
+      }
       if(acct) doLogin(acct);
     });
   });
@@ -2187,21 +2300,38 @@
         var on = isSuper || a.perms[p.key];
         return '<span class="perm-chip'+(on?" on":"")+'">'+(on?"✓ ":"✕ ")+p.label+'</span>';
       }).join("");
+      var credBtn = '<button class="btn-sm" type="button" data-cred-acct="'+esc(a.username)+'">Username &amp; Password</button>';
       var actions = isSuper
-        ? '<span style="font-size:.8rem;color:var(--ink-3);font-weight:700">Primary account — cannot be changed or removed</span>'
-        : '<button class="btn-sm" type="button" data-edit-acct="'+esc(a.username)+'">Edit Authority</button>'+
+        ? '<span style="font-size:.8rem;color:var(--ink-3);font-weight:700">Primary account — authority cannot be changed, account cannot be removed</span>'+credBtn
+        : '<button class="btn-sm" type="button" data-edit-acct="'+esc(a.username)+'">Edit Authority</button>'+credBtn+
           '<button class="btn-sm btn-danger-sm" type="button" data-del-acct="'+esc(a.username)+'">Remove</button>';
       var editBlock = isSuper ? "" :
         '<div class="perm-edit" id="edit-'+esc(a.username)+'">'+
           '<div class="perm-checks">'+permChecksHtml("edit-"+a.username, a.perms)+'</div>'+
           '<button class="btn btn-in" type="button" data-save-acct="'+esc(a.username)+'" style="padding:9px 16px;min-height:2.5rem">Save Authority</button>'+
         '</div>';
+      var credBlock =
+        '<div class="cred-edit" data-cred-box="'+esc(a.username)+'">'+
+          '<div class="create-grid">'+
+            '<div class="field" style="margin:0"><label>Username</label><input type="text" data-cred-user value="'+esc(a.username)+'" autocomplete="off"></div>'+
+            '<div class="field" style="margin:0"><label>New Password (demo)</label><input type="password" data-cred-pass placeholder="Leave blank to keep the current password" autocomplete="new-password"></div>'+
+          '</div>'+
+          '<div class="cred-actions">'+
+            '<button class="btn btn-in" type="button" data-save-cred="'+esc(a.username)+'" style="padding:9px 16px;min-height:2.5rem">Save Username &amp; Password</button>'+
+            '<button class="btn-sm" type="button" data-reset-cred="'+esc(a.username)+'">Reset Password</button>'+
+          '</div>'+
+          '<div class="cred-note" data-cred-note></div>'+
+          '<p class="privacy-note" style="margin-top:8px">As Super Admin you can change this account\'s username and password, or reset the password to a temporary one. Every change is logged in the Audit Log (who changed it, whose account, and when) — the password itself is never written to the log.</p>'+
+        '</div>';
+      var badgeHtml = a.role==="member"
+        ? '<span class="role-badge" style="background:var(--amber-soft);color:var(--amber)">Member</span>'
+        : '<span class="role-badge '+(isSuper?"role-super":"role-admin")+'">'+(isSuper?"Super Admin":"Admin")+'</span>';
       return '<div class="acct-card">'+
-        '<div class="acct-head"><div class="avatar" style="background:'+(isSuper?"var(--green)":"var(--blue)")+'">'+Core.initials(a.name)+'</div>'+
-        '<div><div class="an">'+esc(a.name)+' <span class="role-badge '+(isSuper?"role-super":"role-admin")+'">'+(isSuper?"Super Admin":"Admin")+'</span></div>'+
+        '<div class="acct-head"><div class="avatar" style="background:'+(a.role==="super"?"var(--green)":a.role==="member"?"var(--amber)":"var(--blue)")+'">'+Core.initials(a.name)+'</div>'+
+        '<div><div class="an">'+esc(a.name)+' '+badgeHtml+'</div>'+
         '<div class="au">@'+esc(a.username)+' · '+esc(a.email)+'</div></div>'+
         '<div class="acct-actions">'+actions+'</div></div>'+
-        '<div class="perm-chips">'+chips+'</div>'+ editBlock +
+        '<div class="perm-chips">'+chips+'</div>'+ editBlock + credBlock +
       '</div>';
     }).join("");
 
@@ -2252,6 +2382,56 @@
         Core.log(txt);
         Core.toast("Removed the Admin account of "+acct.name+". Logged in the Audit Log.");
         renderAdminList();
+      });
+    });
+
+    /* Username & password editor (Super Admin only — this whole section is) */
+    function credBox(uname){
+      var boxes=wrap.querySelectorAll("[data-cred-box]");
+      for(var i=0;i<boxes.length;i++) if(boxes[i].getAttribute("data-cred-box")===uname) return boxes[i];
+      return null;
+    }
+    wrap.querySelectorAll("[data-cred-acct]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var box=credBox(btn.getAttribute("data-cred-acct"));
+        if(box) box.classList.toggle("open");
+      });
+    });
+    wrap.querySelectorAll("[data-save-cred]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var uname=btn.getAttribute("data-save-cred");
+        var acct=findAccount(uname); if(!acct) return;
+        var box=credBox(uname); if(!box) return;
+        var passInp=box.querySelector("[data-cred-pass]");
+        if(passInp.value && passInp.value.length<6){ Core.toast("The new password must be at least 6 characters — nothing was saved."); return; }
+        var res=applyUsernameChange(acct, box.querySelector("[data-cred-user]").value);
+        if(res.err){ Core.toast(res.err); return; }
+        var msgs=[];
+        if(res.ok) msgs.push("username changed to @"+res.now);
+        if(passInp.value){
+          applyPasswordChange(acct, passInp.value, false);
+          msgs.push("password changed");
+        }
+        if(msgs.length===0){ Core.toast("Nothing changed for "+acct.name+"."); return; }
+        syncDemoCards();
+        if(acct===currentUser) applySession(); else renderAdminList();
+        Core.toast("Updated "+acct.name+": "+msgs.join(" and ")+". Logged in the Audit Log.");
+      });
+    });
+    wrap.querySelectorAll("[data-reset-cred]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var uname=btn.getAttribute("data-reset-cred");
+        var acct=findAccount(uname); if(!acct) return;
+        var temp="Temp"+Math.floor(1000+Math.random()*9000)+"!";
+        applyPasswordChange(acct, temp, true);
+        syncDemoCards();
+        var box=credBox(uname);
+        var note=box ? box.querySelector("[data-cred-note]") : null;
+        if(note){
+          note.textContent="Temporary password for @"+acct.username+": "+temp+" — give it to "+acct.name+"; they can change it after logging in. (Demo only — a sample password, not a real one.)";
+          note.classList.add("show");
+        }
+        Core.toast("Reset the password of "+acct.name+". Temporary password: "+temp+" (demo). Logged in the Audit Log.");
       });
     });
   }
@@ -2499,6 +2679,28 @@
         '<div class="field"><label for="pfPhone">Contact Number</label><input type="text" id="pfPhone" value="'+esc(e.phone)+'"></div>'+
         '<button class="btn btn-in" type="button" id="pfSave" style="padding:10px 18px">Save Details</button>'
       : '<p class="privacy-note">Only the Super Admin and Admin can edit profile details. As a member, you can only change your own profile picture and see your own records.</p>';
+    /* Today's check-in proof — from the Audit Log records (photo proof, GPS, Verified/Flagged) */
+    var auditEntries = Core.getAudit ? Core.getAudit() : [];
+    var myRec=null;
+    for(var ai=0; ai<auditEntries.length; ai++){ if(auditEntries[ai].name===e.name){ myRec=auditEntries[ai]; break; } }
+    var proofHtml;
+    if(!myRec){
+      proofHtml='<h3>Today\'s Check-In Proof</h3><div class="profile-proof"><div class="pp-none">No check-in has been recorded today yet — there is no photo proof for this member today.</div></div>';
+    } else {
+      var pBadge = myRec.verified ? '<span class="badge badge-verified">Verified</span>' : '<span class="badge badge-flagged">Flagged</span>';
+      var pFlags = (!myRec.verified && myRec.flags.length) ? '<div class="flag-reasons">'+myRec.flags.map(esc).join("<br>")+'</div>' : '';
+      var pLoc = (myRec.lat!==null && myRec.lat!==undefined)
+        ? 'GPS: '+esc(myRec.place || "Place not available")+' ('+Number(myRec.lat).toFixed(5)+', '+Number(myRec.lon).toFixed(5)+')'
+        : 'GPS: no location captured';
+      var pPhoto = myRec.photo
+        ? '<img src="'+myRec.photo+'" alt="Photo proof of '+esc(e.name)+'" data-proof-photo tabindex="0" role="button" aria-label="Enlarge the photo proof of '+esc(e.name)+'">'
+        : '<div class="pp-none">No photo proof — this check-in was recorded without a camera photo.</div>';
+      proofHtml='<h3>Today\'s Check-In Proof</h3><div class="profile-proof">'+pPhoto+
+        '<div class="pp-meta">'+pBadge+'<span class="ht">'+esc(Core.fmtDateTime(new Date(myRec.when)))+'</span></div>'+
+        '<div class="pp-loc">'+pLoc+' · via '+esc(myRec.via)+'</div>'+pFlags+
+        (myRec.photo ? '<div class="pp-cap">The photo has the date, time, name, and GPS coordinates overlaid on it. Tap the photo to view it larger and clearer.</div>' : '')+
+      '</div>';
+    }
     var histRows = hist.map(function(h){
       return '<div class="hist-row"><span class="hd">'+esc(h.label)+'</span>'+
         '<span class="status '+STATUS_CLASS[h.status]+'">'+STATUS_LABEL[h.status]+'</span>'+
@@ -2514,7 +2716,7 @@
           (canExport() ? '<button class="btn-ghost" type="button" data-pdf-user="'+e.id+'">Export Profile (PDF)</button>' : '')+
         '</div></div>'+
       '<div class="profile-cols"><div>'+
-        '<h3>Mga Detalye</h3>'+
+        '<h3>Details</h3>'+
         '<dl class="detail-list">'+
           '<dt>Name</dt><dd>'+esc(e.name)+'</dd>'+
           '<dt>Department</dt><dd>'+esc(e.dept)+'</dd>'+
@@ -2525,6 +2727,7 @@
           '<dt>Time Out today</dt><dd>'+esc(e.outT)+'</dd>'+
         '</dl>'+ editHtml +
       '</div><div>'+
+        proofHtml+
         '<h3>Attendance History</h3>'+
         '<div class="hist-summary">'+
           '<span class="audit-stat">Present: <b>'+c.present+'</b></span>'+
@@ -2537,6 +2740,12 @@
       '<div style="margin-top:18px;text-align:right"><button class="btn-ghost" type="button" id="pfClose">Close</button></div>';
     $("profileModal").classList.add("open");
     bindProfileButtons($("profileSheet"));
+    var proofImg=$("profileSheet").querySelector("[data-proof-photo]");
+    if(proofImg && myRec){
+      var openProof=function(){ Core.openPhoto(myRec.photo, e.name+" — "+Core.fmtDateTime(new Date(myRec.when))); };
+      proofImg.addEventListener("click", openProof);
+      proofImg.addEventListener("keydown", function(ev){ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); openProof(); } });
+    }
     $("pfClose").addEventListener("click", closeProfile);
     var saveBtn=$("pfSave");
     if(saveBtn) saveBtn.addEventListener("click", function(){
