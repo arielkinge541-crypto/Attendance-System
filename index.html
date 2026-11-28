@@ -178,7 +178,7 @@
   .dept-row .dn{font-weight:700;font-size:.9rem;width:130px;flex:none}
   .bar{flex:1;height:9px;background:var(--surface-2);border-radius:99px;overflow:hidden}
   .bar i{display:block;height:100%;background:var(--green);border-radius:99px}
-  .dept-row .dp{font-family:"IBM Plex Mono",monospace;font-size:.82rem;font-weight:600;width:76px;text-align:right;flex:none;color:var(--ink-2)}
+  .dept-row .dp{font-family:"IBM Plex Mono",monospace;font-size:.82rem;font-weight:600;width:86px;text-align:right;flex:none;color:var(--ink-2);white-space:nowrap}
 
   .toast{
     position:fixed;left:50%;bottom:22px;transform:translate(-50%,80px);
@@ -325,7 +325,7 @@
   /* Permission gating (demo, UI-level) */
   body.role-admin .super-only{display:none!important}
   body.no-audit #auditSection{display:none}
-  body.no-audit [data-goto="auditSection"]{display:none}
+  body.no-audit [data-view="audit"]{display:none}
   body.no-time #btnIn,body.no-time #btnOut{opacity:.45;pointer-events:none}
   body.no-enroll #enrollName,body.no-enroll #enrollDept,body.no-enroll #btnEnroll{opacity:.45;pointer-events:none}
   body.no-leave .leave-actions{display:none}
@@ -423,14 +423,8 @@
   .hist-row:last-child{border-bottom:0}
   .hist-row .hd{font-weight:700;min-width:118px}
   .hist-row .ht{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2)}
-  /* Member (user) mode: only their own profile is visible */
-  body.role-member .kpis,
-  body.role-member #liveSection,
-  body.role-member .grid-2,
-  body.role-member #records,
-  body.role-member #auditSection,
-  body.role-member #adminMgmt,
-  body.role-member .grid-bottom{display:none!important}
+  /* Member (user) mode: only their own profile and account are visible */
+  body.role-member .view:not(#view-profiles):not(#view-myaccount){display:none!important}
   body.role-member .nav-item:not(#navProfiles):not(#navMyAccount){display:none}
   body.role-member .nav-label{display:none}
   @media (max-width:760px){
@@ -649,8 +643,34 @@
   .user-chip{border-radius:999px;overflow:hidden;background-clip:padding-box}
   .user-chip .avatar{border-radius:50%}
   .btn-logout{border-radius:999px}
+  /* ---------- Separate views: one view visible at a time ---------- */
+  /* Each sidebar item opens its own view. Nothing scrolls into another
+     section — the user always sees exactly the part they tapped. */
+  .view{display:none}
+  .view.active{display:flex;flex-direction:column;gap:20px}
+  .view > .panel,.view > .kpis,.view > .grid-2,.view > .grid-bottom{margin-bottom:0!important}
+  .view > .slot{display:contents}
+  .section-label{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .view .foot-note{margin-top:4px}
+  /* ---------- Lettering: one clear hierarchy ---------- */
+  .topbar h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+  .panel h2{font-size:1.16rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+  .panel h3{font-size:.95rem;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+  .panel .hint{font-size:.86rem;line-height:1.6;max-width:75ch}
+  .field label{font-size:.82rem}
+  .side-block h3{font-size:.9rem}
+  /* Roster (Employees view) */
+  .roster-list{display:flex;flex-direction:column}
+  .roster-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .roster-item:last-child{border-bottom:0;padding-bottom:2px}
+  .roster-main{flex:1;min-width:0}
+  .roster-name{font-weight:700;line-height:1.25;font-size:.94rem}
+  .roster-dept{font-size:.82rem;color:var(--ink-3);font-weight:600}
+  .roster-role{font-size:.82rem;color:var(--ink-2);font-weight:600;white-space:nowrap}
+  .roster-time{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.84rem;color:var(--ink-2);font-weight:600;white-space:nowrap}
   @media (max-width:760px){
-    .topbar{border-radius:16px;padding:14px 16px;top:8px}
+    .view.active{gap:16px}
+    .roster-role{display:none}
   }
 </style>
 </head>
@@ -700,44 +720,44 @@
     </div>
 
     <div class="nav-label">Menu</div>
-    <button class="nav-item active" type="button">
+    <button class="nav-item active" type="button" data-view="dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
       <span class="nav-txt">Dashboard</span>
     </button>
-    <button class="nav-item" type="button" data-goto="liveSection">
+    <button class="nav-item" type="button" data-view="live">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
       <span class="nav-txt">Live Check-In</span>
     </button>
-    <button class="nav-item" type="button" data-goto="records">
+    <button class="nav-item" type="button" data-view="records">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
       <span class="nav-txt">Records</span>
     </button>
-    <button class="nav-item" type="button" data-goto="auditSection">
+    <button class="nav-item" type="button" data-view="audit">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4.5"/></svg>
       <span class="nav-txt">Audit Log</span>
     </button>
-    <button class="nav-item" type="button" data-goto="employees">
+    <button class="nav-item" type="button" data-view="employees">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5 6.5-5s5.7 1.6 6.5 5"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.9M18.5 15.4c1.7.7 2.7 2.1 3.1 4.1"/></svg>
       <span class="nav-txt">Employees</span>
     </button>
-    <button class="nav-item" type="button" data-goto="leaves">
+    <button class="nav-item" type="button" data-view="leaves">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
       <span class="nav-txt">Leave Requests</span>
       <span class="nav-badge" id="leaveBadge">3</span>
     </button>
-    <button class="nav-item" type="button" data-goto="reports">
+    <button class="nav-item" type="button" data-view="reports">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
       <span class="nav-txt">Reports</span>
     </button>
-    <button class="nav-item" type="button" data-goto="profilesSection" id="navProfiles">
+    <button class="nav-item" type="button" data-view="profiles" id="navProfiles">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-3.8 3.9-5.5 7.5-5.5s6.6 1.7 7.5 5.5"/></svg>
       <span class="nav-txt">User Profiles</span>
     </button>
-    <button class="nav-item" type="button" data-goto="myAccount" id="navMyAccount">
+    <button class="nav-item" type="button" data-view="myaccount" id="navMyAccount">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.5"/><path d="M11.3 12.2L20 3.5M16.8 6.7l3 3M14.2 9.3l2.3 2.3"/></svg>
       <span class="nav-txt">Account Settings</span>
     </button>
-    <button class="nav-item super-only" type="button" data-goto="adminMgmt" id="navAdminMgmt">
+    <button class="nav-item super-only" type="button" data-view="admin" id="navAdminMgmt">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M12 8v4M12 15.5v.5"/></svg>
       <span class="nav-txt">Admin Accounts</span>
     </button>
@@ -758,7 +778,7 @@
   <main class="main">
     <div class="topbar">
       <div>
-        <h1>Dashboard <span class="mock-tag">Mockup</span></h1>
+        <h1><span id="viewTitle">Dashboard</span> <span class="mock-tag">Mockup</span></h1>
         <div class="date-line" id="todayLine">—</div>
       </div>
       <div class="user-chip" id="userChip" aria-label="Currently logged in">
@@ -771,13 +791,9 @@
       </div>
     </div>
 
-    <!-- ============ MY ACCOUNT (username & password) ============ -->
-    <section class="panel" id="myAccount" aria-label="My account — username and password settings" style="margin-bottom:18px">
-      <h2>My Account — Username &amp; Password</h2>
-      <p class="hint" id="myAccountHint">Manage your own sign-in details.</p>
-      <div id="myAccountBody"></div>
-    </section>
-
+    <!-- ============ DASHBOARD ============ -->
+    <section class="view active" id="view-dashboard" aria-label="Dashboard">
+      <div class="section-label">Today at a glance</div>
     <!-- KPI -->
     <section class="kpis" aria-label="Summary of today's attendance">
       <div class="kpi">
@@ -801,7 +817,14 @@
         <div class="sub">approved vacation / sick leave</div>
       </div>
     </section>
+      <div class="slot" id="slotChartDash"></div>
+      <div class="slot" id="slotRecordsDash"></div>
+      <div class="slot" id="slotDeptDash"></div>
+    <p class="foot-note">This is a mockup only — it contains sample data and no real records are saved.</p>
+    </section>
 
+    <!-- ============ LIVE CHECK-IN ============ -->
+    <section class="view" id="view-live" aria-label="Live Check-In">
     <!-- ============ LIVE CAMERA CHECK-IN ============ -->
     <section class="panel live-panel" id="liveSection" aria-label="Live camera check-in using facial recognition">
       <div class="live-head">
@@ -895,8 +918,6 @@
         </div>
       </div>
     </section>
-
-    <div class="grid-2">
       <!-- Clock + Time In/Out -->
       <section class="panel" aria-label="Time in and time out">
         <h2>Time In / Time Out</h2>
@@ -924,7 +945,143 @@
         <div class="last-action" id="lastAction" role="status"></div>
         <div class="perm-lock-note" id="timeLockNote">Your account does not have the authority for Time In / Time Out. Only the Super Admin can grant this authority.</div>
       </section>
+    </section>
 
+    <!-- ============ RECORDS ============ -->
+    <section class="view" id="view-records" aria-label="Records">
+      <div class="slot" id="slotRecordsRecords"></div>
+    </section>
+
+    <!-- ============ EMPLOYEES ============ -->
+    <section class="view" id="view-employees" aria-label="Employees">
+      <div class="slot" id="slotDeptEmp"></div>
+      <section class="panel" aria-label="Employee roster">
+        <h2>Employee Roster</h2>
+        <p class="hint">Everyone on the team, their role, and their status today.</p>
+        <div class="roster-list" id="rosterList"></div>
+      </section>
+    </section>
+
+    <!-- ============ LEAVE REQUESTS ============ -->
+    <section class="view" id="view-leaves" aria-label="Leave Requests">
+      <!-- Leave requests -->
+      <section class="panel" id="leaves" aria-label="Leave requests">
+        <h2>Leave Requests</h2>
+        <p class="hint">Waiting for approval.</p>
+        <div id="leaveList"></div>
+        <div class="perm-lock-note" id="leaveLockNote">Your account does not have the authority to approve or decline leave. Only the Super Admin can grant this authority.</div>
+      </section>
+    </section>
+
+    <!-- ============ REPORTS ============ -->
+    <section class="view" id="view-reports" aria-label="Reports">
+      <div class="slot" id="slotChartReports"></div>
+    </section>
+
+    <!-- ============ AUDIT LOG ============ -->
+    <section class="view" id="view-audit" aria-label="Audit Log">
+    <!-- ============ AUDIT LOG / HISTORY ============ -->
+    <section class="panel" id="auditSection" aria-label="Audit log of every check-in">
+      <h2>Audit Log — Check-In History</h2>
+      <p class="hint">Every check-in is logged here: who, what time, what photo proof, and what GPS location. <b>Verified</b> only if the photo proof with timestamp and the location are complete. Automatically <b>Flagged</b> if there is no photo, no location, or the same person's check-ins are too close together (less than 3 minutes apart).</p>
+      <div class="audit-summary">
+        <span class="audit-stat">Total logs: <b id="auditTotal">0</b></span>
+        <span class="audit-stat">Verified: <b id="auditVerified">0</b></span>
+        <span class="audit-stat">Flagged: <b id="auditFlagged">0</b></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Time / Date</th>
+            <th>Photo Proof</th>
+            <th>Location</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody"></tbody>
+      </table>
+      <p class="privacy-note">Tap a photo proof to view it larger — the date, time, name, and GPS coordinates are overlaid on the photo itself. This log is a demo only: it lives only in the page's memory and disappears on refresh.</p>
+      <div class="super-only" style="margin-top:14px">
+        <button class="btn-danger-ghost" id="btnClearAudit" type="button">Clear Audit Log (Super Admin only)</button>
+      </div>
+
+      <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px">
+        <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Authority &amp; Admin Changes Log</h3>
+        <p class="hint" style="margin-bottom:10px">Every grant or revocation of authority by the Super Admin, creation or removal of an Admin account, removal of a member, and every username change, password change, and password reset is logged here: who did it, to whom, and at what time. Passwords themselves are never written to this log.</p>
+        <ul class="authority-list" id="authorityList">
+          <li><span style="color:var(--ink-3);font-weight:600">No authority changes in this session yet.</span></li>
+        </ul>
+      </div>
+    </section>
+    </section>
+
+    <!-- ============ ADMIN ============ -->
+    <section class="view" id="view-admin" aria-label="Admin">
+    <!-- ============ ADMIN MANAGEMENT (SUPER ADMIN LANG) ============ -->
+    <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin only">
+      <h2>Admin Management <span class="role-badge role-super">Super Admin only</span></h2>
+      <p class="hint">This is the only place where authority can be granted or revoked. An Admin <b>cannot</b> grant authority to others and cannot see this screen. As Super Admin, you can also change the <b>username and password</b> of any Admin or user account here, or <b>reset</b> a password to a temporary one. An Admin can only change their own username and password, and a member can only change their own password (in My Account). Every change is logged in the Audit Log above.</p>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Create a New Admin Account</h3>
+      <div class="create-grid">
+        <div class="field" style="margin:0">
+          <label for="newAdminName">Name</label>
+          <input type="text" id="newAdminName" placeholder="e.g. Juan Dela Cruz" />
+        </div>
+        <div class="field" style="margin:0">
+          <label for="newAdminUser">Username</label>
+          <input type="text" id="newAdminUser" placeholder="e.g. juan.admin" />
+        </div>
+        <div class="field" style="margin:0">
+          <label for="newAdminPass">Password (demo)</label>
+          <input type="password" id="newAdminPass" placeholder="Demo password" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Authority to grant to the new Admin</label>
+        <div class="perm-checks" id="newAdminPerms"></div>
+      </div>
+      <button class="btn btn-in" id="btnCreateAdmin" type="button" style="padding-left:18px;padding-right:18px">Create Admin Account</button>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 8px">Accounts</h3>
+      <div id="adminList"></div>
+
+      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 4px">Member Management</h3>
+      <p class="hint">Only the Super Admin can remove a member. Removals are also logged in the Audit Log.</p>
+      <div id="memberMgmtList"></div>
+    </section>
+    </section>
+
+    <!-- ============ USER PROFILES ============ -->
+    <section class="view" id="view-profiles" aria-label="User Profiles">
+    <!-- ============ USER PROFILES ============ -->
+    <section class="panel" id="profilesSection" aria-label="User profiles of the members">
+      <h2 id="profilesTitle">User Profiles — Members</h2>
+      <p class="hint" id="profilesHint">Every member has their own Profile Account: their own details, profile picture, and attendance history. The Super Admin and Admin can edit details and upload a picture for a member; a member can only change their own picture and can only see their own records. The Super Admin and Admin can also see each member's check-in photo proof in their profile (and in the Audit Log) — tap it to view it larger; a member only ever sees their own proof.</p>
+      <div class="pdf-toolbar export-only">
+        <label>From <input type="date" id="pdfFrom" aria-label="Start of the date range for the PDF" /></label>
+        <label>To <input type="date" id="pdfTo" aria-label="End of the date range for the PDF" /></label>
+        <span class="pdf-note">Date range for each user's PDF export. Leave blank = today + the past 10 workdays.</span>
+      </div>
+      <div class="profile-grid" id="profileGrid"></div>
+      <input type="file" id="profileFileInput" accept="image/*" style="display:none" aria-hidden="true" />
+      <p class="privacy-note">Demo only: an uploaded profile picture is only displayed on this page (browser memory only) — it is not saved or sent anywhere and disappears on refresh.</p>
+    </section>
+    </section>
+
+    <!-- ============ MY ACCOUNT ============ -->
+    <section class="view" id="view-myaccount" aria-label="My Account">
+    <!-- ============ MY ACCOUNT (username & password) ============ -->
+    <section class="panel" id="myAccount" aria-label="My account — username and password settings">
+      <h2>My Account — Username &amp; Password</h2>
+      <p class="hint" id="myAccountHint">Manage your own sign-in details.</p>
+      <div id="myAccountBody"></div>
+    </section>
+    </section>
+
+    <!-- Shared panels: one copy only, moved by JS into the active view's slot -->
+    <div id="sharedPanels" hidden>
       <!-- Weekly chart -->
       <section class="panel" id="reports" aria-label="This week's attendance">
         <h2>Attendance Graphs</h2>
@@ -975,10 +1132,8 @@
           </div>
         </div>
       </section>
-    </div>
-
     <!-- Records table -->
-    <section class="panel" id="records" aria-label="Today's attendance records" style="margin-bottom:18px">
+    <section class="panel" id="records" aria-label="Today's attendance records">
       <h2>Today's Attendance</h2>
       <p class="hint">All of today's records. Search or filter by status.</p>
       <div class="table-tools">
@@ -1006,99 +1161,6 @@
         <tbody id="recordsBody"></tbody>
       </table>
     </section>
-
-    <!-- ============ AUDIT LOG / HISTORY ============ -->
-    <section class="panel" id="auditSection" aria-label="Audit log of every check-in" style="margin-bottom:18px">
-      <h2>Audit Log — Check-In History</h2>
-      <p class="hint">Every check-in is logged here: who, what time, what photo proof, and what GPS location. <b>Verified</b> only if the photo proof with timestamp and the location are complete. Automatically <b>Flagged</b> if there is no photo, no location, or the same person's check-ins are too close together (less than 3 minutes apart).</p>
-      <div class="audit-summary">
-        <span class="audit-stat">Total logs: <b id="auditTotal">0</b></span>
-        <span class="audit-stat">Verified: <b id="auditVerified">0</b></span>
-        <span class="audit-stat">Flagged: <b id="auditFlagged">0</b></span>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>Time / Date</th>
-            <th>Photo Proof</th>
-            <th>Location</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="auditBody"></tbody>
-      </table>
-      <p class="privacy-note">Tap a photo proof to view it larger — the date, time, name, and GPS coordinates are overlaid on the photo itself. This log is a demo only: it lives only in the page's memory and disappears on refresh.</p>
-      <div class="super-only" style="margin-top:14px">
-        <button class="btn-danger-ghost" id="btnClearAudit" type="button">Clear Audit Log (Super Admin only)</button>
-      </div>
-
-      <div style="margin-top:22px;border-top:1px solid var(--line);padding-top:16px">
-        <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Authority &amp; Admin Changes Log</h3>
-        <p class="hint" style="margin-bottom:10px">Every grant or revocation of authority by the Super Admin, creation or removal of an Admin account, removal of a member, and every username change, password change, and password reset is logged here: who did it, to whom, and at what time. Passwords themselves are never written to this log.</p>
-        <ul class="authority-list" id="authorityList">
-          <li><span style="color:var(--ink-3);font-weight:600">No authority changes in this session yet.</span></li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ============ ADMIN MANAGEMENT (SUPER ADMIN LANG) ============ -->
-    <section class="panel super-only" id="adminMgmt" aria-label="Admin management — Super Admin only" style="margin-bottom:18px">
-      <h2>Admin Management <span class="role-badge role-super">Super Admin only</span></h2>
-      <p class="hint">This is the only place where authority can be granted or revoked. An Admin <b>cannot</b> grant authority to others and cannot see this screen. As Super Admin, you can also change the <b>username and password</b> of any Admin or user account here, or <b>reset</b> a password to a temporary one. An Admin can only change their own username and password, and a member can only change their own password (in My Account). Every change is logged in the Audit Log above.</p>
-
-      <h3 style="font-size:.92rem;font-weight:800;margin:16px 0 8px">Create a New Admin Account</h3>
-      <div class="create-grid">
-        <div class="field" style="margin:0">
-          <label for="newAdminName">Name</label>
-          <input type="text" id="newAdminName" placeholder="e.g. Juan Dela Cruz" />
-        </div>
-        <div class="field" style="margin:0">
-          <label for="newAdminUser">Username</label>
-          <input type="text" id="newAdminUser" placeholder="e.g. juan.admin" />
-        </div>
-        <div class="field" style="margin:0">
-          <label for="newAdminPass">Password (demo)</label>
-          <input type="password" id="newAdminPass" placeholder="Demo password" />
-        </div>
-      </div>
-      <div class="field" style="margin-top:12px">
-        <label>Authority to grant to the new Admin</label>
-        <div class="perm-checks" id="newAdminPerms"></div>
-      </div>
-      <button class="btn btn-in" id="btnCreateAdmin" type="button" style="padding-left:18px;padding-right:18px">Create Admin Account</button>
-
-      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 8px">Accounts</h3>
-      <div id="adminList"></div>
-
-      <h3 style="font-size:.92rem;font-weight:800;margin:24px 0 4px">Member Management</h3>
-      <p class="hint">Only the Super Admin can remove a member. Removals are also logged in the Audit Log.</p>
-      <div id="memberMgmtList"></div>
-    </section>
-
-    <!-- ============ USER PROFILES ============ -->
-    <section class="panel" id="profilesSection" aria-label="User profiles of the members" style="margin-bottom:18px">
-      <h2 id="profilesTitle">User Profiles — Members</h2>
-      <p class="hint" id="profilesHint">Every member has their own Profile Account: their own details, profile picture, and attendance history. The Super Admin and Admin can edit details and upload a picture for a member; a member can only change their own picture and can only see their own records. The Super Admin and Admin can also see each member's check-in photo proof in their profile (and in the Audit Log) — tap it to view it larger; a member only ever sees their own proof.</p>
-      <div class="pdf-toolbar export-only">
-        <label>From <input type="date" id="pdfFrom" aria-label="Start of the date range for the PDF" /></label>
-        <label>To <input type="date" id="pdfTo" aria-label="End of the date range for the PDF" /></label>
-        <span class="pdf-note">Date range for each user's PDF export. Leave blank = today + the past 10 workdays.</span>
-      </div>
-      <div class="profile-grid" id="profileGrid"></div>
-      <input type="file" id="profileFileInput" accept="image/*" style="display:none" aria-hidden="true" />
-      <p class="privacy-note">Demo only: an uploaded profile picture is only displayed on this page (browser memory only) — it is not saved or sent anywhere and disappears on refresh.</p>
-    </section>
-
-    <div class="grid-bottom">
-      <!-- Leave requests -->
-      <section class="panel" id="leaves" aria-label="Leave requests">
-        <h2>Leave Requests</h2>
-        <p class="hint">Waiting for approval.</p>
-        <div id="leaveList"></div>
-        <div class="perm-lock-note" id="leaveLockNote">Your account does not have the authority to approve or decline leave. Only the Super Admin can grant this authority.</div>
-      </section>
-
       <!-- Department breakdown -->
       <section class="panel" id="employees" aria-label="Attendance by department">
         <h2>By Department</h2>
@@ -1106,8 +1168,6 @@
         <div id="deptList"></div>
       </section>
     </div>
-
-    <p class="foot-note">This is a mockup only — it contains sample data and no real records are saved.</p>
   </main>
 </div>
 
@@ -1372,9 +1432,17 @@
   }
 
   /* ---------- Weekly chart (hand-authored SVG) ---------- */
+  /* One stacked bar per day: late (amber) at the bottom, on time (green) on
+     top. Only the very top of the bar is rounded, so the segments join cleanly
+     with no notches or gaps between them. */
+  function topRoundPath(x, yTop, w, yBot, r){
+    return 'M '+x+' '+(yTop+r)+' Q '+x+' '+yTop+' '+(x+r)+' '+yTop+
+      ' L '+(x+w-r)+' '+yTop+' Q '+(x+w)+' '+yTop+' '+(x+w)+' '+(yTop+r)+
+      ' L '+(x+w)+' '+yBot+' L '+x+' '+yBot+' Z';
+  }
   function renderChart(){
     var max=TOTAL_STAFF, W=560, H=220, base=182, top=18, plotH=base-top;
-    var slot=W/5, bw=44;
+    var slot=W/5, bw=48;
     var svg="";
     // gridlines
     [0,3,6,9,12].forEach(function(v){
@@ -1382,20 +1450,33 @@
       svg += '<line x1="34" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/>';
       svg += '<text x="28" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace">'+v+'</text>';
     });
+    svg += '<line x1="34" x2="'+(W-6)+'" y1="'+base+'" y2="'+base+'" stroke="var(--ink-3)" stroke-width="1" opacity="0.55"/>';
     var totalRate=0, days=0;
     WEEK.forEach(function(d,i){
       var cx = 34 + slot*i + slot/2;
-      var lateH = (d.late/max)*plotH, onH = (d.ontime/max)*plotH;
-      var yLate = base - lateH, yOn = yLate - onH;
-      if(d.ontime+d.late>0){
-        svg += '<rect x="'+(cx-bw/2)+'" y="'+yOn+'" width="'+bw+'" height="'+Math.max(onH,2)+'" rx="5" fill="var(--green)"/>';
-        if(d.late>0) svg += '<rect x="'+(cx-bw/2)+'" y="'+yLate+'" width="'+bw+'" height="'+Math.max(lateH,2)+'" rx="5" fill="var(--amber)"/>';
-        svg += '<text x="'+cx+'" y="'+(yOn-8)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">'+(d.ontime+d.late)+'</text>';
+      var x = cx - bw/2;
+      var total = d.ontime + d.late;
+      if(total>0){
+        var segs = [];
+        if(d.late>0) segs.push({v:d.late, color:"var(--amber)"});
+        if(d.ontime>0) segs.push({v:d.ontime, color:"var(--green)"});
+        var yCur = base;
+        segs.forEach(function(s, si){
+          var h = (s.v/max)*plotH;
+          var yTop = yCur - h;
+          if(si===segs.length-1){
+            svg += '<path d="'+topRoundPath(x, yTop, bw, yCur, 6)+'" fill="'+s.color+'"/>';
+          } else {
+            svg += '<rect x="'+x+'" y="'+yTop+'" width="'+bw+'" height="'+Math.max(h,1)+'" fill="'+s.color+'"/>';
+          }
+          yCur = yTop;
+        });
+        svg += '<text x="'+cx+'" y="'+(yCur-8)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">'+total+'</text>';
       } else {
         svg += '<text x="'+cx+'" y="'+(base-30)+'" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">no data yet</text>';
       }
       svg += '<text x="'+cx+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink-2)">'+d.day+'</text>';
-      if(d.ontime+d.late>0){ totalRate += (d.ontime+d.late)/TOTAL_STAFF; days++; }
+      if(total>0){ totalRate += total/TOTAL_STAFF; days++; }
     });
     $("weekChart").innerHTML = svg;
     if(days>0) $("weekRate").textContent = Math.round(totalRate/days*100) + "%";
@@ -1546,13 +1627,33 @@
     });
   }
 
-  /* ---------- Sidebar quick-jump ---------- */
-  document.querySelectorAll("[data-goto]").forEach(function(b){
-    b.addEventListener("click", function(){
-      var el=$(b.getAttribute("data-goto"));
-      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-  });
+  /* ---------- Shared panels: one copy, moved into the active view's slot ---------- */
+  /* The chart panel, the records table, and the department panel each exist
+     once. The view system moves them into the slot of the view that is open,
+     so Dashboard can show the overview while Records / Reports / Employees
+     each show their own part — never two copies, never scrolled into. */
+  function moveInto(el, slotId){
+    var slot=$(slotId);
+    if(el && slot && el.parentNode!==slot) slot.appendChild(el);
+  }
+  function placeShared(name){
+    moveInto($("reports"),   name==="reports"   ? "slotChartReports" : "slotChartDash");
+    moveInto($("records"),   name==="records"   ? "slotRecordsRecords" : "slotRecordsDash");
+    moveInto($("employees"), name==="employees" ? "slotDeptEmp" : "slotDeptDash");
+  }
+  window.__placeShared = placeShared;
+
+  /* ---------- Employee roster — Employees view ---------- */
+  function renderRoster(){
+    var host=$("rosterList"); if(!host) return;
+    host.innerHTML = EMPLOYEES.map(function(e){
+      return '<div class="roster-item"><div class="avatar" style="background:'+avatarColor(e.id)+'">'+initials(e.name)+'</div>'+
+        '<div class="roster-main"><div class="roster-name">'+e.name+'</div><div class="roster-dept">'+e.dept+'</div></div>'+
+        '<span class="roster-role">'+(e.role||"Staff")+'</span>'+
+        '<span class="status '+STATUS_CLASS[e.status]+'">'+STATUS_LABEL[e.status]+'</span>'+
+        '<span class="roster-time">'+e.inT+'</span></div>';
+    }).join("");
+  }
 
   /* ---------- Live activity feed + core API for facial recognition ---------- */
   function logActivity(html){
@@ -1640,7 +1741,7 @@
     }
   };
 
-  function renderAll(){ renderKpis(); renderRecords(); renderSelect(); }
+  function renderAll(){ renderKpis(); renderRecords(); renderSelect(); renderRoster(); }
   renderAll(); renderLeaves(); seedAudit();
   $("photoModalClose").addEventListener("click", closePhotoModal);
   $("photoModal").addEventListener("click", function(ev){ if(ev.target===$("photoModal")) closePhotoModal(); });
@@ -2331,6 +2432,7 @@
     $("loginError").classList.remove("show");
     $("loginPass").value="";
     applySession();
+    if(window.AttendanceViews) window.AttendanceViews.show(acct.role==="member" ? "profiles" : "dashboard");
     if(window.__renderProfiles) window.__renderProfiles();
     var rTxt = acct.role==="super" ? "Super Admin" : acct.role==="member" ? "Member / User" : "Admin";
     Core.log("<b>"+esc(acct.name)+"</b> logged in as <b>"+rTxt+"</b>.");
@@ -3081,16 +3183,29 @@
       svg+='<line x1="34" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/>';
       svg+='<text x="28" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace">'+v+'</text>';
     });
+    svg += '<line x1="34" x2="'+(W-6)+'" y1="'+base+'" y2="'+base+'" stroke="var(--ink-3)" stroke-width="1" opacity="0.55"/>';
     var sumIn=0, sumSlots=0;
     WEEKS.forEach(function(w,i){
       var cx=34+slot*i+slot/2;
+      var x=cx-bw/2;
       var total=w.ontime+w.late+w.absent;
       var yCur=base;
-      [["absent","var(--red)"],["late","var(--amber)"],["ontime","var(--green)"]].forEach(function(pair){
-        var v=w[pair[0]]; if(v<=0) return;
+      /* Stack bottom-up: absent, late, on time. Only the very top of the bar
+         is rounded, so the segments join cleanly with no notches. */
+      var pairs=[["absent","var(--red)"],["late","var(--amber)"],["ontime","var(--green)"]]
+        .filter(function(pair){ return w[pair[0]]>0; });
+      pairs.forEach(function(pair, si){
+        var v=w[pair[0]];
         var h=(v/max)*plotH;
-        yCur-=h;
-        svg+='<rect x="'+(cx-bw/2)+'" y="'+yCur+'" width="'+bw+'" height="'+Math.max(h,2)+'" rx="4" fill="'+pair[1]+'"/>';
+        var yTop=yCur-h;
+        if(si===pairs.length-1){
+          svg+='<path d="M '+x+' '+(yTop+6)+' Q '+x+' '+yTop+' '+(x+6)+' '+yTop+
+            ' L '+(x+bw-6)+' '+yTop+' Q '+(x+bw)+' '+yTop+' '+(x+bw)+' '+(yTop+6)+
+            ' L '+(x+bw)+' '+yCur+' L '+x+' '+yCur+' Z" fill="'+pair[1]+'"/>';
+        } else {
+          svg+='<rect x="'+x+'" y="'+yTop+'" width="'+bw+'" height="'+Math.max(h,1)+'" fill="'+pair[1]+'"/>';
+        }
+        yCur=yTop;
       });
       svg+='<text x="'+cx+'" y="'+(yCur-8)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">'+(w.ontime+w.late)+'</text>';
       svg+='<text x="'+cx+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink-2)">'+w.label+'</text>';
@@ -3113,15 +3228,42 @@
   var rb=$("recordsBody");
   if(rb && window.MutationObserver) new MutationObserver(refresh).observe(rb, {childList:true});
 
-  /* ---------- Sidebar: highlight the last clicked menu item ---------- */
-  var navItems=document.querySelectorAll(".nav-item");
-  navItems.forEach(function(n){
-    n.addEventListener("click", function(){
-      navItems.forEach(function(x){ x.classList.remove("active"); });
-      n.classList.add("active");
-      if(!n.getAttribute("data-goto")) window.scrollTo({top:0, behavior:"smooth"});
+  /* ---------- Separate views: one view visible at a time ---------- */
+  /* Tapping a sidebar item shows only that view. Nothing scrolls into
+     another section, and the header always names the view that is open. */
+  var VIEW_TITLES = {
+    dashboard:"Dashboard", live:"Live Check-In", records:"Records",
+    employees:"Employees", leaves:"Leave Requests", reports:"Reports",
+    audit:"Audit Log", admin:"Admin Accounts", profiles:"User Profiles",
+    myaccount:"Account Settings"
+  };
+  var VIEW_ORDER = Object.keys(VIEW_TITLES);
+  var currentView = "dashboard";
+  function showView(name){
+    if(VIEW_ORDER.indexOf(name)===-1) name="dashboard";
+    /* Role gating: a member only ever sees Profiles and My Account. */
+    if(document.body.classList.contains("role-member") && name!=="profiles" && name!=="myaccount") name="profiles";
+    /* An admin without audit authority never opens the Audit Log. */
+    if(document.body.classList.contains("no-audit") && name==="audit") name="dashboard";
+    currentView = name;
+    VIEW_ORDER.forEach(function(v){
+      var el=$("view-"+v);
+      if(el) el.classList.toggle("active", v===name);
     });
+    document.querySelectorAll(".nav-item[data-view]").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-view")===name);
+    });
+    var t=$("viewTitle"); if(t) t.textContent = VIEW_TITLES[name];
+    if(window.__placeShared) window.__placeShared(name);
+    if(name==="reports" || name==="dashboard"){ renderDay(); renderMonth(); }
+    window.scrollTo(0,0);
+  }
+  var navItems=document.querySelectorAll(".nav-item[data-view]");
+  navItems.forEach(function(n){
+    n.addEventListener("click", function(){ showView(n.getAttribute("data-view")); });
   });
+  window.AttendanceViews = { show: showView, current: function(){ return currentView; } };
+  showView("dashboard");
 
   renderDay();
   renderMonth();
