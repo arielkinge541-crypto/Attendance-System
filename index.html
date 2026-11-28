@@ -206,8 +206,9 @@
   .live-dot{width:10px;height:10px;border-radius:50%;background:var(--ink-3);flex:none}
   .live-dot.on{background:#e5484d;animation:pulse 1.2s ease infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .live-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;margin-top:8px;align-items:start}
-  .cam-wrap{position:relative;background:#0a0f0d;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
+  .live-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px;margin-top:8px;align-items:start}
+  .cam-wrap{position:relative;background:#0a0f0d;border-radius:14px;overflow:hidden;aspect-ratio:16/10;border:1px solid var(--line);box-shadow:var(--shadow)}
+  .cam-wrap.cam-on{box-shadow:0 0 0 2px rgba(0,240,255,.4),var(--shadow)}
   .cam-wrap video{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1)}
   .cam-wrap canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}
   .cam-placeholder{position:absolute;inset:0;display:grid;place-items:center;color:#cfe0d6;text-align:center;padding:22px;font-weight:600;font-size:.9rem;line-height:1.55}
@@ -215,6 +216,20 @@
   .face-status.good{background:var(--green)}
   .face-status.bad{background:#b42318}
   .face-status.warn{background:#b45309}
+
+  /* ---------- Face guide oval + fullscreen scanner (v16) ---------- */
+  .face-guide{position:absolute;left:50%;top:50%;width:min(42%,260px);aspect-ratio:3/4;transform:translate(-50%,-50%);border:2px dashed rgba(0,240,255,.9);border-radius:50%;display:none;pointer-events:none;z-index:2}
+  .cam-wrap.cam-on:not(.mode-scanner) .face-guide{display:block}
+  .face-guide .fg-label{position:absolute;left:50%;top:16px;transform:translateX(-50%);white-space:nowrap;background:rgba(10,15,13,.8);color:#fff;font-weight:700;font-size:.78rem;padding:5px 11px;border-radius:999px}
+  .cam-wrap.mode-scanner .face-guide{display:none!important}
+  .cam-mode-chip{position:absolute;top:12px;left:12px;z-index:6;background:rgba(10,15,13,.72);color:#fff;font-weight:800;font-size:.8rem;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3)}
+  .fs-btn{position:absolute;top:12px;right:12px;z-index:6;display:inline-flex;align-items:center;gap:6px;background:rgba(10,15,13,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 13px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit}
+  .fs-btn:hover{background:var(--cyan);color:#04222a;border-color:transparent}
+  .cam-wrap:fullscreen,.cam-wrap:-webkit-full-screen{border-radius:0;aspect-ratio:auto;width:100%;height:100%;max-width:none;background:#000;border:0}
+  .cam-wrap:fullscreen video,.cam-wrap:-webkit-full-screen video{object-fit:contain}
+  .cam-wrap:fullscreen .face-status,.cam-wrap:-webkit-full-screen .face-status{font-size:1rem;padding:10px 16px}
+  .cam-wrap:fullscreen .face-guide,.cam-wrap:-webkit-full-screen .face-guide{width:min(34%,360px)}
+  .cam-wrap:fullscreen .cam-mode-chip,.cam-wrap:-webkit-full-screen .cam-mode-chip{font-size:.95rem}
   .cam-controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
   .btn-ghost{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 15px;font-weight:800;font-size:.9rem;min-height:2.75rem}
   .btn-danger-ghost{background:var(--surface);border:1px solid var(--line);color:var(--red);border-radius:10px;padding:10px 15px;font-weight:800;font-size:.9rem;min-height:2.75rem}
@@ -916,8 +931,9 @@
 
       <div class="live-grid">
         <div>
-          <div class="cam-wrap">
+          <div class="cam-wrap" id="camWrap">
             <video id="camVideo" autoplay muted playsinline></video>
+            <div class="face-guide" id="faceGuide" aria-hidden="true"><span class="fg-label">Center your face in the oval</span></div>
             <canvas id="camOverlay" aria-hidden="true"></canvas>
             <div class="scan-frame" id="scanFrame" hidden><div class="scan-box"></div></div>
             <div class="cam-placeholder" id="camPlaceholder">
@@ -927,6 +943,8 @@
               </div>
             </div>
             <div class="face-status" id="faceStatus">No camera</div>
+            <div class="cam-mode-chip" id="camModeChip">📷 Camera — Face</div>
+            <button class="fs-btn" id="btnFullscreen" type="button" aria-label="Fullscreen scanner" title="Fullscreen">⛶ Fullscreen</button>
           </div>
           <div class="cam-controls">
             <button class="btn btn-in" id="btnCamStart" type="button" style="flex:0 1 auto;padding-left:18px;padding-right:18px">Turn On Camera</button>
@@ -2432,6 +2450,7 @@
       stream=s;
       video.srcObject=s;
       $("camPlaceholder").style.display="none";
+      $("camWrap").classList.add("cam-on");
       $("btnCamStart").disabled=true;
       $("btnCamStop").disabled=false;
       setLive(true, "Camera: LIVE · scanning");
@@ -2462,6 +2481,7 @@
     lastBox=null; lastDescriptor=null; proposed=null; resetStable();
     clearBox();
     $("camPlaceholder").style.display="grid";
+    $("camWrap").classList.remove("cam-on");
     $("btnCamStart").disabled=false;
     $("btnCamStop").disabled=true;
     setLive(false, "Camera: off");
@@ -2677,6 +2697,8 @@
     $("modeTabScanner").setAttribute("aria-selected", m==="scanner" ? "true" : "false");
     $("scanPanel").hidden = (m!=="scanner");
     $("scanFrame").hidden = (m!=="scanner");
+    var cw=$("camWrap"); if(cw) cw.classList.toggle("mode-scanner", m==="scanner");
+    var chip=$("camModeChip"); if(chip) chip.textContent = m==="scanner" ? "🔳 Scanner — QR" : "📷 Camera — Face";
     if(m==="scanner"){
       window.__facePaused = true; /* face loop skips while scanning */
       if($("btnCamStart") && !$("btnCamStart").disabled){ $("btnCamStart").click(); }
@@ -2761,6 +2783,36 @@
   if(unlockBtn){ unlockBtn.addEventListener("click", tryUnlock); }
   var lockPass=$("lockPass");
   if(lockPass){ lockPass.addEventListener("keydown", function(e){ if(e.key==="Enter") tryUnlock(); }); }
+
+  /* ---------- Fullscreen scanner (v16) ----------
+     requestFullscreen on the camera container: the video element, the face
+     overlay canvas, the guide oval and the status pill all live inside it,
+     so the camera stream (video.srcObject) is never touched and keeps
+     running across enter/exit. iOS Safari has no element fullscreen, so
+     it falls back to the video's own webkitEnterFullscreen. */
+  var camWrap=$("camWrap"), fsBtn=$("btnFullscreen");
+  function fsEl(){ return document.fullscreenElement || document.webkitFullscreenElement || null; }
+  function fsOn(){ return fsEl()===camWrap || (video && document.webkitFullscreenElement===video); }
+  function updateFsBtn(){
+    if(!fsBtn) return;
+    fsBtn.textContent = fsOn() ? "⤢ Exit Fullscreen" : "⛶ Fullscreen";
+    fsBtn.setAttribute("aria-label", fsOn() ? "Exit fullscreen" : "Fullscreen scanner");
+  }
+  function enterFs(){
+    if(camWrap.requestFullscreen){
+      var p=camWrap.requestFullscreen();
+      if(p && p.catch) p.catch(function(){ if(video && video.webkitEnterFullscreen){ try{ video.webkitEnterFullscreen(); }catch(e){} } });
+    } else if(camWrap.webkitRequestFullscreen){ camWrap.webkitRequestFullscreen(); }
+    else if(video && video.webkitEnterFullscreen){ try{ video.webkitEnterFullscreen(); }catch(e){} }
+    else if(Core) Core.toast("Fullscreen is not supported in this browser.");
+  }
+  function exitFs(){
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+  if(fsBtn){ fsBtn.addEventListener("click", function(){ if(fsOn()) exitFs(); else enterFs(); }); }
+  document.addEventListener("fullscreenchange", updateFsBtn);
+  document.addEventListener("webkitfullscreenchange", updateFsBtn);
 })();
 </script>
 
