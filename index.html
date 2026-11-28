@@ -402,22 +402,6 @@
   /* ---------- Face engine offline banner ---------- */
   .face-offline-banner{margin:0 0 12px;background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 12px;font-size:.84rem;font-weight:700;line-height:1.5}
 
-  /* ---------- Appearance: background options ---------- */
-  /* When a background is active, the app/main stop painting their solid
-     colour so the picture shows through the gaps. Sidebar and panels stay
-     opaque on purpose, so text is always on a solid surface. */
-  body.has-bg, body.has-bg .app, body.has-bg .main{background-color:transparent}
-  body.has-bg{background-attachment:fixed;background-position:center;background-repeat:no-repeat;background-size:cover}
-  .bg-options{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 14px}
-  .bg-opt{border:2px solid var(--line);border-radius:12px;padding:0;overflow:hidden;background:var(--surface-2);cursor:pointer;text-align:left;min-height:0}
-  .bg-opt .sw{display:block;height:62px;background-size:cover;background-position:center}
-  .bg-opt .nm{display:block;font-size:.8rem;font-weight:800;padding:8px 10px;color:var(--ink)}
-  .bg-opt[aria-pressed="true"]{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,240,255,.25)}
-  .bg-opt:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-  .bg-custom-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
-  .bg-preview{width:96px;height:60px;border-radius:10px;border:1px solid var(--line);object-fit:cover;background:var(--surface-2)}
-  @media (max-width:760px){ .bg-options{grid-template-columns:repeat(2,1fr)} }
-
   /* ---------- Username & password management ---------- */
   input[type="password"]{
     width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
@@ -1188,22 +1172,6 @@
       <div id="myAccountBody"></div>
     </section>
 
-    <!-- ============ APPEARANCE (background) ============ -->
-    <section class="panel" id="appearancePanel" aria-label="Appearance — background">
-      <h2>Appearance — Background</h2>
-      <p class="hint">Choose the background of the app. The default is the dark cyan-to-purple look. The presets are subtle and dark, so text stays easy to read. You can also upload your own picture — it is dimmed automatically so nothing behind the panels gets in the way of reading.</p>
-      <div class="bg-options" id="bgOptions" role="group" aria-label="Background choices"></div>
-      <div class="bg-custom-row">
-        <button class="btn-ghost" id="btnBgUpload" type="button">Upload my own picture…</button>
-        <input type="file" id="bgFile" accept="image/*" style="display:none" aria-hidden="true" />
-        <img class="bg-preview" id="bgPreview" alt="Preview of your uploaded background picture" hidden />
-        <span class="hint" id="bgCustomName" style="margin:0"></span>
-      </div>
-      <div style="margin-top:14px">
-        <button class="btn-ghost" id="btnBgReset" type="button">Reset to default</button>
-      </div>
-      <p class="privacy-note">Saved only on this device (in this browser) — it is a display preference, not an account change, so it is never written to the Audit Log and it does not follow you to another device.</p>
-    </section>
     </section>
 
     <!-- Shared panels: one copy only, moved by JS into the active view's slot -->
@@ -1951,13 +1919,22 @@
   var video=$("camVideo"), canvas=$("camOverlay"), ctx=canvas.getContext("2d");
   var MODEL_URL="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
   var MATCH_THRESHOLD=0.55;
+  /* Twin / lookalike guard: the best match must beat the second-best by at
+     least this much, or the system refuses to guess and asks instead. */
+  var AMBIGUITY_MARGIN=0.08;
+  var ENROLL_SAMPLES=3;   /* front, slight-left, slight-right per member */
+  var STABLE_FRAMES=2;    /* same match in N frames in a row before proposing */
+  var MIN_FACE_PX=90;     /* face box must be at least this wide */
+  var MIN_BRIGHTNESS=28;  /* 0-255 mean brightness of the face region */
 
   var stream=null, loopTimer=null, busy=false;
   var engineReady=false, engineFailed=false, engineLoading=false;
   var lastBox=null, lastDescriptor=null;
-  var enrolled=[]; /* {name, dept, descriptor, thumb} — memory only, no storage */
+  var enrolled=[]; /* {name, dept, descriptors:[...], descriptor:first, thumb} — memory only, no storage */
   var proposed=null; /* {name, dept, confidence, via} */
   var unknownShown=false;
+  var stableName=null, stableCount=0, ambiguousKey=null;
+  var enrollSamples=[], enrollTarget=null;
 
   /* ---------- GPS location (anti-cheat) ---------- */
   var lastLocation=null; /* {lat, lon, place, at} — memory only */
@@ -2088,7 +2065,7 @@
     $("btnConfirmMatch").addEventListener("click", confirmMatch);
     $("btnRejectMatch").addEventListener("click", function(){
       Core.log("Scan of <b>"+esc(p.name)+"</b> — not confirmed, nothing recorded.");
-      proposed=null;
+      proposed=null; resetStable();
       renderIdleCard("The last scan was not confirmed — no attendance recorded. Scan again when ready.");
     });
   }
@@ -2098,6 +2075,20 @@
       '<div class="mc-title">✕ Unknown face'+(via==="simulation"?' <span style="color:var(--amber)">(simulation)</span>':'')+'</div>'+
       '<div class="mc-body">A face was seen but it <b>did not match</b> any enrolled member. <b>No employee was marked present.</b></div>'+
       '<div class="mc-body" style="margin-top:6px">If they are a member, enroll their face first using the form below while they face the camera.</div>';
+  }
+  function renderAmbiguousCard(first, second, confidence){
+    $("matchCard").className="match-card is-match";
+    $("matchCard").innerHTML=
+      '<div class="mc-title">⚠ Magkamukha — sino ka?</div>'+
+      '<div class="mc-body">Ang mukha sa camera ay <b style="color:var(--ink)">halos magkapareho</b> kina <b style="color:var(--ink)">'+esc(first.name)+'</b> at <b style="color:var(--ink)">'+esc(second.name)+'</b>. Hindi ako manghuhula — <b>piliin mo kung sino ka</b> para walang maling ma-record.</div>'+
+      '<div class="match-actions">'+
+        '<button class="btn btn-in" id="btnAmbFirst" type="button" style="padding-left:16px;padding-right:16px">Ako si '+esc(first.name)+'</button>'+
+        '<button class="btn btn-in" id="btnAmbSecond" type="button" style="padding-left:16px;padding-right:16px">Ako si '+esc(second.name)+'</button>'+
+        '<button class="btn-ghost" id="btnAmbNeither" type="button">Hindi ako ito</button>'+
+      '</div>';
+    $("btnAmbFirst").addEventListener("click", function(){ ambiguousKey=null; resetStable(); proposeMatch(first.name, first.dept, confidence, "camera"); });
+    $("btnAmbSecond").addEventListener("click", function(){ ambiguousKey=null; resetStable(); proposeMatch(second.name, second.dept, confidence, "camera"); });
+    $("btnAmbNeither").addEventListener("click", function(){ ambiguousKey=null; resetStable(); renderIdleCard("Hindi ka nakilala bilang isa sa kanila — subukang muli sa mas maliwanag na lugar."); });
   }
   function renderDoneCard(name, res, audit){
     var proofHtml = audit && audit.photo
@@ -2181,14 +2172,19 @@
     }
     $("enrolledList").innerHTML=enrolled.map(function(m){
       var av = m.thumb ? '<img src="'+m.thumb+'" alt="">' : '<span class="avatar" style="background:'+Core.avatarColor(m.name.length)+'">'+Core.initials(m.name)+'</span>';
-      return '<span class="enrolled-chip">'+av+esc(m.name)+'</span>';
+      var n = (m.descriptors && m.descriptors.length) || 1;
+      return '<span class="enrolled-chip" title="'+n+' face sample'+(n>1?'s':'')+'">'+av+esc(m.name)+'</span>';
     }).join("");
   }
   function updateEnrollBtn(){
     var ready = !!lastDescriptor;
     $("btnEnroll").disabled = !ready;
+    if(enrollSamples.length){
+      $("enrollHint").textContent = "Sample "+enrollSamples.length+" of "+ENROLL_SAMPLES+" saved — humarap nang bahagya sa kaliwa o kanan, tapos pindutin ulit ang Enroll.";
+      return;
+    }
     $("enrollHint").textContent = ready
-      ? "A face was detected — ready to enroll. Enter the name, then tap enroll."
+      ? "A face was detected — ready to enroll. Enter the name, then tap Enroll 3 times: harap, bahagyang kaliwa, bahagyang kanan."
       : (stream ? "Looking for a face… face the camera to enroll." : "Turn on the camera first and face it — only then can you enroll.");
   }
 
@@ -2220,14 +2216,30 @@
     var s=0; for(var i=0;i<a.length;i++){ var d=a[i]-b[i]; s+=d*d; }
     return Math.sqrt(s);
   }
+  /* Distance to one member = the closest of their enrolled samples.
+     Several samples (front / slight-left / slight-right) make the same
+     person match from more angles, so recognition fails less often. */
+  function memberDistance(desc, m){
+    var samples = (m.descriptors && m.descriptors.length) ? m.descriptors : (m.descriptor ? [m.descriptor] : []);
+    var best=Infinity;
+    samples.forEach(function(s){ var d=euclid(desc, s); if(d<best) best=d; });
+    return best;
+  }
+  /* Best match wins only if it clearly beats the second-best. When two
+     enrolled people are almost equally close (twins, lookalikes), the
+     system refuses to guess and returns both, so the person picks. */
   function matchDescriptor(desc){
-    var best=null, bestDist=Infinity;
+    var best=null, second=null, bestDist=Infinity, secondDist=Infinity;
     enrolled.forEach(function(m){
-      var d=euclid(desc, m.descriptor);
-      if(d<bestDist){ bestDist=d; best=m; }
+      var d=memberDistance(desc, m);
+      if(d<bestDist){ second=best; secondDist=bestDist; best=m; bestDist=d; }
+      else if(d<secondDist){ second=m; secondDist=d; }
     });
     if(best && bestDist<MATCH_THRESHOLD){
       var conf=Math.round(Math.max(55, Math.min(99, (1-bestDist/0.9)*100)));
+      if(second && (secondDist-bestDist)<AMBIGUITY_MARGIN){
+        return {ambiguous:true, first:best, second:second, confidence:conf};
+      }
       return {member:best, confidence:conf};
     }
     return null;
@@ -2251,29 +2263,71 @@
   }
   function clearBox(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
 
+  /* Mean brightness (0-255) of the face region — too dark means the
+     descriptor is unreliable, so the system asks for more light instead
+     of guessing. Returns 255 when it cannot be measured. */
+  function faceBrightness(box){
+    try{
+      var c=document.createElement("canvas"); c.width=32; c.height=32;
+      var g=c.getContext("2d");
+      g.drawImage(video, box.x, box.y, box.width, box.height, 0, 0, 32, 32);
+      var d=g.getImageData(0,0,32,32).data, sum=0, n=0;
+      for(var i=0;i<d.length;i+=4){ sum += 0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]; n++; }
+      return sum/n;
+    }catch(e){ return 255; }
+  }
+  function resetStable(){ stableName=null; stableCount=0; ambiguousKey=null; }
+
   function detectOnce(){
     if(!stream || busy) return;
     if(engineReady && typeof window.faceapi!=="undefined"){
       busy=true;
-      var opts=new window.faceapi.TinyFaceDetectorOptions({inputSize:224, scoreThreshold:0.5});
+      var opts=new window.faceapi.TinyFaceDetectorOptions({inputSize:320, scoreThreshold:0.5});
       window.faceapi.detectSingleFace(video, opts).withFaceLandmarks(true).withFaceDescriptor()
       .then(function(det){
         busy=false;
         if(!stream) return;
         if(det){
           lastBox=det.detection.box;
+          /* Quality gates: the face must be big enough and lit well
+             enough, or the descriptor is unreliable — say so, do not guess. */
+          if(lastBox.width < MIN_FACE_PX){
+            lastDescriptor=null; resetStable();
+            drawBox(lastBox, "#f2b04e");
+            if(!proposed) setFaceStatus("Lumapit ka pa sa camera — maliit ang mukha sa frame", "warn");
+            updateEnrollBtn(); return;
+          }
+          if(faceBrightness(lastBox) < MIN_BRIGHTNESS){
+            lastDescriptor=null; resetStable();
+            drawBox(lastBox, "#f2b04e");
+            if(!proposed) setFaceStatus("Madilim — lumapit sa liwanag para makilala ka", "warn");
+            updateEnrollBtn(); return;
+          }
           lastDescriptor=det.descriptor;
           var m=matchDescriptor(det.descriptor);
-          if(m){
+          if(m && m.ambiguous){
+            var key=m.first.name+"|"+m.second.name;
+            if(key===stableName){ stableCount++; } else { stableName=key; stableCount=1; }
+            drawBox(lastBox, "#f2b04e");
+            if(stableCount>=STABLE_FRAMES && ambiguousKey!==key){
+              ambiguousKey=key;
+              renderAmbiguousCard(m.first, m.second, m.confidence);
+              setFaceStatus("Magkamukha — piliin kung sino ka", "warn");
+            }
+          } else if(m){
+            ambiguousKey=null;
+            if(m.member.name===stableName){ stableCount++; } else { stableName=m.member.name; stableCount=1; }
             drawBox(lastBox, "#00f0ff");
-            proposeMatch(m.member.name, m.member.dept, m.confidence, "camera");
+            if(stableCount>=STABLE_FRAMES) proposeMatch(m.member.name, m.member.dept, m.confidence, "camera");
+            else if(!proposed) setFaceStatus("Kinikilala… ("+stableCount+"/"+STABLE_FRAMES+")", "");
           } else {
+            resetStable();
             drawBox(lastBox, enrolled.length? "#e5484d" : "#f2b04e");
             if(enrolled.length) showUnknown("camera");
             else { unknownShown=false; setFaceStatus("Face detected — no members enrolled yet", "warn"); }
           }
         } else {
-          lastBox=null; lastDescriptor=null; clearBox();
+          lastBox=null; lastDescriptor=null; clearBox(); resetStable();
           if(!proposed) setFaceStatus("No face visible — face the camera", "");
         }
         updateEnrollBtn();
@@ -2329,7 +2383,7 @@
     if(loopTimer){ clearInterval(loopTimer); loopTimer=null; }
     if(stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream=null; }
     video.srcObject=null;
-    lastBox=null; lastDescriptor=null; proposed=null;
+    lastBox=null; lastDescriptor=null; proposed=null; resetStable();
     clearBox();
     $("camPlaceholder").style.display="grid";
     $("btnCamStart").disabled=false;
@@ -2362,16 +2416,30 @@
     if(!name){ Core.toast("Enter the member's name first."); $("enrollName").focus(); return; }
     if(!lastDescriptor){ Core.toast("No face detected yet — face the camera first."); return; }
     var dept=$("enrollDept").value;
-    var copy=new Float32Array(lastDescriptor);
+    /* Three samples per member (front, slight-left, slight-right) — the
+       system matches against the closest one, so the same person is
+       recognized from more angles instead of failing on a turn. */
+    if(enrollTarget!==name.toLowerCase()){
+      enrollSamples=[]; enrollTarget=name.toLowerCase();
+    }
+    enrollSamples.push(new Float32Array(lastDescriptor));
+    if(enrollSamples.length<ENROLL_SAMPLES){
+      Core.toast("Sample "+enrollSamples.length+" of "+ENROLL_SAMPLES+" saved — humarap nang bahagya sa gilid, tapos pindutin ulit ang Enroll.");
+      Core.log("Enroll sample "+enrollSamples.length+"/"+ENROLL_SAMPLES+" for <b>"+esc(name)+"</b>.");
+      updateEnrollBtn();
+      return;
+    }
+    var samples=enrollSamples.slice(); enrollSamples=[]; enrollTarget=null;
     var existing=null;
     enrolled.forEach(function(m){ if(m.name.toLowerCase()===name.toLowerCase()) existing=m; });
-    if(existing){ existing.descriptor=copy; existing.thumb=captureThumb(); }
-    else enrolled.push({name:name, dept:dept, descriptor:copy, thumb:captureThumb()});
+    if(existing){ existing.descriptors=samples; existing.descriptor=samples[0]; existing.thumb=captureThumb(); }
+    else enrolled.push({name:name, dept:dept, descriptors:samples, descriptor:samples[0], thumb:captureThumb()});
     Core.addMember(name, dept);
-    Core.toast(name+" enrolled. Face the camera again to be recognized.");
-    Core.log("Enrolled the face of <b>"+esc(name)+"</b> as a member.");
+    Core.toast(name+" enrolled with "+ENROLL_SAMPLES+" face samples — mas accurate na ang pagkilala.");
+    Core.log("Enrolled the face of <b>"+esc(name)+"</b> ("+ENROLL_SAMPLES+" samples: harap, kaliwa, kanan).");
     $("enrollName").value="";
     renderEnrolled();
+    updateEnrollBtn();
   });
 
   /* ---------- Simulation (demo, no camera) ---------- */
@@ -4109,144 +4177,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 </script>
 
 <script>
-/* ---------- Appearance: background picture (per-device demo preference) ---------- */
-/* Saved in localStorage only. Never an account change, never logged. */
-(function(){
-  "use strict";
-  function $(id){ return document.getElementById(id); }
-  var KEY = "attendpro.background.v1";
-  /* Dark dimming overlay painted over an uploaded picture, so white text on
-     the topbar and headings stays readable no matter how bright it is. */
-  var OVERLAY = "linear-gradient(rgba(6,10,24,0.74), rgba(6,10,24,0.74))";
-  var DEFAULT_CHIP = "linear-gradient(135deg,#00f0ff 0%,#8b5cf6 100%)";
-  var PRESETS = [
-    {id:"default",  name:"Default",  css:null},
-    {id:"midnight", name:"Midnight", css:"linear-gradient(160deg,#0b1e3a 0%,#0a1128 55%,#12082b 100%)"},
-    {id:"forest",   name:"Forest",   css:"linear-gradient(160deg,#06231f 0%,#071a24 55%,#0a2417 100%)"},
-    {id:"ember",    name:"Ember",    css:"linear-gradient(160deg,#2b0f1e 0%,#1c0b22 55%,#2a1408 100%)"}
-  ];
-  function toast(msg){
-    if(window.AttendanceCore && window.AttendanceCore.toast) window.AttendanceCore.toast(msg);
-  }
-  function presetById(id){
-    for(var i=0;i<PRESETS.length;i++) if(PRESETS[i].id===id) return PRESETS[i];
-    return null;
-  }
-  function load(){
-    try{
-      var raw = window.localStorage.getItem(KEY);
-      if(!raw) return {kind:"default"};
-      var v = JSON.parse(raw);
-      if(!v || (v.kind!=="default" && v.kind!=="preset" && v.kind!=="custom")) return {kind:"default"};
-      if(v.kind==="preset" && !presetById(v.id)) return {kind:"default"};
-      if(v.kind==="custom" && typeof v.data!=="string") return {kind:"default"};
-      return v;
-    }catch(e){ return {kind:"default"}; }
-  }
-  function save(v){
-    try{ window.localStorage.setItem(KEY, JSON.stringify(v)); return true; }
-    catch(e){ return false; }
-  }
-  function apply(v){
-    var b = document.body;
-    if(!v || v.kind==="default"){
-      b.classList.remove("has-bg");
-      b.style.backgroundImage=""; b.style.backgroundSize=""; b.style.backgroundPosition=""; b.style.backgroundAttachment="";
-    } else if(v.kind==="preset"){
-      var p = presetById(v.id) || PRESETS[0];
-      b.classList.add("has-bg");
-      b.style.backgroundImage = p.css;
-      b.style.backgroundSize="cover"; b.style.backgroundPosition="center"; b.style.backgroundAttachment="fixed";
-    } else if(v.kind==="custom"){
-      b.classList.add("has-bg");
-      b.style.backgroundImage = OVERLAY + ", url(" + JSON.stringify(v.data) + ")";
-      b.style.backgroundSize="cover"; b.style.backgroundPosition="center"; b.style.backgroundAttachment="fixed";
-    }
-    syncUI(v);
-  }
-  function currentCustom(){
-    var v = load();
-    return v.kind==="custom" ? v : null;
-  }
-  function syncUI(v){
-    var wrap = $("bgOptions"); if(!wrap) return;
-    var custom = currentCustom();
-    var html = PRESETS.map(function(p){
-      var pressed = (v.kind==="preset" && v.id===p.id) || (v.kind==="default" && p.id==="default");
-      return '<button type="button" class="bg-opt" data-bg="'+p.id+'" aria-pressed="'+pressed+'" aria-label="Background: '+p.name+'">'+
-        '<span class="sw" style="background:'+(p.css || DEFAULT_CHIP)+'"></span>'+
-        '<span class="nm">'+p.name+'</span></button>';
-    }).join("");
-    var chip = custom ? OVERLAY + ", url(" + JSON.stringify(custom.data) + ")" : "repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px)";
-    html += '<button type="button" class="bg-opt" data-bg="custom" aria-pressed="'+(v.kind==="custom")+'" aria-label="Background: my picture">'+
-      '<span class="sw" style="background:'+chip+'"></span>'+
-      '<span class="nm">My picture</span></button>';
-    wrap.innerHTML = html;
-    wrap.querySelectorAll("[data-bg]").forEach(function(btn){
-      btn.addEventListener("click", function(){
-        var id = btn.getAttribute("data-bg");
-        if(id==="custom"){
-          var c = currentCustom();
-          if(c){ apply(c); }
-          else { $("bgFile").click(); }
-          return;
-        }
-        var next = id==="default" ? {kind:"default"} : {kind:"preset", id:id};
-        save(next); apply(next);
-      });
-    });
-    var prev = $("bgPreview"), nm = $("bgCustomName");
-    if(custom){
-      prev.src = custom.data; prev.hidden = false;
-      nm.textContent = "Your picture is saved on this device.";
-    } else {
-      prev.removeAttribute("src"); prev.hidden = true;
-      nm.textContent = "";
-    }
-  }
-  /* Shrink big uploads (max 1600 px, JPEG) so they fit in localStorage. */
-  function downscale(dataUrl, done){
-    var img = new Image();
-    img.onload = function(){
-      try{
-        var MAX = 1600, w = img.naturalWidth, h = img.naturalHeight;
-        var scale = Math.min(1, MAX/Math.max(w, h));
-        var c = document.createElement("canvas");
-        c.width = Math.max(1, Math.round(w*scale));
-        c.height = Math.max(1, Math.round(h*scale));
-        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-        done(c.toDataURL("image/jpeg", 0.82));
-      }catch(e){ done(null); }
-    };
-    img.onerror = function(){ done(null); };
-    img.src = dataUrl;
-  }
-  $("btnBgUpload").addEventListener("click", function(){ $("bgFile").click(); });
-  $("bgFile").addEventListener("change", function(){
-    var f = this.files && this.files[0];
-    this.value = "";
-    if(!f) return;
-    if(f.type.indexOf("image/")!==0){ toast("Choose an image file for the background."); return; }
-    var reader = new FileReader();
-    reader.onload = function(){
-      downscale(reader.result, function(dataUrl){
-        if(!dataUrl){ toast("That picture could not be used — try another image."); return; }
-        var v = {kind:"custom", data:dataUrl};
-        if(!save(v)){ toast("Could not save that picture — it may be too large for this browser's storage."); return; }
-        apply(v);
-        toast("Background picture saved on this device.");
-      });
-    };
-    reader.onerror = function(){ toast("Could not read that picture — try another image."); };
-    reader.readAsDataURL(f);
-  });
-  $("btnBgReset").addEventListener("click", function(){
-    var next = {kind:"default"};
-    save(next); apply(next);
-    toast("Background reset to default.");
-  });
-  apply(load());
-})();
 </script>
 <script>
 /* ---------- Simplified Mode toggle (per-device preference) ---------- */
