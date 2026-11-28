@@ -331,6 +331,18 @@
 
   /* Permission gating (demo, UI-level) */
   body.role-admin .super-only{display:none!important}
+  body.role-member .admin-only{display:none!important}
+
+  /* Appearance — Background (Super Admin & Admin only; members never see it) */
+  .bg-options{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .bg-option{width:86px;border:2px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;background:var(--surface-2);padding:0;font-family:inherit}
+  .bg-option .bg-swatch{height:52px}
+  .bg-option .bg-name{font-size:.75rem;font-weight:800;padding:7px 4px;color:var(--ink);text-align:center}
+  .bg-option.active{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,240,255,.28)}
+  body.bg-midnight{--bg:#020617;background-image:linear-gradient(160deg,#020617,#0b1e3a 55%,#0f2a52)}
+  body.bg-forest{--bg:#04150c;background-image:linear-gradient(160deg,#04150c,#0a2e1c 55%,#0f3d24)}
+  body.bg-ember{--bg:#170b06;background-image:linear-gradient(160deg,#170b06,#2e1608 55%,#3d1e0a)}
+  body.bg-custom{background-image:var(--bg-img);background-size:cover;background-position:center;background-attachment:fixed}
   body.no-audit #auditSection{display:none}
   body.no-audit [data-view="audit"]{display:none}
   body.no-time #btnIn,body.no-time #btnOut{opacity:.45;pointer-events:none}
@@ -1170,6 +1182,25 @@
       <h2>My Account — Username &amp; Password</h2>
       <p class="hint" id="myAccountHint">Manage your own sign-in details.</p>
       <div id="myAccountBody"></div>
+    </section>
+
+    <!-- Appearance — Background (Super Admin & Admin only; hidden from members) -->
+    <section class="panel admin-only" id="appearancePanel" aria-label="Appearance — background">
+      <h2>Appearance — Background <span class="role-badge role-admin">Super Admin &amp; Admin only</span></h2>
+      <p class="hint">Choose the background of this app on this device. Members cannot see or change this — only Super Admin and Admin.</p>
+      <div class="bg-options" id="bgOptions">
+        <button class="bg-option active" type="button" data-bg="default"><span class="bg-swatch" style="display:block;background:#060a18"></span><span class="bg-name">Default</span></button>
+        <button class="bg-option" type="button" data-bg="midnight"><span class="bg-swatch" style="display:block;background:linear-gradient(160deg,#020617,#0f2a52)"></span><span class="bg-name">Midnight</span></button>
+        <button class="bg-option" type="button" data-bg="forest"><span class="bg-swatch" style="display:block;background:linear-gradient(160deg,#04150c,#0f3d24)"></span><span class="bg-name">Forest</span></button>
+        <button class="bg-option" type="button" data-bg="ember"><span class="bg-swatch" style="display:block;background:linear-gradient(160deg,#170b06,#3d1e0a)"></span><span class="bg-name">Ember</span></button>
+      </div>
+      <p class="hint" id="bgPreview" style="margin-top:10px">Current background: <b id="bgCustomName" style="color:var(--ink)">Default</b></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn btn-ghost" id="btnBgUpload" type="button">Upload your own picture</button>
+        <button class="btn btn-ghost" id="btnBgReset" type="button">Reset to Default</button>
+      </div>
+      <input type="file" id="bgFile" accept="image/*" style="display:none" aria-hidden="true" />
+      <p class="hint">Your own picture is stored only on this device (browser storage) and is used as the app background here.</p>
     </section>
 
     </section>
@@ -2472,6 +2503,77 @@
 
   renderEnrolled();
   updateEnrollBtn();
+})();
+</script>
+
+<script>
+/* ---------- Appearance — Background (Super Admin & Admin only) ----------
+   The panel is hidden from members by CSS (body.role-member .admin-only),
+   and every change is double-checked here: members cannot apply or save
+   a background even if the panel were somehow shown. The choice is
+   per-device (localStorage) and applies to everyone on this device. */
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  var KEY="attendpro.background";
+  var PRESETS={default:"Default", midnight:"Midnight", forest:"Forest", ember:"Ember"};
+  function role(){ var u=(window.AuthState && window.AuthState.getUser()) || null; return u ? u.role : null; }
+  function canChange(){ var r=role(); return r==="super" || r==="admin"; }
+  function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){ return null; } }
+  function apply(){
+    var v=read();
+    var b=document.body;
+    b.classList.remove("bg-midnight","bg-forest","bg-ember","bg-custom");
+    b.style.removeProperty("--bg-img");
+    var name="Default";
+    if(v && v.kind==="preset" && PRESETS[v.id] && v.id!=="default"){
+      b.classList.add("bg-"+v.id); name=PRESETS[v.id];
+    } else if(v && v.kind==="custom" && v.data){
+      b.classList.add("bg-custom");
+      b.style.setProperty("--bg-img","url(\""+v.data+"\")");
+      name="Your picture";
+    }
+    var label=$("bgCustomName"); if(label) label.textContent=name;
+    var activeId=(v && v.kind==="preset") ? v.id : (v && v.kind==="custom" ? "" : "default");
+    var opts=document.querySelectorAll("#bgOptions .bg-option");
+    opts.forEach(function(o){ o.classList.toggle("active", o.getAttribute("data-bg")===activeId); });
+  }
+  function save(v){
+    if(!canChange()){
+      if(window.AttendanceCore) window.AttendanceCore.toast("Only Super Admin or Admin can change the background.");
+      return;
+    }
+    try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){ /* storage full or blocked — keep the current background */ }
+    apply();
+  }
+  apply();
+  var opts=document.querySelectorAll("#bgOptions .bg-option");
+  opts.forEach(function(o){
+    o.addEventListener("click", function(){ save({kind:"preset", id:o.getAttribute("data-bg")}); });
+  });
+  var up=$("btnBgUpload"), file=$("bgFile"), reset=$("btnBgReset");
+  if(up && file){
+    up.addEventListener("click", function(){ if(canChange()) file.click(); });
+    file.addEventListener("change", function(){
+      if(!canChange() || !file.files || !file.files[0]){ file.value=""; return; }
+      var reader=new FileReader();
+      reader.onload=function(){
+        var img=new Image();
+        img.onload=function(){
+          /* Downscale so the picture fits browser storage (max 1280px wide). */
+          var w=img.width, h=img.height, max=1280;
+          if(w>max){ h=Math.round(h*max/w); w=max; }
+          var c=document.createElement("canvas"); c.width=w; c.height=h;
+          c.getContext("2d").drawImage(img,0,0,w,h);
+          save({kind:"custom", data:c.toDataURL("image/jpeg",0.82)});
+        };
+        img.src=reader.result;
+      };
+      reader.readAsDataURL(file.files[0]);
+      file.value="";
+    });
+  }
+  if(reset){ reset.addEventListener("click", function(){ save({kind:"preset", id:"default"}); }); }
 })();
 </script>
 
